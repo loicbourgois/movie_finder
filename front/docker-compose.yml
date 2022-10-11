@@ -1,0 +1,11 @@
+version: "3"
+services:
+    movie_front:
+        image: nginx
+        ports:
+            - 80:80
+        volumes:
+            - $HOME/github.com/loicbourgois/movie_finder/movie_front:/usr/share/nginx/html/movie_front
+            - $HOME/github.com/loicbourgois/movie_finder/movie_front/favicon.ico:/usr/share/nginx/html/favicon.ico
+            - $HOME/github.com/loicbourgois/movie_finder_local/data:/usr/share/nginx/html/data
+            - $HOME/github.com/loicbourgois/movie_finder_local/cache:/usr/share/nginx/html/cache

@@ -1,0 +1,9 @@
+services:
+  data_builder:
+    build:
+      context: $HOME/github.com/loicbourgois/movie_finder/data_builder
+      dockerfile: Dockerfile
+    command: /root/github.com/loicbourgois/movie_finder/data_builder/_main.sh
+    volumes:
+      - $HOME/github.com/loicbourgois/movie_finder_local/data:/root/github.com/loicbourgois/movie_finder_local/data:rw
+      - $HOME/github.com/loicbourgois/movie_finder:/root/github.com/loicbourgois/movie_finder:ro
