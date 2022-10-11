@@ -1,0 +1,11 @@
+instance_of = "wdt:P31"
+human_activity = "wd:Q61788060"
+activity = "wd:Q1914636"
+action = "wd:Q4026292"
+# occupation = "wd:P106"
+occupation = "wd:Q12737077"
+all_languages = "[AUTO_LANGUAGE],en,fr,ar,be,bg,bn,ca,cs,da,de,el,es,et,fa,fi,he,hi,hu,hy,id,it,ja,jv,ko,nb,nl,eo,pa,pl,pt,ro,ru,sh,sk,sr,sv,sw,te,th,tr,uk,yue,vec,vi,zh"
+
+subclass_of = "wdt:P279"
+instance_of_any_subclass_of = "wdt:P31/wdt:P279*"
+any_subclass_of = "wdt:P279*"

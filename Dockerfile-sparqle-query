@@ -1,0 +1,6 @@
+from python:3.10
+ENV dtw="/root/github.com/loicbourgois/downtowhat"
+RUN python -m pip install sparqlwrapper
+COPY sparqle_query.py $dtw/sparqle_query.py
+COPY sparqle_query_run.py $dtw/sparqle_query_run.py
+CMD cd $dtw/.. && PYTHONPATH=$dtw python -m downtowhat.sparqle_query_run
