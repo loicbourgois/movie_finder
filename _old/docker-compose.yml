@@ -6,10 +6,10 @@ services:
     environment:
       POSTGRES_PASSWORD: downtowhat_admin_password
       POSTGRES_USER: downtowhat_admin
-      query_hash: 3e75164a7c0301d310d92ccecb78c108793a5293eb45194cb6be762f1f69d952
-    volumes:
-      - $HOME/github.com/loicbourgois/downtowhat_local/data:/root/github.com/loicbourgois/downtowhat_local/data
-      - $HOME/github.com/loicbourgois/downtowhat_local/data:/docker-entrypoint-initdb.d/data
+      # query_hash: 3e75164a7c0301d310d92ccecb78c108793a5293eb45194cb6be762f1f69d952
+    # volumes:
+    #   - $HOME/github.com/loicbourgois/downtowhat_local/data:/root/github.com/loicbourgois/downtowhat_local/data
+    #   - $HOME/github.com/loicbourgois/downtowhat_local/data:/docker-entrypoint-initdb.d/data
       # - $HOME/github.com/loicbourgois/downtowhat_local/data/database:/var/lib/postgresql/data
   # api:
   #   # TODO: check this

@@ -1,0 +1,19 @@
+services:
+  dtw_database_migration_create:
+    build:
+      context: $HOME/github.com/loicbourgois/downtowhat
+      dockerfile: database/migrate/Dockerfile
+    command: database/migrate/inner_create.sh
+    environment:
+      - environment=$environment
+      - DATABASE_PASSWORD=downtowhat_password
+      - DATABASE_USER=downtowhat
+      - DATABASE_HOST=host.docker.internal
+      - DATABASE_PORT=5432
+      - DATABASE_NAME=downtowhat
+      - migration=$migration
+    volumes:
+      - $migrations_folder/$migration:/migration_folder:rw
+      - $HOME/github.com/loicbourgois/downtowhat/database/migrate:/root/github.com/loicbourgois/downtowhat/database/migrate:rw
+    # links:
+    #   - dtw_database:db

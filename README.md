@@ -1,12 +1,18 @@
-# downtowhat
+# Downtowhat
 
+
+## Backend
 ```sh
-docker-compose \
-  --file $HOME/github.com/loicbourgois/downtowhat/docker-compose.yml \
-  up --build
+$HOME/github.com/loicbourgois/downtowhat/backend/go.sh
 ```
 
+
+## Database
 ```sh
-alias d="cargo run --release --manifest-path $HOME/github.com/loicbourgois/downtowhat/cli/Cargo.toml -- "
-d help
+# run
+$HOME/github.com/loicbourgois/downtowhat/database/go.sh
+# create migration
+$HOME/github.com/loicbourgois/downtowhat/database/migrate/create.sh <migration>
+# apply migration
+todo
 ```

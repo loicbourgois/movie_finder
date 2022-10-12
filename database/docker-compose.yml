@@ -1,0 +1,8 @@
+services:
+  dtw_database:
+    image: postgres:14
+    environment:
+      POSTGRES_PASSWORD: downtowhat_password
+      POSTGRES_USER: downtowhat
+    ports:
+      - 5432:5432
