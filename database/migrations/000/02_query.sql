@@ -11,25 +11,29 @@ create table dtw_user (
   id uuid unique default uuid_generate_v4(),
   username text unique not null,
   email text unique not null,
+  salt text not null,
   hash text not null,
-  last_active timestamp,
+  last_active timestamp without time zone default (now() at time zone('utc')),
+  created_at timestamp without time zone default (now() at time zone('utc')),
   primary key( id )
 );
 
 
 create table question (
   id uuid unique default uuid_generate_v4(),
-  question text not null,
   description text not null,
+  prompt text not null,
+  priority int unique not null,
   primary key( id )
 );
 
 
 create table option (
   id uuid unique default uuid_generate_v4(),
-  str text unique not null,
-  priority int unique not null,
-  primary key( id )
+  question_id uuid not null,
+  str text not null,
+  primary key( id ),
+  foreign key ( question_id ) references question(id)
 );
 
 

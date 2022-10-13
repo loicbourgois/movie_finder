@@ -1,4 +1,0 @@
-const data = [
-  ['outdor', 'indor'],
-  ['']
-]

@@ -3,3 +3,5 @@ flask
 bleach
 sqlalchemy
 psycopg2
+cryptography
+pyjwt

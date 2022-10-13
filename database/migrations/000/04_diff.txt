@@ -1,29 +1,31 @@
---- /migration_folder/01_before.txt	2022-10-12 20:52:27.895744054 +0000
-+++ /migration_folder/03_after.txt	2022-10-12 20:52:28.603248336 +0000
-@@ -0,0 +1,46 @@
-+                                Table "public.dtw_user"
-+   Column    |            Type             | Collation | Nullable |      Default       
-+-------------+-----------------------------+-----------+----------+--------------------
+--- /migration_folder/01_before.txt	2022-10-13 20:41:08.652347255 +0000
++++ /migration_folder/03_after.txt	2022-10-13 20:41:09.156480619 +0000
+@@ -0,0 +1,52 @@
++                                       Table "public.dtw_user"
++   Column    |            Type             | Collation | Nullable |             Default              
++-------------+-----------------------------+-----------+----------+----------------------------------
 + id          | uuid                        |           | not null | uuid_generate_v4()
 + username    | text                        |           | not null | 
 + email       | text                        |           | not null | 
++ salt        | text                        |           | not null | 
 + hash        | text                        |           | not null | 
-+ last_active | timestamp without time zone |           |          | 
++ last_active | timestamp without time zone |           |          | (now() AT TIME ZONE 'utc'::text)
++ created_at  | timestamp without time zone |           |          | (now() AT TIME ZONE 'utc'::text)
 +Indexes:
 +    "dtw_user_pkey" PRIMARY KEY, btree (id)
 +    "dtw_user_email_key" UNIQUE CONSTRAINT, btree (email)
 +    "dtw_user_username_key" UNIQUE CONSTRAINT, btree (username)
 +
 +                     Table "public.option"
-+  Column  |  Type   | Collation | Nullable |      Default       
-+----------+---------+-----------+----------+--------------------
-+ id       | uuid    |           | not null | uuid_generate_v4()
-+ str      | text    |           | not null | 
-+ priority | integer |           | not null | 
++   Column    | Type | Collation | Nullable |      Default       
++-------------+------+-----------+----------+--------------------
++ id          | uuid |           | not null | uuid_generate_v4()
++ question_id | uuid |           | not null | 
++ str         | text |           | not null | 
 +Indexes:
 +    "option_pkey" PRIMARY KEY, btree (id)
-+    "option_priority_key" UNIQUE CONSTRAINT, btree (priority)
-+    "option_str_key" UNIQUE CONSTRAINT, btree (str)
++Foreign-key constraints:
++    "option_question_id_fkey" FOREIGN KEY (question_id) REFERENCES question(id)
 +
 +              Table "public.preference"
 +  Column   |  Type   | Collation | Nullable | Default 
@@ -32,14 +34,18 @@
 + option_id | uuid    |           |          | 
 + score     | integer |           |          | 
 +
-+                    Table "public.question"
-+   Column    | Type | Collation | Nullable |      Default       
-+-------------+------+-----------+----------+--------------------
-+ id          | uuid |           | not null | uuid_generate_v4()
-+ question    | text |           | not null | 
-+ description | text |           | not null | 
++                      Table "public.question"
++   Column    |  Type   | Collation | Nullable |      Default       
++-------------+---------+-----------+----------+--------------------
++ id          | uuid    |           | not null | uuid_generate_v4()
++ description | text    |           | not null | 
++ prompt      | text    |           | not null | 
++ priority    | integer |           | not null | 
 +Indexes:
 +    "question_pkey" PRIMARY KEY, btree (id)
++    "question_priority_key" UNIQUE CONSTRAINT, btree (priority)
++Referenced by:
++    TABLE "option" CONSTRAINT "option_question_id_fkey" FOREIGN KEY (question_id) REFERENCES question(id)
 +
 +            Table "public.user_distance"
 +  Column  |  Type   | Collation | Nullable | Default 
