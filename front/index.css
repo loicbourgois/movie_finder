@@ -3,7 +3,7 @@
 }
 
 body {
-  background: #224;
+  background: #312;
   height: 100vh;
   margin: 0;
   width: 100vw;
@@ -38,10 +38,11 @@ button:hover {
 }
 
 
-#title {
+#title, #title:visited {
   font-size: 1.125rem;
   color: #cac;
   margin: 1rem;
+  text-decoration: none;
   font-size: 1.5rem;
 }
 
@@ -152,4 +153,34 @@ button:hover {
 
 #header #button_login {
   margin-right: 0;
+}
+
+
+#play_content_wrapper {
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  align-items: center;
+}
+
+
+#play_content {
+  width: 100%;
+}
+
+
+.button_less {
+  padding: 1rem;
+  font-size: 1rem;
+  margin-top: 5rem;
+  background: #cac2;
+  color: #cac;
+  border-radius: 100rem;
+  background: transparent;
+}
+
+
+.button_less:hover {
+  color: #ece;
+  background: transparent;
 }

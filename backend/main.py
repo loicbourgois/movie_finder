@@ -167,14 +167,13 @@ def test(database_engine):
         'password': 'hunter',
     })
     delete_user(database_engine, 'test2')
-    question_1_id = add_question({
+    add_question({
         'title': 'Ideal match',
         'prompt': 'Who are you looking for ?',
         'options': [
             'A life partner',
             'A lover',
             'A friend',
-            'A date',
             'A distraction',
             'A fuck buddy',
         ]
@@ -189,7 +188,6 @@ def test(database_engine):
             'Coffee',
             'Dinner',
             'Going to the movie',
-            'Chilling',
         ]
     })
     add_question({
@@ -198,9 +196,8 @@ def test(database_engine):
         'options': [
             'At the beach',
             'In the mountains',
-            'Deep in the forest',
+            'In the forest',
             'In a vibrant city',
-            'Lost at sea',
             'In the countryside',
         ]
     })
@@ -239,8 +236,39 @@ def test(database_engine):
             'Cartoons',
         ]
     })
-
-    # for x in range(0, 20):
+    add_question({
+        'title': '',
+        'prompt': "Which kind of person would you rather have by your side?",
+        'options': [
+            'Someone brave',
+            'Someone loyal',
+            'Someone funny',
+            'Someone respectful',
+            'Someone ambitious',
+            'Someone honest',
+        ]
+    })
+    add_question({
+        'title': '',
+        'prompt': "How much is too much ?",
+        'options': [
+            '100.000$',
+            '1.000.000$',
+            '10.000.000$',
+            '100.000.000$',
+        ]
+    })
+    add_question({
+        'title': '',
+        'prompt': "How much is enough ?",
+        'options': [
+            '1.000$',
+            '10.000$',
+            '100.000$',
+            '1.000.000$',
+        ]
+    })
+    # for x in range(0, 10):
     #     add_question({
     #         'title': f'test-{x}',
     #         'prompt': f'test-{x}',
@@ -250,46 +278,30 @@ def test(database_engine):
     #             f'test-{x}-3',
     #         ]
     #     })
-
-    tmp_user_id = database.create_tmp_user()['id']
-    tmp_user_id_2 = database.create_tmp_user()['id']
-    for x in range(0, 2):
-        question = database.get_tmp_question(tmp_user_id)
-        if random() < 0.5:
-            database.tmp_answer({
-                'question_id': question['question_id'],
-                'winner': question['option_a_id'],
-                'loser': question['option_b_id'],
-                'tmp_user_id': tmp_user_id,
-            })
-        else:
-            database.tmp_answer({
-                'question_id': question['question_id'],
-                'winner': question['option_b_id'],
-                'loser': question['option_a_id'],
-                'tmp_user_id': tmp_user_id,
-            })
-    for x in range(0, 4):
-        question = database.get_tmp_question(tmp_user_id_2)
-        if random() < 0.5:
-            database.tmp_answer({
-                'question_id': question['question_id'],
-                'winner': question['option_a_id'],
-                'loser': question['option_b_id'],
-                'tmp_user_id': tmp_user_id_2,
-            })
-        else:
-            database.tmp_answer({
-                'question_id': question['question_id'],
-                'winner': question['option_b_id'],
-                'loser': question['option_a_id'],
-                'tmp_user_id': tmp_user_id_2,
-            })
+    for y in range(0, 20):
+        r = random()
+        tmp_user_id = database.create_tmp_user()['id']
+        for x in range(0, int(61*random())):
+            question = database.get_tmp_question(tmp_user_id)
+            if random() < r:
+                database.tmp_answer({
+                    'question_id': question['question_id'],
+                    'winner': question['option_a_id'],
+                    'loser': question['option_b_id'],
+                    'tmp_user_id': tmp_user_id,
+                })
+            else:
+                database.tmp_answer({
+                    'question_id': question['question_id'],
+                    'winner': question['option_b_id'],
+                    'loser': question['option_a_id'],
+                    'tmp_user_id': tmp_user_id,
+                })
     logging.info('All tests ok')
 
 
 test(database_engine)
-test(database_engine)
+# test(database_engine)
 
 
 def token_required(f):

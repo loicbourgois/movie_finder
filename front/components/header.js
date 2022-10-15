@@ -11,7 +11,7 @@ window.header_join = () => {
 const html = () => {
   return `
     <div id="header">
-      <span id="title">Down to What</span>
+      <a id="title" href="/">Down to What</a>
       <span class="spacer"></span>
       <button id="button_login" onclick="header_login()">Login</button>
       <button onclick="header_join()">Register</button>

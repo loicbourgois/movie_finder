@@ -71,10 +71,14 @@ const go = async () => {
   window.tmp_answer = tmp_answer
   document.body.innerHTML = `
     ${header.html()}
-    <div id="play_content">
-      <div id="left"></div>
-      <div id="right"></div>
+    <div id="play_content_wrapper">
+      <div id="play_content">
+        <div id="left"></div>
+        <div id="right"></div>
+      </div>
+      <button class="button_less">Duo mode</button>
     </div>
+
   `
   const tmp_id_1 = await get_tmp_id_1()
   const question = await http.post("/get_tmp_question", {

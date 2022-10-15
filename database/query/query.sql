@@ -1,71 +1,7 @@
 BEGIN;
 
 
--- insert into tmp_user default values;
-
 select * from tmp_user;
-
-
--- CREATE OR REPLACE FUNCTION max_answers_inner (
---   total_ bigint,
---   next_ bigint
--- ) returns table (
---   total bigint,
---   next bigint
--- ) AS $$
--- BEGIN
---   IF next_ > 0 THEN
---     return query
---     select * from max_answers_inner(total_+next_, next_-1);
---   else
---     return query
---     select total_, next_;
---   END IF;
--- END;
--- $$ LANGUAGE plpgsql;
---
---
--- CREATE OR REPLACE FUNCTION max_answers (
---   x bigint
--- ) returns table (
---   y bigint
--- ) AS $$
--- BEGIN
---   return query
---   select total from max_answers_inner(x-1, x-2);
--- END;
--- $$ LANGUAGE plpgsql;
-
-
-
--- CREATE OR REPLACE FUNCTION progress (
---   answer_count bigint,
---   rounds bigint
--- ) returns table (
---   progress float
--- ) AS $$
--- BEGIN
---   return query
---   select 1.0::float;
---   -- select ((answer_count / rounds) as float);
--- END;
--- $$ LANGUAGE plpgsql;
---
---
--- CREATE OR REPLACE FUNCTION priority_x_remaining (
---   prio_max int,
---   priority int,
---   progress float
--- ) returns table (
---   priority_x_remaining float
--- ) AS $$
--- BEGIN
---   return query
---   select 1.0::float;
--- END;
--- $$ LANGUAGE plpgsql;
-
-
 
 
 with prio_max as (
@@ -103,14 +39,70 @@ q2 as (
           from q3
       ),
       q5 as (
-          select *, cast( (prio_max+1-priority) as float) * (1.0  - progress ) as priority_x_remaining
+          select *, cast( (prio_max+1-priority) as float) * (1.0  - progress ) * (1.0  - progress ) as priority_x_remaining
           from q4
       ),
       Q as (
           select * from q5
       )
-select *
-from Q;
+select * from Q;
 
+
+
+with q1 as (
+  select
+    t_a.tmp_user_id as ua,
+    t_b.tmp_user_id as ub,
+    t_a.option_a,
+    t_a.option_b,
+    t_a.option_win = t_b.option_win as same
+  from
+    tmp_answer t_a,
+    tmp_answer t_b
+  where
+    t_a.tmp_user_id < t_b.tmp_user_id
+    and t_a.option_a = t_b.option_a
+    and t_a.option_b = t_b.option_b
+),
+q2 as (
+  select count(same)as total , ua, ub  from q1 group by ua, ub
+),
+q3 as (
+  select count(same)as same, ua, ub,
+  ( select count(*) from tmp_answer where tmp_user_id = ua ) as total_a,
+  ( select count(*) from tmp_answer where tmp_user_id = ub ) as total_b
+  from q1 where same group by ua, ub
+)
+
+select
+  q2.ua, q2.ub,
+  total_a,
+  total_b,
+  total as total_ab,
+  same,
+  cast(same as float) * 2.0 / cast(total_a + total_b as float) as match
+from q2, q3
+where q2.ua = q3.ua
+  and q2.ub = q3.ub
+group by total, same, q2.ua, q2.ub, q3.total_a, q3.total_b
+order by match desc limit 10 
+
+;
+
+      with q1 as (
+        select question.*, (
+         select count(*)
+         from option
+         where option.question_id = question.id
+       ) as option_count
+       from question
+
+              group by  question.id
+     ),
+     q2 as (
+      select *, ((option_count)*(option_count-1)/2) as rounds
+      from q1
+    ) select sum(rounds) from q2 as total_rounds
+;
 
 rollback;
