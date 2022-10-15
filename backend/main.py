@@ -17,6 +17,8 @@ from functools import wraps
 import uuid
 import jwt
 import datetime
+from . import database
+from random import random
 
 
 def env(k):
@@ -103,11 +105,11 @@ def add_question(x):
         except Exception as e:
             pass
         id = connection.execute(sql_text(f'''
-            insert into question (description, prompt, priority)
-            values (:description, :prompt, :priority)
+            insert into question (title, prompt, priority)
+            values (:title, :prompt, :priority)
             returning id;
         '''), {
-            'description': x['description'],
+            'title': x['title'],
             'prompt': x['prompt'],
             'priority': priority,
         }).all()[0][0]
@@ -120,6 +122,7 @@ def add_question(x):
                 'str': xx,
             })
         transaction.commit()
+        return {'id':id}
 
 
 def get_user(email):
@@ -137,11 +140,22 @@ def get_user(email):
         }
 
 
+def delete_all_questions():
+    with database_engine.connect() as connection:
+        connection.execute(sql_text(f'''
+            delete from option;
+            delete from question;
+        '''))
+
+
 def test(database_engine):
     logging.info('Testing')
     test_connection(database_engine)
     delete_user(database_engine, 'test')
     delete_user(database_engine, 'test2')
+    database.delete_all_tmp_answer()
+    delete_all_questions()
+    database.delete_all_tmp_user()
     add_user(database_engine, {
         'username': 'test',
         'email': 'test@test.com',
@@ -153,9 +167,9 @@ def test(database_engine):
         'password': 'hunter',
     })
     delete_user(database_engine, 'test2')
-    add_question({
-        'description': 'Ideal match',
-        'prompt': 'Who you looking for ?',
+    question_1_id = add_question({
+        'title': 'Ideal match',
+        'prompt': 'Who are you looking for ?',
         'options': [
             'A life partner',
             'A lover',
@@ -164,22 +178,22 @@ def test(database_engine):
             'A distraction',
             'A fuck buddy',
         ]
-    })
+    })['id']
     add_question({
-        'description': 'First date',
-        'prompt': 'What to do for a first date ?',
+        'title': 'First date',
+        'prompt': "What's best for a first date ?",
         'options': [
             'Walk and talk',
-            'Have sex',
-            'Get a drink',
-            'Grab a coffee',
-            'Have dinner',
-            'Go to the movie',
-            'Chill',
+            'Sex',
+            'Drinks',
+            'Coffee',
+            'Dinner',
+            'Going to the movie',
+            'Chilling',
         ]
     })
     add_question({
-        'description': 'Best place to be',
+        'title': 'Best place to be',
         'prompt': 'Best place to be ?',
         'options': [
             'At the beach',
@@ -187,17 +201,90 @@ def test(database_engine):
             'Deep in the forest',
             'In a vibrant city',
             'Lost at sea',
-            'The countryside',
+            'In the countryside',
         ]
     })
     add_question({
-        'description': 'Good or intersting ',
+        'title': 'Good or intersting ',
         'prompt': "What would you rather be a part of ?",
         'options': [
             'Someting good',
             'Something interesting',
         ]
     })
+    add_question({
+        'title': 'Crossing the road',
+        'prompt': "Why did the frog cross the road ?",
+        'options': [
+            'To get to the other side',
+            'Because a llama ate her hat',
+            'To get a job',
+        ]
+    })
+    add_question({
+        'title': 'Consequences or intentions',
+        'prompt': "Which is most important ?",
+        'options': [
+            'Intentions',
+            'Consequences',
+        ]
+    })
+    add_question({
+        'title': 'Moving images',
+        'prompt': "Moving images are best enjoyed as ...",
+        'options': [
+            'TV Shows',
+            'Movies',
+            'Animes',
+            'Cartoons',
+        ]
+    })
+
+    # for x in range(0, 20):
+    #     add_question({
+    #         'title': f'test-{x}',
+    #         'prompt': f'test-{x}',
+    #         'options': [
+    #             f'test-{x}-1',
+    #             f'test-{x}-2',
+    #             f'test-{x}-3',
+    #         ]
+    #     })
+
+    tmp_user_id = database.create_tmp_user()['id']
+    tmp_user_id_2 = database.create_tmp_user()['id']
+    for x in range(0, 2):
+        question = database.get_tmp_question(tmp_user_id)
+        if random() < 0.5:
+            database.tmp_answer({
+                'question_id': question['question_id'],
+                'winner': question['option_a_id'],
+                'loser': question['option_b_id'],
+                'tmp_user_id': tmp_user_id,
+            })
+        else:
+            database.tmp_answer({
+                'question_id': question['question_id'],
+                'winner': question['option_b_id'],
+                'loser': question['option_a_id'],
+                'tmp_user_id': tmp_user_id,
+            })
+    for x in range(0, 4):
+        question = database.get_tmp_question(tmp_user_id_2)
+        if random() < 0.5:
+            database.tmp_answer({
+                'question_id': question['question_id'],
+                'winner': question['option_a_id'],
+                'loser': question['option_b_id'],
+                'tmp_user_id': tmp_user_id_2,
+            })
+        else:
+            database.tmp_answer({
+                'question_id': question['question_id'],
+                'winner': question['option_b_id'],
+                'loser': question['option_a_id'],
+                'tmp_user_id': tmp_user_id_2,
+            })
     logging.info('All tests ok')
 
 
@@ -209,11 +296,17 @@ def token_required(f):
    @wraps(f)
    def decorator(*args, **kwargs):
        try:
-           token = request.headers['Authorization'].split("Bearer ")[1]
-           data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
-           user = get_user(data['email'])
-       except:
-           return jsonify({'message': 'token is invalid'})
+           assert request.referrer.startswith(os.environ['referrer'])
+           token_a = request.headers['Authorization'].split("Bearer ")[1]
+           token_c = request.cookies.get('access_token')
+           assert token_a != token_c, f"{token_a} | {token_c}"
+           data_a = jwt.decode(token_a, app.config['SECRET_KEY'], algorithms=["HS256"])
+           data_c = jwt.decode(token_c, app.config['SECRET_KEY_2'], algorithms=["HS256"])
+           assert data_a['exp'] == data_c['exp']
+           assert data_a['email'] == data_c['email']
+           user = get_user(data_a['email'])
+       except Exception as e:
+           return jsonify({'message': 'invalid token'})
        return f(user, *args, **kwargs)
    return decorator
 
@@ -222,6 +315,7 @@ app = Flask(
     __name__,
 )
 app.config['SECRET_KEY'] = os.urandom(16).hex()
+app.config['SECRET_KEY_2'] = os.urandom(16).hex()
 
 
 @app.route('/login', methods=['POST'])
@@ -229,16 +323,29 @@ def login_user():
     try:
         user = get_user(request.json['email'])
         verify(request.json['password'], user['salt'], user['hash'])
-        token = jwt.encode(
+        exp = datetime.datetime.utcnow() + datetime.timedelta(minutes=45)
+        token_a = jwt.encode(
             {
                 'email' : request.json['email'],
-                'exp' : datetime.datetime.utcnow() + datetime.timedelta(minutes=45)
+                'exp' : exp,
             },
             app.config['SECRET_KEY'],
             "HS256"
         )
-        return jsonify({'token' : token})
+        token_c = jwt.encode(
+            {
+                'email' : request.json['email'],
+                'exp' : exp,
+            },
+            app.config['SECRET_KEY_2'],
+            "HS256"
+        )
+        return jsonify({
+            'a': token_a,
+            'c': token_c
+        })
     except Exception as e:
+        logging.error(e)
         return make_response('could not verify',  401, {'Authentication': 'login required'})
 
 
@@ -246,6 +353,35 @@ def login_user():
 @token_required
 def protected(user):
     return jsonify({'message' : 'protected'})
+
+
+@app.route('/questions', methods = ['POST'])
+def route_questions():
+    return jsonify(database.get_questions())
+
+
+@app.route('/create_tmp_user', methods = ['POST'])
+def route_create_tmp_user():
+    return jsonify(database.create_tmp_user())
+
+
+@app.route('/get_tmp_user', methods = ['POST'])
+def route_get_tmp_user():
+    return jsonify(database.get_tmp_user(
+        request.json['user_id']
+    ))
+
+
+@app.route('/get_tmp_question', methods = ['POST'])
+def route_get_tmp_question():
+    return jsonify(database.get_tmp_question(
+        request.json['user_id']
+    ))
+
+
+@app.route('/tmp_answer', methods = ['POST'])
+def route_tmp_answer():
+    return jsonify(database.tmp_answer(request.json))
 
 
 @app.route('/', methods = ['GET'])
@@ -261,9 +397,7 @@ def about():
 @app.route('/<path>', methods = ['GET'])
 def front(path):
     if path in [
-        'me',
-        'quiz',
-        'home',
+        'play',
     ]:
         return front('index.html')
     else:

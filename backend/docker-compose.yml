@@ -13,7 +13,7 @@ services:
       - API_PORT=80
       - API_HOST=0.0.0.0
       - front_dir=/root/github.com/loicbourgois/downtowhat/front
-      - salt=95546f94a0226eb26c9a7728133282de
+      - referrer=http://0.0.0.0/
     volumes:
       - $HOME/github.com/loicbourgois/downtowhat/backend:/root/github.com/loicbourgois/downtowhat/backend:ro
       - $HOME/github.com/loicbourgois/downtowhat/front:/root/github.com/loicbourgois/downtowhat/front:ro
