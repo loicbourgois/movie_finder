@@ -84,25 +84,14 @@ select
 from q2, q3
 where q2.ua = q3.ua
   and q2.ub = q3.ub
+  and (
+    q2.ua = '8847343f-9e1c-461d-9a20-262165d98f8b'
+    or q2.ub = '8847343f-9e1c-461d-9a20-262165d98f8b'
+  )
 group by total, same, q2.ua, q2.ub, q3.total_a, q3.total_b
-order by match desc limit 10 
+order by match desc
+limit 9 ;
 
-;
 
-      with q1 as (
-        select question.*, (
-         select count(*)
-         from option
-         where option.question_id = question.id
-       ) as option_count
-       from question
-
-              group by  question.id
-     ),
-     q2 as (
-      select *, ((option_count)*(option_count-1)/2) as rounds
-      from q1
-    ) select sum(rounds) from q2 as total_rounds
-;
 
 rollback;

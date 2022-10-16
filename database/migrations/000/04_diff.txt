@@ -1,6 +1,27 @@
---- /migration_folder/01_before.txt	2022-10-15 14:17:04.762666648 +0000
-+++ /migration_folder/03_after.txt	2022-10-15 14:17:05.275564036 +0000
-@@ -0,0 +1,85 @@
+--- /migration_folder/01_before.txt	2022-10-16 14:37:03.234270669 +0000
++++ /migration_folder/03_after.txt	2022-10-16 14:37:03.739750517 +0000
+@@ -0,0 +1,113 @@
++                                        Table "public.answer"
++   Column    |            Type             | Collation | Nullable |             Default              
++-------------+-----------------------------+-----------+----------+----------------------------------
++ user_id     | uuid                        |           | not null | 
++ question_id | uuid                        |           | not null | 
++ option_a    | uuid                        |           | not null | 
++ option_b    | uuid                        |           | not null | 
++ option_win  | uuid                        |           | not null | 
++ option_lose | uuid                        |           | not null | 
++ created_at  | timestamp without time zone |           |          | (now() AT TIME ZONE 'utc'::text)
++Indexes:
++    "answer_pkey" PRIMARY KEY, btree (user_id, option_a, option_b)
++Foreign-key constraints:
++    "answer_option_a_fkey" FOREIGN KEY (option_a) REFERENCES option(id)
++    "answer_option_b_fkey" FOREIGN KEY (option_b) REFERENCES option(id)
++    "answer_option_lose_fkey" FOREIGN KEY (option_lose) REFERENCES option(id)
++    "answer_option_win_fkey" FOREIGN KEY (option_win) REFERENCES option(id)
++    "answer_question_id_fkey" FOREIGN KEY (question_id) REFERENCES question(id)
++    "answer_question_id_option_a_fkey" FOREIGN KEY (question_id, option_a) REFERENCES option(question_id, id)
++    "answer_question_id_option_b_fkey" FOREIGN KEY (question_id, option_b) REFERENCES option(question_id, id)
++
 +                                       Table "public.dtw_user"
 +   Column    |            Type             | Collation | Nullable |             Default              
 +-------------+-----------------------------+-----------+----------+----------------------------------
@@ -28,6 +49,12 @@
 +Foreign-key constraints:
 +    "option_question_id_fkey" FOREIGN KEY (question_id) REFERENCES question(id)
 +Referenced by:
++    TABLE "answer" CONSTRAINT "answer_option_a_fkey" FOREIGN KEY (option_a) REFERENCES option(id)
++    TABLE "answer" CONSTRAINT "answer_option_b_fkey" FOREIGN KEY (option_b) REFERENCES option(id)
++    TABLE "answer" CONSTRAINT "answer_option_lose_fkey" FOREIGN KEY (option_lose) REFERENCES option(id)
++    TABLE "answer" CONSTRAINT "answer_option_win_fkey" FOREIGN KEY (option_win) REFERENCES option(id)
++    TABLE "answer" CONSTRAINT "answer_question_id_option_a_fkey" FOREIGN KEY (question_id, option_a) REFERENCES option(question_id, id)
++    TABLE "answer" CONSTRAINT "answer_question_id_option_b_fkey" FOREIGN KEY (question_id, option_b) REFERENCES option(question_id, id)
 +    TABLE "tmp_answer" CONSTRAINT "tmp_answer_option_a_fkey" FOREIGN KEY (option_a) REFERENCES option(id)
 +    TABLE "tmp_answer" CONSTRAINT "tmp_answer_option_b_fkey" FOREIGN KEY (option_b) REFERENCES option(id)
 +    TABLE "tmp_answer" CONSTRAINT "tmp_answer_option_lose_fkey" FOREIGN KEY (option_lose) REFERENCES option(id)
@@ -47,6 +74,7 @@
 +    "question_priority_key" UNIQUE CONSTRAINT, btree (priority)
 +    "question_title_key" UNIQUE CONSTRAINT, btree (title)
 +Referenced by:
++    TABLE "answer" CONSTRAINT "answer_question_id_fkey" FOREIGN KEY (question_id) REFERENCES question(id)
 +    TABLE "option" CONSTRAINT "option_question_id_fkey" FOREIGN KEY (question_id) REFERENCES question(id)
 +    TABLE "tmp_answer" CONSTRAINT "tmp_answer_question_id_fkey" FOREIGN KEY (question_id) REFERENCES question(id)
 +

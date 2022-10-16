@@ -65,6 +65,25 @@ create table tmp_answer (
 );
 
 
+create table answer (
+  user_id uuid not null,
+  question_id uuid not null,
+  option_a uuid not null,
+  option_b uuid not null,
+  option_win uuid not null,
+  option_lose uuid not null,
+  created_at timestamp without time zone default (now() at time zone('utc')),
+  primary key( user_id, option_a, option_b ),
+  foreign key ( question_id ) references question(id),
+  foreign key ( option_a ) references option(id),
+  foreign key ( option_b ) references option(id),
+  foreign key ( option_win ) references option(id),
+  foreign key ( option_lose ) references option(id),
+  foreign key ( question_id, option_a ) references option(question_id, id),
+  foreign key ( question_id, option_b ) references option(question_id, id)
+);
+
+
 create table user_distance (
   user_a uuid,
   user_b uuid,

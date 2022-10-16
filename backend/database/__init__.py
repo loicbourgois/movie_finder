@@ -22,6 +22,13 @@ logging.basicConfig(level=logging.INFO)
 database_engine = create_engine(get_database_url('DATABASE_USER', 'DATABASE_PASSWORD', 'DATABASE_HOST', 'DATABASE_NAME'))
 
 
+from .delete_all_user import delete_all_user
+from .delete_all_answer import delete_all_answer
+from .get_matches import get_matches
+from .get_question import get_question
+from .answer import answer
+
+
 def get_questions():
     with database_engine.connect() as connection:
         r = connection.execute(sql_text(f'''
@@ -167,15 +174,18 @@ def get_tmp_question(tmp_user_id):
             ;
         '''), {
             'tmp_user_id': tmp_user_id,
-        }).all()[0]
-        return {
-            'prompt': r[0],
-            'option_a': r[1],
-            'option_b': r[2],
-            'question_id': r[3],
-            'option_a_id': r[4],
-            'option_b_id': r[5],
-        }
+        }).all()
+        try:
+            return {
+                'prompt': r[0][0],
+                'option_a': r[0][1],
+                'option_b': r[0][2],
+                'question_id': r[0][3],
+                'option_a_id': r[0][4],
+                'option_b_id': r[0][5],
+            }
+        except Exception as e:
+            return {}
 
 
 def delete_all_tmp_user():
@@ -210,4 +220,108 @@ def tmp_answer(x):
             'option_b': option_b,
             'option_win': x['winner'],
             'option_lose': x['loser'],
+        })
+
+
+def tmp_match_percent(tmp_user_id_1, tmp_user_id_2):
+    if  tmp_user_id_1 < tmp_user_id_2:
+        tmp_user_id_a = tmp_user_id_1
+        tmp_user_id_b = tmp_user_id_2
+    else:
+        tmp_user_id_a = tmp_user_id_2
+        tmp_user_id_b = tmp_user_id_1
+    with database_engine.connect() as connection:
+        try:
+            r = connection.execute(sql_text(f'''
+                with q1 as (
+                  select
+                    t_a.tmp_user_id as ua,
+                    t_b.tmp_user_id as ub,
+                    t_a.option_a,
+                    t_a.option_b,
+                    t_a.option_win = t_b.option_win as same
+                  from
+                    tmp_answer t_a,
+                    tmp_answer t_b
+                  where
+                    t_a.tmp_user_id < t_b.tmp_user_id
+                    and t_a.option_a = t_b.option_a
+                    and t_a.option_b = t_b.option_b
+                    and t_a.tmp_user_id = :tmp_user_id_a
+                    and t_b.tmp_user_id = :tmp_user_id_b
+                ),
+                q2 as (
+                  select count(same)as total , ua, ub  from q1 group by ua, ub
+                ),
+                q3 as (
+                  select count(same)as same, ua, ub,
+                  ( select count(*) from tmp_answer where tmp_user_id = ua ) as total_a,
+                  ( select count(*) from tmp_answer where tmp_user_id = ub ) as total_b
+                  from q1 where same group by ua, ub
+                )
+                select
+                  q2.ua, q2.ub,
+                  total_a,
+                  total_b,
+                  total as total_ab,
+                  same,
+                  cast(same as float) * 2.0 / cast(total_a + total_b as float) as match
+                from q2, q3
+                where q2.ua = q3.ua
+                  and q2.ub = q3.ub
+                group by total, same, q2.ua, q2.ub, q3.total_a, q3.total_b
+                order by match desc limit 10
+            '''), {
+                'tmp_user_id_a': tmp_user_id_a,
+                'tmp_user_id_b': tmp_user_id_b,
+            }).all()
+            return r[0][6]
+        except Exception as e:
+            pass
+
+
+def tmp_progress(tmp_user_id):
+    with database_engine.connect() as connection:
+        r = connection.execute(sql_text(f'''
+            with q1 as (
+                  select question.*, (
+                      select count(*)
+                      from option
+                      where option.question_id = question.id
+                  ) as option_count
+                  from question
+                  group by  question.id
+              ),
+              q2 as (
+                  select *, ((option_count)*(option_count-1)/2) as rounds
+                  from q1
+              ),
+              q3 as (
+                  select count(*) as count_answered
+                  from tmp_answer
+                  where tmp_user_id = :tmp_user_id
+              ),
+              q4 as (
+                select sum(rounds) as total_rounds
+                from q2
+              )
+              select count_answered, total_rounds, (count_answered / total_rounds) as progress
+              from q4 , q3;
+
+        '''), {
+            'tmp_user_id': tmp_user_id,
+        }).all()
+        return {
+            'count_answered': r[0][0],
+            'total_rounds': r[0][1],
+            'progress': r[0][2],
+        }
+
+
+def tmp_reset(id):
+    with database_engine.connect() as connection:
+        connection.execute(sql_text(f'''
+            delete from tmp_answer where tmp_user_id = :id
+        '''), {
+            'id':id
         })

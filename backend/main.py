@@ -128,7 +128,7 @@ def add_question(x):
 def get_user(email):
     with database_engine.connect() as connection:
         x = connection.execute(sql_text(f'''
-            select username, salt, hash
+            select username, salt, hash, email, id
             from dtw_user where email = :email;
         '''), {
             'email': email
@@ -137,6 +137,8 @@ def get_user(email):
             'username': x[0],
             'salt': x[1],
             'hash': x[2],
+            'email': x[3],
+            'id': x[4],
         }
 
 
@@ -151,22 +153,11 @@ def delete_all_questions():
 def test(database_engine):
     logging.info('Testing')
     test_connection(database_engine)
-    delete_user(database_engine, 'test')
-    delete_user(database_engine, 'test2')
     database.delete_all_tmp_answer()
+    database.delete_all_answer()
     delete_all_questions()
     database.delete_all_tmp_user()
-    add_user(database_engine, {
-        'username': 'test',
-        'email': 'test@test.com',
-        'password': 'hunter',
-    })
-    add_user(database_engine, {
-        'username': 'test2',
-        'email': 'test2@test.com',
-        'password': 'hunter',
-    })
-    delete_user(database_engine, 'test2')
+    database.delete_all_user()
     add_question({
         'title': 'Ideal match',
         'prompt': 'Who are you looking for ?',
@@ -227,17 +218,18 @@ def test(database_engine):
         ]
     })
     add_question({
-        'title': 'Moving images',
-        'prompt': "Moving images are best enjoyed as ...",
+        'title': 'stories images',
+        'prompt': "Stories are best enjoyed as ...",
         'options': [
             'TV Shows',
             'Movies',
             'Animes',
             'Cartoons',
+            'Books',
         ]
     })
     add_question({
-        'title': '',
+        'title': 'comparse',
         'prompt': "Which kind of person would you rather have by your side?",
         'options': [
             'Someone brave',
@@ -249,7 +241,7 @@ def test(database_engine):
         ]
     })
     add_question({
-        'title': '',
+        'title': 'toomuch',
         'prompt': "How much is too much ?",
         'options': [
             '100.000$',
@@ -259,7 +251,7 @@ def test(database_engine):
         ]
     })
     add_question({
-        'title': '',
+        'title': 'enough',
         'prompt': "How much is enough ?",
         'options': [
             '1.000$',
@@ -278,10 +270,10 @@ def test(database_engine):
     #             f'test-{x}-3',
     #         ]
     #     })
-    for y in range(0, 20):
+    for y in range(0, 5):
         r = random()
         tmp_user_id = database.create_tmp_user()['id']
-        for x in range(0, int(61*random())):
+        for x in range(0, int(5*random())):
             question = database.get_tmp_question(tmp_user_id)
             if random() < r:
                 database.tmp_answer({
@@ -297,6 +289,33 @@ def test(database_engine):
                     'loser': question['option_a_id'],
                     'tmp_user_id': tmp_user_id,
                 })
+    for y in range(0, 10):
+        r = random()
+        email = f"test{y}@test.com"
+        add_user(database_engine, {
+            'username': f'Test {y}',
+            'email': email,
+            'password': 'hunter',
+        })
+        user = get_user(email)
+        for x in range(0, int(20*random())):
+            question = database.get_question(user['id'])
+            if random() < r:
+                database.answer({
+                    'question_id': question['question_id'],
+                    'winner': question['option_a_id'],
+                    'loser': question['option_b_id'],
+                    'user_id': user['id'],
+                })
+            else:
+                database.answer({
+                    'question_id': question['question_id'],
+                    'winner': question['option_b_id'],
+                    'loser': question['option_a_id'],
+                    'user_id': user['id'],
+                })
+    user = get_user('test0@test.com')
+    database.get_matches(user['id'], {})
     logging.info('All tests ok')
 
 
@@ -361,12 +380,6 @@ def login_user():
         return make_response('could not verify',  401, {'Authentication': 'login required'})
 
 
-@app.route('/protected', methods = ['POST'])
-@token_required
-def protected(user):
-    return jsonify({'message' : 'protected'})
-
-
 @app.route('/questions', methods = ['POST'])
 def route_questions():
     return jsonify(database.get_questions())
@@ -396,6 +409,28 @@ def route_tmp_answer():
     return jsonify(database.tmp_answer(request.json))
 
 
+@app.route('/tmp_match_percent', methods = ['POST'])
+def route_tmp_match_percent():
+    return jsonify(database.tmp_match_percent(
+        request.json['tmp_user_id_left'],
+        request.json['tmp_user_id_right'],
+    ))
+
+
+@app.route('/tmp_progress', methods = ['POST'])
+def route_tmp_progress():
+    return jsonify(database.tmp_progress(
+        request.json['tmp_user_id'],
+    ))
+
+
+@app.route('/tmp_reset', methods = ['POST'])
+def route_tmp_reset():
+    return jsonify(database.tmp_reset(
+        request.json['tmp_user_id'],
+    ))
+
+
 @app.route('/', methods = ['GET'])
 def index():
     return front('index.html')
@@ -410,6 +445,7 @@ def about():
 def front(path):
     if path in [
         'play',
+        'login',
     ]:
         return front('index.html')
     else:
@@ -419,3 +455,15 @@ def front(path):
 @app.route('/<path>/<path2>', methods = ['GET'])
 def front_2(path, path2):
     return send_from_directory(env('front_dir'), {}.get(f"{path}/{path2}", f"{path}/{path2}"))
+
+
+@app.route('/protected', methods = ['POST'])
+@token_required
+def protected(user):
+    return jsonify({'message' : 'protected'})
+
+
+@app.route('/get_matches', methods = ['POST'])
+@token_required
+def route_get_matches(user):
+    return jsonify(database.get_matches(user['id'], request.json))

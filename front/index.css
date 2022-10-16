@@ -37,7 +37,6 @@ button:hover {
   font-size: 1.125rem;
 }
 
-
 #title, #title:visited {
   font-size: 1.125rem;
   color: #cac;
@@ -46,7 +45,6 @@ button:hover {
   font-size: 1.5rem;
 }
 
-
 #content {
   flex-grow: 1;
   align-items: center;
@@ -54,20 +52,17 @@ button:hover {
   flex-direction: column;
 }
 
-
 #content > #p1 {
   margin-top: 20vh;
   color: #cad;
   font-size: 1.5rem;
 }
 
-
 #content > button {
   margin-top: 2rem;
   padding: 0.5rem;
   font-size: 1.25rem;
 }
-
 
 #filter {
   height: 100vh;
@@ -76,13 +71,11 @@ button:hover {
   pointer-events: none;
 }
 
-
 #letsgo_text {
   margin-top: 2rem;
   font-size: 1.25rem;
   color: #cad;
 }
-
 
 #letsgo_button {
   width: 4rem;
@@ -92,32 +85,29 @@ button:hover {
   margin-top: 2.5rem;
 }
 
-
 #excla {
   margin-left: 0.125rem;
 }
 
-
 #play_content {
   display: flex;
-  flex-grow: 1;
 }
 
-
-#left {
+#left, #right {
   display: flex;
   flex-direction: column;
   align-items: center;
   flex-grow: 1;
+  width: 0;
 }
-
 
 .prompt {
   font-size: 2rem;
   color: #dbd;
-  margin-top: 10rem;
+  margin-top: 8rem;
+  text-align: center;
+  height: 3rem;
 }
-
 
 .answer {
   padding: 2rem;
@@ -128,17 +118,6 @@ button:hover {
   border-radius: 100rem;
   width: 0;
   flex-grow: 1;
-}
-
-
-.answers {
-  display: flex;
-  flex-grow: 1;
-  width: 100%;
-}
-
-
-.answer {
   margin: 2rem;
   flex-grow: 1000;
   height: 10rem;
@@ -151,10 +130,16 @@ button:hover {
   color: #fcf;
 }
 
+.answers {
+  display: flex;
+  flex-grow: 1;
+  width: 100%;
+  margin-bottom: 4rem;
+}
+
 #header #button_login {
   margin-right: 0;
 }
-
 
 #play_content_wrapper {
   display: flex;
@@ -163,24 +148,135 @@ button:hover {
   align-items: center;
 }
 
-
 #play_content {
   width: 100%;
 }
 
+.button_mode {
+  margin-top: 5rem;
+  padding: 1rem;
+  margin-bottom: 10vh;
+}
 
 .button_less {
-  padding: 1rem;
   font-size: 1rem;
-  margin-top: 5rem;
   background: #cac2;
   color: #cac;
   border-radius: 100rem;
   background: transparent;
 }
 
-
 .button_less:hover {
   color: #ece;
   background: transparent;
+}
+
+.display_none {
+  display: none !important;
+}
+
+#play_content_wrapper {
+  flex-grow: 1;
+}
+
+#play_content_wrapper {
+  flex-grow: 1;
+}
+
+.progress {
+  height: 0.25rem;
+  width: 100%;
+  flex-direction: column;
+  display: flex;
+}
+
+.progress_inner {
+  height: 100%;
+  background: #fff3;
+}
+
+#match {
+  color: #fbf;
+  padding: 2rem;
+  border-radius: 100rem;
+  min-width: 1.75rem;
+  text-align: center;
+  font-size: 1.5rem;
+  background: transparent;
+  border: solid #cac7 3px;
+  margin-bottom: 2.75rem;
+
+}
+
+#center {
+  align-items: end;
+  display: flex;
+}
+
+.progress {
+  margin-bottom: 4.25rem;
+}
+
+#login_content {
+  display: flex;
+  flex-direction: column;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#login_content button {
+  padding: 0.5rem;
+  margin: 1rem;
+  width: 16rem;
+}
+
+#login_content input {
+  background: #cac4;
+  border: solid 1px #cac;
+  color: #cac;
+  padding: 0.5rem;
+  margin: 1rem
+}
+
+#filters {
+  display: flex;
+  flex-direction: column;
+}
+
+#home_logged_content {
+  width: 100vw;
+  display: flex;
+  flex-grow: 1;
+}
+
+select {
+  background: none;
+  border: none;
+  color: #cac;
+  padding: 0.25rem;
+}
+
+#info p {
+  text-align: center;
+  color: #fdd;
+  font-size: 1.25rem;
+}
+
+#button_logout {
+  background: transparent;
+  color: #cac;
+}
+
+#filters p {
+  padding: 0;
+  margin: 0;
+  color: #cac;
+  padding: 0.5rem;
+  font-size: 1.125rem;
+  padding-bottom: 0.125rem;
+  margin-left: 0.5rem;
+}
+
+#filters select {
+  margin-left: 1.5rem;
 }
