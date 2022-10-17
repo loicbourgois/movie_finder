@@ -32,26 +32,36 @@ def get_matches(user_id, x):
               ( select count(*) from answer where user_id = ua ) as total_a,
               ( select count(*) from answer where user_id = ub ) as total_b
               from q1 where same group by ua, ub
+            ),
+            q4 as (
+                select
+                  q2.ua,
+                  q2.ub,
+                  total_a,
+                  total_b,
+                  total as total_ab,
+                  same,
+                  cast(same as float) * 2.0 / cast(total_a + total_b as float) as match,
+                  ( case when q2.ua != :user_id then q2.ua else q2.ub end ) as other_id
+                from q2, q3
+                where q2.ua = q3.ua
+                  and q2.ub = q3.ub
+                  and (
+                    q2.ua = :user_id
+                    or q2.ub = :user_id
+                  )
+                group by total, same, q2.ua, q2.ub, q3.total_a, q3.total_b
             )
-            select
-              q2.ua, q2.ub,
-              total_a,
-              total_b,
-              total as total_ab,
-              same,
-              cast(same as float) * 2.0 / cast(total_a + total_b as float) as match
-            from q2, q3
-            where q2.ua = q3.ua
-              and q2.ub = q3.ub
-              and (
-                q2.ua = :user_id
-                or q2.ub = :user_id
-              )
-            group by total, same, q2.ua, q2.ub, q3.total_a, q3.total_b
+            select q4.*, dtw_user.username, dtw_user.description
+            from q4
+            join dtw_user
+                on dtw_user.id = other_id
+            where match >= :min_match
             order by match desc
-            limit 9 ;
+            limit 12 ;
         '''), {
             'user_id': user_id,
+            'min_match': x['filters']['min_match'],
         }).all()
         return {
             i: {
@@ -62,6 +72,9 @@ def get_matches(user_id, x):
                 'tab': x[4],
                 'same': x[5],
                 'm': x[6],
+                'o_id': x[7],
+                'o_username': x[8],
+                'od': x[9],
             }
             for i, x in enumerate(r)
         }

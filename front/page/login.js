@@ -2,18 +2,22 @@ import * as header from '../components/header.js'
 import * as http from '../http.js'
 
 
+const do_login = async (email, password) => {
+  const tokens = (await http.post("/login", {
+    'email': email,
+    'password': password,
+  }))
+  const secure = http.base_url.includes('https://') ? 'Secure' : ''
+  document.cookie = `access_token=${tokens.c}; SameSite=strict; ${secure}`
+  localStorage.setItem('access_token', tokens.a)
+}
+
+
+
 const login = async () => {
   document.querySelector("#info").innerHTML = ''
   try {
-    const email = document.querySelector("#email").value
-    const password = document.querySelector("#password").value
-    const tokens = (await http.post("/login", {
-      'email': email,
-      'password': password,
-    }))
-    const secure = http.base_url.includes('https://') ? 'Secure' : ''
-    document.cookie = `access_token=${tokens.c}; SameSite=strict; ${secure}`
-    localStorage.setItem('access_token', tokens.a)
+    await do_login(document.querySelector("#email").value, document.querySelector("#password").value)
     window.location = "/"
   } catch (e) {
       document.querySelector("#info").innerHTML = `
@@ -38,5 +42,6 @@ const go = async () => {
 
 
 export {
-  go
+  go,
+  do_login,
 }

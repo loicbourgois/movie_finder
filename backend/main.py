@@ -5,6 +5,7 @@ from flask import (
     make_response,
     send_from_directory,
 )
+import string
 from flask import jsonify as flask_jsonify
 import bleach
 from sqlalchemy import (
@@ -18,7 +19,10 @@ import uuid
 import jwt
 import datetime
 from . import database
-from random import random
+from random import (
+    random,
+    choices,
+)
 
 
 def env(k):
@@ -73,14 +77,15 @@ def add_user(engine, user):
     with engine.connect() as connection:
         kdf, salt = kdf_salt()
         r = connection.execute(sql_text(f'''
-            insert into dtw_user (username, email, hash, salt)
-            values (:username, :email, :hash, :salt)
+            insert into dtw_user (username, email, hash, salt, description)
+            values (:username, :email, :hash, :salt, :description)
             returning id, username, email, salt, hash;
         '''), {
             'username': user['username'],
             'email': user['email'],
             'hash': kdf.derive(bytes(user['password'], 'utf-8')).hex(),
             'salt': salt,
+            'description': user['description'],
         }).all()[0]
     verify(user['password'], r[3], r[4])
 
@@ -173,12 +178,20 @@ def test(database_engine):
         'title': 'First date',
         'prompt': "What's best for a first date ?",
         'options': [
-            'Walk and talk',
+            'A Walk',
             'Sex',
             'Drinks',
             'Coffee',
             'Dinner',
-            'Going to the movie',
+            'A movie',
+        ]
+    })
+    add_question({
+        'title': 'Good or intersting ',
+        'prompt': "What would you rather be a part of ?",
+        'options': [
+            'Someting good',
+            'Something interesting',
         ]
     })
     add_question({
@@ -190,14 +203,6 @@ def test(database_engine):
             'In the forest',
             'In a vibrant city',
             'In the countryside',
-        ]
-    })
-    add_question({
-        'title': 'Good or intersting ',
-        'prompt': "What would you rather be a part of ?",
-        'options': [
-            'Someting good',
-            'Something interesting',
         ]
     })
     add_question({
@@ -218,17 +223,6 @@ def test(database_engine):
         ]
     })
     add_question({
-        'title': 'stories images',
-        'prompt': "Stories are best enjoyed as ...",
-        'options': [
-            'TV Shows',
-            'Movies',
-            'Animes',
-            'Cartoons',
-            'Books',
-        ]
-    })
-    add_question({
         'title': 'comparse',
         'prompt': "Which kind of person would you rather have by your side?",
         'options': [
@@ -242,12 +236,10 @@ def test(database_engine):
     })
     add_question({
         'title': 'toomuch',
-        'prompt': "How much is too much ?",
+        'prompt': "Is 100.000.000$ too much for one person to own ?",
         'options': [
-            '100.000$',
-            '1.000.000$',
-            '10.000.000$',
-            '100.000.000$',
+            'Yes',
+            'No',
         ]
     })
     add_question({
@@ -260,6 +252,66 @@ def test(database_engine):
             '1.000.000$',
         ]
     })
+    add_question({
+        'title': 'earth',
+        'prompt': "How old is the earth ?",
+        'options': [
+            '4.5 billion years old',
+            '6000 years old',
+        ]
+    })
+    add_question({
+        'title': 'spirits',
+        'prompt': "Do you believe in spirits ?",
+        'options': [
+            'Yes',
+            'No',
+        ]
+    })
+    add_question({
+        'title': 'stories images',
+        'prompt': "Stories are best enjoyed as ...",
+        'options': [
+            'TV Shows',
+            'Movies',
+            'Animes',
+            'Cartoons',
+            'Books',
+            'Games',
+        ]
+    })
+    add_question({
+        'title': 'commi',
+        'prompt': "Is communism a good idea ?",
+        'options': [
+            'Yes',
+            'No',
+        ]
+    })
+    add_question({
+        'title': 'capitalism',
+        'prompt': "Is capitalism a good idea ?",
+        'options': [
+            'Yes',
+            'No',
+        ]
+    })
+    add_question({
+        'title': 'socialism',
+        'prompt': "Is socialism a good idea ?",
+        'options': [
+            'Yes',
+            'No',
+        ]
+    })
+    add_question({
+        'title': 'suni',
+        'prompt': "DO you prefer sunrise or sunset ?",
+        'options': [
+            'Sunrise',
+            'Sunset',
+        ]
+    })
     # for x in range(0, 10):
     #     add_question({
     #         'title': f'test-{x}',
@@ -270,7 +322,7 @@ def test(database_engine):
     #             f'test-{x}-3',
     #         ]
     #     })
-    for y in range(0, 5):
+    for y in range(0, 3):
         r = random()
         tmp_user_id = database.create_tmp_user()['id']
         for x in range(0, int(5*random())):
@@ -289,16 +341,22 @@ def test(database_engine):
                     'loser': question['option_a_id'],
                     'tmp_user_id': tmp_user_id,
                 })
-    for y in range(0, 10):
+    for y in range(0, 15):
+        logging.info(y)
         r = random()
         email = f"test{y}@test.com"
+        description = []
+        for x in range(0, int(50*random())):
+            description.append("".join(choices(list(string.ascii_lowercase), k=( int(10*random()) + 1 ) ) ))
+        description = (" ".join(description)).capitalize() + "."
         add_user(database_engine, {
             'username': f'Test {y}',
             'email': email,
             'password': 'hunter',
+            'description': description,
         })
         user = get_user(email)
-        for x in range(0, int(20*random())):
+        for x in range(0, int(50*random())):
             question = database.get_question(user['id'])
             if random() < r:
                 database.answer({
@@ -315,7 +373,12 @@ def test(database_engine):
                     'user_id': user['id'],
                 })
     user = get_user('test0@test.com')
-    database.get_matches(user['id'], {})
+    x = database.get_matches(user['id'], {
+        'filters': {
+            'min_match': 0
+        }
+    })
+    logging.info(x)
     logging.info('All tests ok')
 
 

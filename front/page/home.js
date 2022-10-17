@@ -1,5 +1,6 @@
 import * as header from '../components/header.js'
 import * as http from '../http.js'
+import * as login from './login.js'
 
 
 const play = () => {
@@ -17,10 +18,36 @@ const refresh_results = async () => {
     }
   })
   console.log(r)
+  let h = ""
+  for (let x of Object.values(r)) {
+    console.log(x.o_username)
+    h += `
+      <div class="profile">
+        <div class="score_name">
+          <span>${parseInt(x.m*100)}</span>
+          <label>${x.o_username}</label>
+        </div>
+        <img src="corgi.jpg">
+        <p class="o_description">${x.od}</p>
+        <div class="pro_buttons">
+          <button class="button_message">Message</button>
+          <span class="spacer"></span>
+          <button class="button_less">More</button>
+          <span class="spacer"></span>
+          <button class="button_less">Hide</button>
+        </div>
+      </div>
+    `
+  }
+  document.querySelector("#results").innerHTML = h
+  // r.forEach((item, i) => {
+  //
+  // });
 }
 
 
 const go = async () => {
+  await login.do_login("test0@test.com", "hunter")
   window.play = play
   window.refresh_results = refresh_results
   document.body.innerHTML = `
@@ -33,21 +60,22 @@ const go = async () => {
       <div id="home_logged_content">
         <div id="filters">
           <p>Show me people </p>
-          <select name="last_active" id="last_active">
-            <option value="1_hour">Active in the last minute</option>
-            <option value="1_hour">Active in the last hour</option>
-            <option value="1_day">Active in the last day</option>
-            <option value="1_week" selected>Active in the last week</option>
-            <option value="1_month">Active in the last month</option>
+          <select name="last_active" id="last_active" onchange="refresh_results()">
+            <option value="1_minute">Active less than a minute ago</option>
+            <option value="1_hour">Active less than an hour ago</option>
+            <option value="1_day">Active less than a day ago</option>
+            <option value="1_week" selected>Active less than a week ago</option>
+            <option value="1_month">Active less than a month ago</option>
           </select>
-          <select name="min_match" id="min_match">
-            <option value="90">With 90+ compatibility</option>
-            <option value="70">With 70+ compatibility</option>
-            <option value="50">With 50+ compatibility</option>
-            <option value="30">With 30+ compatibility</option>
-            <option value="10"selected>With 10+ compatibility</option>
+          <select name="min_match" id="min_match" onchange="refresh_results()">
+            <option value="0.9">With 90+ compatibility</option>
+            <option value="0.7">With 70+ compatibility</option>
+            <option value="0.5">With 50+ compatibility</option>
+            <option value="0.3">With 30+ compatibility</option>
+            <option value="0.1">With 10+ compatibility</option>
+            <option value="0"selected>With 0+ compatibility</option>
           </select>
-          <select name="max_distance" id="max_distance">
+          <select name="max_distance" id="max_distance" onchange="refresh_results()">
             <!-- <option value="5">5 km away or less</option>
             <option value="10">10 km away or less</option>
             <option value="25" selected>25 km away or less</option>

@@ -27,6 +27,8 @@ Foreign-key constraints:
  email       | text                        |           | not null | 
  salt        | text                        |           | not null | 
  hash        | text                        |           | not null | 
+ description | text                        |           | not null | ''::text
+ birthday    | date                        |           |          | '2000-01-01'::date
  last_active | timestamp without time zone |           |          | (now() AT TIME ZONE 'utc'::text)
  created_at  | timestamp without time zone |           |          | (now() AT TIME ZONE 'utc'::text)
 Indexes:

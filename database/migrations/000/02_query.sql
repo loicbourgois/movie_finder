@@ -13,6 +13,8 @@ create table dtw_user (
   email text unique not null,
   salt text not null,
   hash text not null,
+  description text not null default '',
+  birthday date default '2000/01/01',
   last_active timestamp without time zone default (now() at time zone('utc')),
   created_at timestamp without time zone default (now() at time zone('utc')),
   primary key( id )

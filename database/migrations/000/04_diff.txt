@@ -1,6 +1,6 @@
---- /migration_folder/01_before.txt	2022-10-16 14:37:03.234270669 +0000
-+++ /migration_folder/03_after.txt	2022-10-16 14:37:03.739750517 +0000
-@@ -0,0 +1,113 @@
+--- /migration_folder/01_before.txt	2022-10-16 19:08:34.086140977 +0000
++++ /migration_folder/03_after.txt	2022-10-16 19:08:34.615765471 +0000
+@@ -0,0 +1,115 @@
 +                                        Table "public.answer"
 +   Column    |            Type             | Collation | Nullable |             Default              
 +-------------+-----------------------------+-----------+----------+----------------------------------
@@ -30,6 +30,8 @@
 + email       | text                        |           | not null | 
 + salt        | text                        |           | not null | 
 + hash        | text                        |           | not null | 
++ description | text                        |           | not null | ''::text
++ birthday    | date                        |           |          | '2000-01-01'::date
 + last_active | timestamp without time zone |           |          | (now() AT TIME ZONE 'utc'::text)
 + created_at  | timestamp without time zone |           |          | (now() AT TIME ZONE 'utc'::text)
 +Indexes:
