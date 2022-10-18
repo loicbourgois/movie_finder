@@ -30,6 +30,8 @@ from .answer import answer
 from .get_tmp_user_share_id import get_tmp_user_share_id
 from .get_tmp_user import get_tmp_user
 from .set_tmp_pseudo import set_tmp_pseudo
+from .add_picture import add_picture
+from .get_picture import get_picture
 
 
 def get_questions():

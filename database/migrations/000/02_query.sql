@@ -15,10 +15,32 @@ create table dtw_user (
   hash varchar(128) not null,
   description varchar(1024) not null default '',
   birthday date default '2000/01/01',
+  picture_1 bytea,
+  picture_1_status varchar(128),
+  picture_2 bytea,
+  picture_2_status varchar(128),
+  picture_3 bytea,
+  picture_3_status varchar(128),
+  picture_4 bytea,
+  picture_4_status varchar(128),
   last_active timestamp without time zone default (now() at time zone('utc')),
   created_at timestamp without time zone default (now() at time zone('utc')),
   primary key( id )
 );
+
+
+alter table dtw_user
+   add constraint check_picture_1_length
+   check (octet_length(picture_1) <= 1024 * 8 * 2);
+alter table dtw_user
+  add constraint check_picture_2_length
+  check (octet_length(picture_2) <= 1024 * 8 * 2);
+alter table dtw_user
+   add constraint check_picture_3_length
+   check (octet_length(picture_3) <= 1024 * 8 * 2);
+alter table dtw_user
+  add constraint check_picture_4_length
+  check (octet_length(picture_4) <= 1024 * 8 * 2);
 
 
 create table tmp_user (

@@ -554,6 +554,11 @@ def front_2(path, path2):
     return send_from_directory(env('front_dir'), {}.get(f"{path}/{path2}", f"{path}/{path2}"))
 
 
+#
+# Private routes
+#
+
+
 @app.route('/protected', methods = ['POST'])
 @token_required
 def protected(user):
@@ -564,3 +569,15 @@ def protected(user):
 @token_required
 def route_get_matches(user):
     return jsonify(database.get_matches(user['id'], request.json))
+
+
+@app.route('/add_picture', methods = ['POST'])
+@token_required
+def route_add_picture(user):
+    return jsonify(database.add_picture(user['id'], request.json))
+
+
+@app.route('/get_picture', methods = ['POST'])
+@token_required
+def route_get_picture(user):
+    return jsonify(database.get_picture(user['id'], request.json))

@@ -426,17 +426,14 @@ div.profile > img {
 
 #pictures_content {
   display: flex;
-  flex-grow: 1;
+  overflow: hidden;
+  flex-grow: 0;
 }
 
 #picture_right > img {
   width: 100%;
   height: 0;
 }
-
-
-
-/* Element | http://0.0.0.0/pictures */
 
 #picture_right > div > label {
   color: #cac;
@@ -445,4 +442,36 @@ div.profile > img {
 #demo {
   color: transparent;
   display: none;
+}
+
+#canvas {
+  width: 0;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#canvas_cropped {
+  display: none;
+}
+
+#pictures_content button {
+  padding: 0.25rem;
+  margin: 0.25rem;
+  margin-left: 0;
+}
+
+#picture_right {
+  width: 20rem;
+  overflow: scroll;
+}
+
+#picture_right img {
+  width: 20rem;
+  height: 20rem;
+}
+
+#picture_right .picture {
+  width: 9rem;
+  height: 9rem;
+  border: none;
 }
