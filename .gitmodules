@@ -4,3 +4,6 @@
 [submodule "submodules/temporal_tables"]
 	path = submodules/temporal_tables
 	url = https://github.com/nearform/temporal_tables
+[submodule "submodules/image-conversion"]
+	path = submodules/image-conversion
+	url = git@github.com:WangYuLue/image-conversion.git

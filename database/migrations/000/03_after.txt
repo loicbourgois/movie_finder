@@ -23,11 +23,11 @@ Foreign-key constraints:
    Column    |            Type             | Collation | Nullable |             Default              
 -------------+-----------------------------+-----------+----------+----------------------------------
  id          | uuid                        |           | not null | uuid_generate_v4()
- username    | text                        |           | not null | 
- email       | text                        |           | not null | 
- salt        | text                        |           | not null | 
- hash        | text                        |           | not null | 
- description | text                        |           | not null | ''::text
+ username    | character varying(128)      |           | not null | 
+ email       | character varying(128)      |           | not null | 
+ salt        | character varying(128)      |           | not null | 
+ hash        | character varying(128)      |           | not null | 
+ description | character varying(1024)     |           | not null | ''::character varying
  birthday    | date                        |           |          | '2000-01-01'::date
  last_active | timestamp without time zone |           |          | (now() AT TIME ZONE 'utc'::text)
  created_at  | timestamp without time zone |           |          | (now() AT TIME ZONE 'utc'::text)
@@ -36,12 +36,12 @@ Indexes:
     "dtw_user_email_key" UNIQUE CONSTRAINT, btree (email)
     "dtw_user_username_key" UNIQUE CONSTRAINT, btree (username)
 
-                     Table "public.option"
-   Column    | Type | Collation | Nullable |      Default       
--------------+------+-----------+----------+--------------------
- id          | uuid |           | not null | uuid_generate_v4()
- question_id | uuid |           | not null | 
- str         | text |           | not null | 
+                              Table "public.option"
+   Column    |          Type          | Collation | Nullable |      Default       
+-------------+------------------------+-----------+----------+--------------------
+ id          | uuid                   |           | not null | uuid_generate_v4()
+ question_id | uuid                   |           | not null | 
+ str         | character varying(128) |           | not null | 
 Indexes:
     "option_pkey" PRIMARY KEY, btree (id)
     "option_question_id_id_key" UNIQUE CONSTRAINT, btree (question_id, id)
@@ -61,13 +61,13 @@ Referenced by:
     TABLE "tmp_answer" CONSTRAINT "tmp_answer_question_id_option_a_fkey" FOREIGN KEY (question_id, option_a) REFERENCES option(question_id, id)
     TABLE "tmp_answer" CONSTRAINT "tmp_answer_question_id_option_b_fkey" FOREIGN KEY (question_id, option_b) REFERENCES option(question_id, id)
 
-                    Table "public.question"
-  Column  |  Type   | Collation | Nullable |      Default       
-----------+---------+-----------+----------+--------------------
- id       | uuid    |           | not null | uuid_generate_v4()
- title    | text    |           | not null | 
- prompt   | text    |           | not null | 
- priority | integer |           | not null | 
+                            Table "public.question"
+  Column  |          Type          | Collation | Nullable |      Default       
+----------+------------------------+-----------+----------+--------------------
+ id       | uuid                   |           | not null | uuid_generate_v4()
+ title    | character varying(128) |           | not null | 
+ prompt   | character varying(128) |           | not null | 
+ priority | integer                |           | not null | 
 Indexes:
     "question_pkey" PRIMARY KEY, btree (id)
     "question_priority_key" UNIQUE CONSTRAINT, btree (priority)
@@ -102,10 +102,13 @@ Foreign-key constraints:
    Column    |            Type             | Collation | Nullable |             Default              
 -------------+-----------------------------+-----------+----------+----------------------------------
  id          | uuid                        |           | not null | uuid_generate_v4()
+ share_id    | uuid                        |           |          | uuid_generate_v4()
+ pseudo      | character varying(128)      |           | not null | 'Anon'::character varying
  last_active | timestamp without time zone |           |          | (now() AT TIME ZONE 'utc'::text)
  created_at  | timestamp without time zone |           |          | (now() AT TIME ZONE 'utc'::text)
 Indexes:
     "tmp_user_pkey" PRIMARY KEY, btree (id)
+    "tmp_user_share_id_key" UNIQUE CONSTRAINT, btree (share_id)
 
             Table "public.user_distance"
   Column  |  Type   | Collation | Nullable | Default 

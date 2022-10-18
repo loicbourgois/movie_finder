@@ -40,14 +40,11 @@ const refresh_results = async () => {
     `
   }
   document.querySelector("#results").innerHTML = h
-  // r.forEach((item, i) => {
-  //
-  // });
 }
 
 
 const go = async () => {
-  await login.do_login("test0@test.com", "hunter")
+  // await login.do_login("test0@test.com", "hunter")
   window.play = play
   window.refresh_results = refresh_results
   document.body.innerHTML = `

@@ -23,6 +23,7 @@ from random import (
     random,
     choices,
 )
+import uuid
 
 
 def env(k):
@@ -47,6 +48,14 @@ def test_connection(engine):
         assert connection.execute(sql_text(f'''
             select true;
         ''')).all()[0][0]
+
+
+def is_valid_uuid(value):
+    try:
+        uuid.UUID(str(value))
+        return True
+    except ValueError:
+        return False
 
 
 def jsonify(data):
@@ -326,6 +335,7 @@ def test(database_engine):
         r = random()
         tmp_user_id = database.create_tmp_user()['id']
         for x in range(0, int(5*random())):
+            logging.info(f"t.{y}.{x}")
             question = database.get_tmp_question(tmp_user_id)
             if random() < r:
                 database.tmp_answer({
@@ -356,7 +366,8 @@ def test(database_engine):
             'description': description,
         })
         user = get_user(email)
-        for x in range(0, int(50*random())):
+        for x in range(0, int(15*random())):
+            logging.info(f"f.{y}.{x}")
             question = database.get_question(user['id'])
             if random() < r:
                 database.answer({
@@ -378,7 +389,7 @@ def test(database_engine):
             'min_match': 0
         }
     })
-    logging.info(x)
+    # logging.info(x)
     logging.info('All tests ok')
 
 
@@ -453,11 +464,11 @@ def route_create_tmp_user():
     return jsonify(database.create_tmp_user())
 
 
-@app.route('/get_tmp_user', methods = ['POST'])
-def route_get_tmp_user():
-    return jsonify(database.get_tmp_user(
-        request.json['user_id']
-    ))
+# @app.route('/get_tmp_user', methods = ['POST'])
+# def route_get_tmp_user():
+#     return jsonify(database.get_tmp_user(
+#         request.json['user_id']
+#     ))
 
 
 @app.route('/get_tmp_question', methods = ['POST'])
@@ -472,6 +483,11 @@ def route_tmp_answer():
     return jsonify(database.tmp_answer(request.json))
 
 
+@app.route('/set_tmp_pseudo', methods = ['POST'])
+def route_set_tmp_pseudo():
+    return jsonify(database.set_tmp_pseudo(request.json))
+
+
 @app.route('/tmp_match_percent', methods = ['POST'])
 def route_tmp_match_percent():
     return jsonify(database.tmp_match_percent(
@@ -480,9 +496,24 @@ def route_tmp_match_percent():
     ))
 
 
-@app.route('/tmp_progress', methods = ['POST'])
-def route_tmp_progress():
-    return jsonify(database.tmp_progress(
+@app.route('/tmp_match_percent_by_share_id', methods = ['POST'])
+def route_tmp_match_percent_by_share_id():
+    return jsonify(database.tmp_match_percent_by_share_id(
+        request.json['tmp_user_id'],
+        request.json['tmp_user_share_id'],
+    ))
+
+
+@app.route('/get_tmp_user_share_id', methods = ['POST'])
+def route_get_tmp_user_share_id():
+    return jsonify(database.get_tmp_user_share_id(
+        request.json['tmp_user_id'],
+    ))
+
+
+@app.route('/get_tmp_user', methods = ['POST'])
+def route_get_tmp_user():
+    return jsonify(database.get_tmp_user(
         request.json['tmp_user_id'],
     ))
 
@@ -509,6 +540,7 @@ def front(path):
     if path in [
         'play',
         'login',
+        'pictures',
     ]:
         return front('index.html')
     else:
@@ -517,6 +549,8 @@ def front(path):
 
 @app.route('/<path>/<path2>', methods = ['GET'])
 def front_2(path, path2):
+    if path == 'play' and is_valid_uuid(path2):
+        return front('index.html')
     return send_from_directory(env('front_dir'), {}.get(f"{path}/{path2}", f"{path}/{path2}"))
 
 

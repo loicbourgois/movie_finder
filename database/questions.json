@@ -1,0 +1,11 @@
+[
+  {
+    "title": "prio",
+    "prompt": "Which is more important ?",
+    "options": [
+      "Food",
+      "Clothing",
+      "Entertainment"
+    ]
+  }
+]

@@ -27,6 +27,9 @@ from .delete_all_answer import delete_all_answer
 from .get_matches import get_matches
 from .get_question import get_question
 from .answer import answer
+from .get_tmp_user_share_id import get_tmp_user_share_id
+from .get_tmp_user import get_tmp_user
+from .set_tmp_pseudo import set_tmp_pseudo
 
 
 def get_questions():
@@ -70,16 +73,16 @@ def create_tmp_user():
         }
 
 
-def get_tmp_user(user_id):
-    with database_engine.connect() as connection:
-        r = connection.execute(sql_text(f'''
-            select id from tmp_user where id = :id;
-        '''), {
-            'id': user_id
-        }).all()
-        return {
-            'id': r[0][0],
-        }
+# def get_tmp_user(user_id):
+#     with database_engine.connect() as connection:
+#         r = connection.execute(sql_text(f'''
+#             select id from tmp_user where id = :id;
+#         '''), {
+#             'id': user_id
+#         }).all()
+#         return {
+#             'id': r[0][0],
+#         }
 
 
 def get_tmp_question(tmp_user_id):
@@ -223,6 +226,26 @@ def tmp_answer(x):
         })
 
 
+def tmp_match_percent_by_share_id(tmp_user_id_1, tmp_user_share_id_2):
+    with database_engine.connect() as connection:
+        r = connection.execute(
+            sql_text(f'''
+                select id, pseudo from tmp_user where share_id = :tmp_user_share_id limit 2;
+            '''),
+            {'tmp_user_share_id':tmp_user_share_id_2}
+        ).all()
+        if len(r) == 1:
+            if str(tmp_user_id_1) == str(r[0][0]):
+                return {
+                    'matching': 1,
+                    'pseudo': r[0][1],
+                }
+            else:
+                return {**tmp_match_percent(tmp_user_id_1, str(r[0][0])), **{'pseudo': r[0][1] }}
+        else:
+            return {'error': f'found {len(r)} tmp_users'}
+
+
 def tmp_match_percent(tmp_user_id_1, tmp_user_id_2):
     if  tmp_user_id_1 < tmp_user_id_2:
         tmp_user_id_a = tmp_user_id_1
@@ -275,47 +298,14 @@ def tmp_match_percent(tmp_user_id_1, tmp_user_id_2):
                 'tmp_user_id_a': tmp_user_id_a,
                 'tmp_user_id_b': tmp_user_id_b,
             }).all()
-            return r[0][6]
+            return {
+                'matching': r[0][6],
+            }
         except Exception as e:
-            pass
-
-
-def tmp_progress(tmp_user_id):
-    with database_engine.connect() as connection:
-        r = connection.execute(sql_text(f'''
-            with q1 as (
-                  select question.*, (
-                      select count(*)
-                      from option
-                      where option.question_id = question.id
-                  ) as option_count
-                  from question
-                  group by  question.id
-              ),
-              q2 as (
-                  select *, ((option_count)*(option_count-1)/2) as rounds
-                  from q1
-              ),
-              q3 as (
-                  select count(*) as count_answered
-                  from tmp_answer
-                  where tmp_user_id = :tmp_user_id
-              ),
-              q4 as (
-                select sum(rounds) as total_rounds
-                from q2
-              )
-              select count_answered, total_rounds, (count_answered / total_rounds) as progress
-              from q4 , q3;
-
-        '''), {
-            'tmp_user_id': tmp_user_id,
-        }).all()
-        return {
-            'count_answered': r[0][0],
-            'total_rounds': r[0][1],
-            'progress': r[0][2],
-        }
+            return {
+                'error': 'no matching',
+                'matching': None,
+            }
 
 
 def tmp_reset(id):
