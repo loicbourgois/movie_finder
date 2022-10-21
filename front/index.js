@@ -3,6 +3,7 @@ import * as home from './page/home.js'
 import * as play from './page/play.js'
 import * as login from './page/login.js'
 import * as pictures from './page/pictures.js'
+import * as profile from './page/profile.js'
 
 
 const go = (x) => {
@@ -11,6 +12,7 @@ const go = (x) => {
     play: play.go,
     login: login.go,
     pictures: pictures.go,
+    profile: profile.go,
   }[x])()
 }
 

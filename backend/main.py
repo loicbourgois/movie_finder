@@ -172,29 +172,29 @@ def test(database_engine):
     delete_all_questions()
     database.delete_all_tmp_user()
     database.delete_all_user()
-    add_question({
-        'title': 'Ideal match',
-        'prompt': 'Who are you looking for ?',
-        'options': [
-            'A life partner',
-            'A lover',
-            'A friend',
-            'A distraction',
-            'A fuck buddy',
-        ]
-    })['id']
-    add_question({
-        'title': 'First date',
-        'prompt': "What's best for a first date ?",
-        'options': [
-            'A Walk',
-            'Sex',
-            'Drinks',
-            'Coffee',
-            'Dinner',
-            'A movie',
-        ]
-    })
+    # add_question({
+    #     'title': 'Ideal match',
+    #     'prompt': 'Who are you looking for ?',
+    #     'options': [
+    #         'A life partner',
+    #         'A lover',
+    #         'A friend',
+    #         'A distraction',
+    #         'A fuck buddy',
+    #     ]
+    # })['id']
+    # add_question({
+    #     'title': 'First date',
+    #     'prompt': "What's best for a first date ?",
+    #     'options': [
+    #         'A Walk',
+    #         'Sex',
+    #         'Drinks',
+    #         'Coffee',
+    #         'Dinner',
+    #         'A movie',
+    #     ]
+    # })
     add_question({
         'title': 'Good or intersting ',
         'prompt': "What would you rather be a part of ?",
@@ -541,6 +541,7 @@ def front(path):
         'play',
         'login',
         'pictures',
+        'profile',
     ]:
         return front('index.html')
     else:

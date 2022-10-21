@@ -475,3 +475,14 @@ div.profile > img {
   height: 9rem;
   border: none;
 }
+
+#header a {
+  font-size: 1.25rem;
+  color: #cac;
+  text-decoration: none;
+  margin: 1rem;
+}
+
+#header a:hover {
+  color: #ebe;
+}

@@ -24,6 +24,9 @@ const html = async () => {
       <div id="header">
         <a id="title" href="/">Down to What</a>
         <span class="spacer"></span>
+        <a href="/profile">Profile</a>
+        <a href="/pictures">Pictures</a>
+        <span class="spacer"></span>
         <button id="button_logout" onclick="header_logout()">Logout</button>
       </div>
     `

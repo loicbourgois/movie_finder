@@ -16,3 +16,5 @@ $HOME/github.com/loicbourgois/downtowhat/database/migrate/create.sh <migration>
 # apply migration
 todo
 ```
+
+WIP -> profile page

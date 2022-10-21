@@ -1,5 +1,5 @@
---- /migration_folder/01_before.txt	2022-10-18 20:54:52.353031959 +0000
-+++ /migration_folder/03_after.txt	2022-10-18 20:54:52.871046072 +0000
+--- /migration_folder/01_before.txt	2022-10-21 16:41:59.320808395 +0000
++++ /migration_folder/03_after.txt	2022-10-21 16:41:59.820513919 +0000
 @@ -0,0 +1,131 @@
 +                                        Table "public.answer"
 +   Column    |            Type             | Collation | Nullable |             Default              

@@ -27,7 +27,7 @@ const load_file_2 = (src) => {
   scale = 1.0
   var image = new Image();
   image.src = src;
-  image.onload = function(){
+  image.onload = function() {
     source_image = image
     process(source_image)
   }
@@ -186,7 +186,9 @@ const refresh_pictures = async () => {
 
 
 const go = async () => {
-  await login.do_login("test0@test.com", "hunter")
+  if ( (await http.post("/protected") ).message != 'protected' ) {
+    window.location = "/login"
+  }
   window.choose_pic = choose_pic
   window.load_file = load_file
   window.zoom_in = zoom_in
@@ -199,7 +201,6 @@ const go = async () => {
   document.body.innerHTML = `
     ${await header.html()}
     <div id="pictures_content">
-
       <div id="picture_right">
         <canvas id="canvas_cropped" width="${SQR}" height="${SQR}"></canvas>
         <img id="output_image" width="512" height="512">
@@ -235,7 +236,6 @@ const go = async () => {
   )
   document.querySelector("#canvas").style.height = uu + "px"
   document.querySelector("#canvas").style.width = uu + "px"
-  test()
   refresh_pictures()
 }
 
