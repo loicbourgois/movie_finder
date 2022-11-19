@@ -1,0 +1,22 @@
+limit = ""
+
+human_activity = "wd:Q61788060"
+activity = "wd:Q1914636"
+action = "wd:Q4026292"
+film = "wd:Q11424"
+occupation = "wd:Q12737077"
+actor = "wd:Q33999"
+cat = "wd:Q146"
+
+languages = "[AUTO_LANGUAGE],en,fr,ar,be,bg,bn,ca,cs,da,de,el,es,et,fa,fi,he,hi,hu,hy,id,it,ja,jv,ko,nb,nl,eo,pa,pl,pt,ro,ru,sh,sk,sr,sv,sw,te,th,tr,uk,yue,vec,vi,zh"
+
+instance_of = "wdt:P31"
+subclass_of = "wdt:P279"
+instance_of_any_subclass_of = "wdt:P31/wdt:P279*"
+any_subclass_of = "wdt:P279*"
+with_director = "wdt:P57"
+with_publication_date = "wdt:P577"
+with_cast_member = "wdt:P161"
+with_image = "wdt:P18"
+# occupation = "P106"
+# occupation = "wdt:P106"

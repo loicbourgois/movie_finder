@@ -1,0 +1,4 @@
+sparqlwrapper
+xmltodict
+requests
+qwikidata
