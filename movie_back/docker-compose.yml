@@ -3,6 +3,7 @@ services:
   dtw_m_b:
     build:
       context: $HOME/github.com/loicbourgois/downtowhat/movie_back
+    command: /root/github.com/loicbourgois/downtowhat/movie_back/_main.sh
     ports:
       - 81:81
     volumes:

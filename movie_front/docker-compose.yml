@@ -8,3 +8,4 @@ services:
             - $HOME/github.com/loicbourgois/downtowhat/movie_front:/usr/share/nginx/html/movie_front
             - $HOME/github.com/loicbourgois/downtowhat/movie_front/favicon.ico:/usr/share/nginx/html/favicon.ico
             - $HOME/github.com/loicbourgois/downtowhat_local/data:/usr/share/nginx/html/data
+            - $HOME/github.com/loicbourgois/downtowhat_local/cache:/usr/share/nginx/html/cache
