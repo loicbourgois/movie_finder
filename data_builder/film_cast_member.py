@@ -1,10 +1,10 @@
-from .common import instance_of, film, languages, with_cast_member, limit
+from .common import instance_of_any_subclass_of, film, with_cast_member, limit
 import os
 name = os.path.basename(__file__).replace('.py', '')
 query = f'''
 SELECT ?movie ?cast_member
 WHERE {{
-  ?movie {instance_of} {film} .
+  ?movie {instance_of_any_subclass_of} {film} .
   ?movie {with_cast_member} ?cast_member .
 }}
 {limit}

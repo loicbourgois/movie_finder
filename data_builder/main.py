@@ -16,17 +16,25 @@ import xmltodict
 from SPARQLWrapper import XML, SPARQLWrapper
 
 from . import (  # human_activity,; action,; activity,; professions,; social_status,
-    cat, film_cast_member, 
+    # cat, 
+    film_cast_member, 
     film_label,
+    # film_label_2,
     film_director,
     film_publication,
-    occupation,
-    film_cast_member_2,
-    film_cast_member_3,
-    film_cast_member_4,
+    # occupation,
+    # film_cast_member_2,
+    # film_cast_member_3,
+    # film_cast_member_4,
     film_image,
     film_imdb,
     film_omdb,
+    film_screenwriter,
+    film_voice_actor,
+    voice_actor_label,
+    screenwriter_label,
+    cast_member_label,
+    director_label,
 )
 
 data_builders = (
@@ -35,8 +43,15 @@ data_builders = (
     # film_director,
     # film_publication,
     # film_image,
-    film_imdb,
+    # film_imdb,
     # film_omdb,
+    # film_screenwriter,
+    # film_voice_actor,
+    voice_actor_label,
+    screenwriter_label,
+    cast_member_label,
+    # director_label,
+    # film_label_old,
     # film_cast_member_2,
     # film_cast_member_3,
     # film_cast_member_4,
@@ -77,7 +92,10 @@ for data_builder in data_builders:
     d = json.loads(str_)
     l = [ d['head']['vars'] ]
     for x in d['results']['bindings']:
-        l.append( [ x[l[0][0]]['value'], x[l[0][1]]['value']  ] )
+        l.append( [ 
+            x[aa]['value']
+            for aa in l[0]
+        ] )
     with open(path_out, "w") as file:
         writer = csv.writer(file)
         writer.writerows(l)
@@ -89,26 +107,33 @@ for data_builder in data_builders:
     path_in = f"{data}/{data_builder.name}.raw"
     path_out = f"{data}/map/{data_builder.name}.json"
     path_out_2 = f"{data}/map/{data_builder.name}_inverted.json"
+    logging.info(f"  opening")
     with open(path_in, "r") as file:
         str_ = file.read()
+    logging.info(f"  loading")
     d = json.loads(str_)
     l = {}
     l2 = {}
-    for x in d['results']['bindings']:
+    length = len(d['results']['bindings'])
+    length_100 = int(length/100)
+    logging.info(f"  converting")
+    for i,x in enumerate(d['results']['bindings']):
+        if i % max(length_100, 1) == 0:
+            logging.info(f'    {int(i/length*100)}%')
         k = x[d['head']['vars'][0]]['value'].replace('http://www.wikidata.org/entity/','')
         v = x[d['head']['vars'][1]]['value'].replace('http://www.wikidata.org/entity/','')
         if l.get(k):
-            l[k].append(v)
+            l[k][v] = ''
         else:
-            l[k] = [v]
+            l[k] = {v:''}
         if l2.get(v):
-            l2[v].append(k)
+            l2[v][k] = ''
         else:
-            l2[v] = [k]
-    with open(path_out, "w") as file:
-        file.write(json.dumps(l, indent=2))
-    with open(path_out_2, "w") as file:
-        file.write(json.dumps(l2, indent=2))
+            l2[v] = {k:''}
+    with open(path_out, "w", encoding='utf-8') as file:
+        json.dump(l, file, indent=2,ensure_ascii=False)
+    with open(path_out_2, "w", encoding='utf-8') as file:
+        json.dump(l2, file, indent=2,ensure_ascii=False)
     logging.info(f"  {data_builder.name} -> {path_out}")
 
 

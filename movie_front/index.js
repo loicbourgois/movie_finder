@@ -3,47 +3,72 @@ let global_id = null
 let maps = {}
 const movie_small = (id) => {
     let year = null
-    let search_query = maps.film_label[id]
-    if (maps.film_publication[id] && maps.film_publication[id][0] && maps.film_publication[id][0].split("-").length > 1) {
-        year = maps.film_publication[id][0].split('-')[0]
-        search_query = maps.film_label[id] + " " + year
-    }
+    let search_query = first(maps.film_label[id])
+    // if (maps.film_publication[id] && maps.film_publication[id][0] && maps.film_publication[id][0].split("-").length > 1) {
+    //     year = maps.film_publication[id][0].split('-')[0]
+    //     search_query = maps.film_label[id] + " " + year
+    // }
     return {
         impawards: maps.impawards[id],
         id: id,
-        title: maps.film_label[id],
+        title: first(maps.film_label[id]),
         year: year,
         search_query: search_query,
-        imdb_id: maps.film_imdb[id],
+        imdb_id: keys(maps.film_imdb[id]),
+        omdb_id: keys(maps.film_omdb[id]),
     }
 }
+
+
+const first = (a) => {
+    let ks = keys(a)
+    if (ks.length) {
+        return ks[0]
+    } else {
+        return null
+    }
+} 
+
+
+const keys = (a) => {
+    if (a) {
+        return Object.keys(a)
+    } else {
+        return []
+    }
+} 
+
 const movie = (id) => {
     let m = {
         'id': id,
-        'title': maps.film_label[id],
-        'directors': maps.film_director[id],
-        'cast_members': maps.film_cast_member[id],
-        'impawards': maps.impawards[id],
+        'title': keys(maps.film_label[id]),
+        'directors': keys(maps.film_director[id]),
+        'cast_members': keys(maps.film_cast_member[id]),
+        'screenwriters': keys(maps.film_screenwriter[id]),
+        'voice_actors': keys(maps.film_voice_actor[id]),
+        'impawards': keys(maps.impawards[id]),
         'related': {
             [id]: movie_small(id)
         }
     }
-    if (m.directors) {
-        for (const k of m.directors) {
-            if (maps.film_director_inverted[k]) {
-                for (const movie_id of maps.film_director_inverted[k]) {
-                    m.related[movie_id] = movie_small(movie_id)
-                }
-            }
+    for (const k of m.directors) {
+        for (const movie_id of keys(maps.film_director_inverted[k])) {
+            m.related[movie_id] = movie_small(movie_id)
         }
     }
-    if (m.cast_members) {
-        for (const k of m.cast_members) {
-            if (maps.film_cast_member_inverted[k]) {
-                for (const movie_id of maps.film_cast_member_inverted[k]) {
-                    m.related[movie_id] = movie_small(movie_id)
-                }
-            }
+    for (const k of m.cast_members) {
+        for (const movie_id of keys(maps.film_cast_member_inverted[k])) {
+            m.related[movie_id] = movie_small(movie_id)
+        }
+    }
+    for (const k of m.voice_actors) {
+        for (const movie_id of keys(maps.film_voice_actor_inverted[k])) {
+            m.related[movie_id] = movie_small(movie_id)
+        }
+    }
+    for (const k of m.screenwriters) {
+        for (const movie_id of keys(maps.film_screenwriter_inverted[k])) {
+            m.related[movie_id] = movie_small(movie_id)
         }
     }
     return m
@@ -77,20 +102,18 @@ const show_movies = async (movies_, id) => {
         }
         let picture_src = ``
         let imdb_link = ``
-        if (r.imdb_id) {
-            for (const imdb_id of r.imdb_id) {
-                imdb_link = `https://www.imdb.com/title/${imdb_id}/`
-                const rr = await post("http://localhost:81/imdb", {
-                    'imdb_id': imdb_id
+        if (r.omdb_id) {
+            for (const omdb_id of r.omdb_id) {
+                const rr = await post("http://localhost:81/omdb", {
+                    'omdb_id': omdb_id
                 })
                 if (rr && rr.image_path) {
                     picture_src = `../cache/${rr.image_path}`
-                    // pictures = `<img onclick="load_movie('${r.id}')" src="../cache/${rr.image_path}">`
                     break
                 }
             }
         }
-        if (r.impawards) {
+        if (r.impawards && !picture_src ) {
             for (const url of r.impawards) {
                 const rr = await post("http://localhost:81/impawards", {
                     'url': url
@@ -108,6 +131,20 @@ const show_movies = async (movies_, id) => {
                         break
                     }
                 }
+            }
+        }
+        if (r.imdb_id) {
+            for (const imdb_id of r.imdb_id) {
+                imdb_link = `https://www.imdb.com/title/${imdb_id}/`
+                // if (! picture_src) {
+                //     const rr = await post("http://localhost:81/imdb", {
+                //         'imdb_id': imdb_id
+                //     })
+                //     if (rr && rr.image_path) {
+                //         picture_src = `../cache/${rr.image_path}`
+                //         break
+                //     }
+                // }
             }
         }
         if (picture_src.length > 1) {
@@ -174,7 +211,7 @@ const trigger_search = () => {
 
 const search = (str_) => {
     console.log(`Searching ${str_}`)
-    document.querySelector("#infos").value = "Searching..."
+    document.querySelector("#infos").innerHTML = "Searching..."
     global_id = str_
     let results = Object.entries(maps.film_label_inverted)
     for (const token of str_.split(" ") ) {
@@ -185,7 +222,7 @@ const search = (str_) => {
     }
     let r = {}
     for (const kv of results) {
-        for (const id of kv[1]) {
+        for (const id of keys(kv[1])) {
             r[id] = movie_small(id)
         }
     }
@@ -209,16 +246,30 @@ const main = async () => {
         'film_omdb',
         'film_director_inverted',
         'film_cast_member_inverted',
+        'film_voice_actor',
+        'film_screenwriter',
+        'film_voice_actor_inverted',
+        'film_screenwriter_inverted',
         'impawards',
     ]
     for (const k of ks) {
         requests[k] = fetch(`/data/map/${k}.json`);
     }
+    let l = ks.length
+    let c = 0
+    document.querySelector("#infos").innerHTML = `Fetching json ${c}/${l}`
     for (const k of ks) {
         responses[k] = await requests[k];
+        c+=1
+        document.querySelector("#infos").innerHTML = `Fetching json ${c}/${l}`
     }
+     l = ks.length
+     c = 0
+     document.querySelector("#infos").innerHTML = `Loading json ${c}/${l}`
     for (const k of ks) {
         maps[k] = await responses[k].json();
+        c+=1
+        document.querySelector("#infos").innerHTML = `Loading json ${c}/${l}`
     }
     const wlhs = window.location.href.split('#')
     if (wlhs.length == 2) {
@@ -228,6 +279,6 @@ const main = async () => {
         load_movie(movie_ids[parseInt(movie_ids.length * Math.random())])
     }
     // load_movie("Q165325")
-    // search("Kill bill")
+    // search("totoro")
 }
 main()

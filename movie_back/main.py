@@ -1,5 +1,5 @@
 import logging
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 import os
 from flask import (
     Flask,
@@ -39,15 +39,21 @@ def get_image_impawards(url):
         return None
 
 
+def force_write(path, content):
+    mkdir_parent(path)
+    with open(path, 'w') as f:
+            f.write(content)
+
+
 def mkdir_parent(path):
     parent_path = os.path.dirname(path)
     if not os.path.exists(parent_path):
         os.makedirs(parent_path)
 
 
-def get_image(url, path):
+def get_image(url, path, force=False):
     full_path = cache_path + path
-    if not os.path.exists(full_path):
+    if not os.path.exists(full_path) or force:
         mkdir_parent(full_path)
         r = requests.get(url, stream=True)
         if r.status_code == 200:
@@ -68,16 +74,16 @@ def get_or_pull_and_save(url, path, force=False):
     if (not os.path.exists(full_path)) or force:
         r = requests.get(url, {
             'headers': {
-                'Accept-Language': 'en'
+                'User-Agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:107.0) Gecko/20100101 Firefox/107.0',
+                'Accept-Language': 'en-US,en;q=0.5',
             }
         })
         if r.status_code == 200:
             content = r.text
         else:
-            content = ""
-        mkdir_parent(full_path)
-        with open(full_path, 'w') as f:
-            f.write(content)
+            content = r.text
+            logging.warn(f" {url} : {r.status_code}")
+        force_write(full_path, content)
     else:
         with open(full_path, 'r') as f:
             content = f.read()
@@ -90,23 +96,23 @@ def get_imdb_info(imdb_id, force=False):
     url = f"https://www.imdb.com/title/{imdb_id}/"
     full_path = cache_path + path_2
     if (not os.path.exists(full_path)) or force:
-        raw = get_or_pull_and_save(url, path)
+        raw = get_or_pull_and_save(url, path, force)
         x = re.findall('<script type="application\/ld\+json">({.*})<\/script><meta', raw)
         if len(x) == 1:
             short = json.dumps(json.loads(x[0]))
         else:
             short = json.dumps({})
-        parent_path = os.path.dirname(full_path)
-        if not os.path.exists(parent_path):
-            os.makedirs(parent_path)
-        with open(full_path, 'w') as f:
-            f.write(short)
+        force_write(full_path, short)
     else:
         with open(full_path, 'r') as f:
             short = f.read()
     short = json.loads(short)
     if short and short.get('image'):
-        image_path = get_image(short.get('image'), f"imdb/{imdb_id}/image.{short.get('image').split('.')[-1]}")
+        image_path = get_image(
+            short.get('image'), 
+            f"imdb/{imdb_id}/image.{short.get('image').split('.')[-1]}",
+            force
+        )
     else:
         image_path = None
     return {
@@ -115,11 +121,52 @@ def get_imdb_info(imdb_id, force=False):
     }
 
 
+def get_omdb_info(id, force=False):
+    path_raw = f"omdb/{id}/raw.html"
+    path_description = f"omdb/{id}/description.json"
+    url_raw = f"https://www.omdb.org/movie/{id}"
+    full_path_raw = cache_path + path_raw
+    if (not os.path.exists(full_path_raw)) or force:
+        raw = get_or_pull_and_save(url_raw, path_raw, force)
+        x = re.findall('<meta property="og:image" content="https:\/\/www.omdb.org\/image\/default\/(.*)\.jpeg', raw)
+        if len(x) == 1:
+            image_id = x[0]
+        else:
+            image_id = None
+        description = {
+            'image_id':image_id,
+        }
+        if image_id:
+            description['image_url'] = f'https://www.omdb.org/image/default/{image_id}.jpeg'
+        force_write(path_description, json.dumps(description, indent=2))
+    else:
+        try:
+            with open(path_description, 'r') as f:
+                description = json.loads(f.read())
+        except Exception:
+            description = {}
+            logging.error(f"error opening file {path_description}")
+            if not force:
+                return get_omdb_info(id, True)
+    if description and description.get('image_url'):
+        image_path = get_image(
+            description.get('image_url'), 
+            f"omdb/{id}/image.{description.get('image_url').split('.')[-1]}",
+            force,
+        )
+    else:
+        image_path = None
+    return { 
+        'description': description,
+        'image_path': image_path
+    }
+
+
 def test():
     url = "http://www.impawards.com/2004/posters/kill_bill_vol_two.jpg"
     r = get_image_impawards(url)
-    # Q72962
     r = get_imdb_info('tt0105236')
+    r = get_omdb_info('8392', True)
 
 
 test()
@@ -152,5 +199,12 @@ def api_impawards():
 @app.route('/imdb', methods = ['GET','POST'])
 def api_imdb():
     r = jsonify(get_imdb_info(request.json['imdb_id']))
+    r.headers.add("Access-Control-Allow-Origin", "*")
+    return r
+
+
+@app.route('/omdb', methods = ['GET','POST'])
+def api_omdb():
+    r = jsonify(get_omdb_info(request.json['omdb_id']))
     r.headers.add("Access-Control-Allow-Origin", "*")
     return r
