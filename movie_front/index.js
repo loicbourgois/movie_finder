@@ -36,6 +36,14 @@ const keys = (a) => {
     } else {
         return []
     }
+}
+
+const values = (a) => {
+    if (a) {
+        return Object.values(a)
+    } else {
+        return []
+    }
 } 
 
 const movie = (id) => {
@@ -226,7 +234,27 @@ const search = (str_) => {
             r[id] = movie_small(id)
         }
     }
+
+
+    let results_people = Object.entries(maps.actor_label_inverted)
+    for (const token of str_.split(" ") ) {
+        const t = token.toLowerCase()
+        results_people = results_people.filter ( ([k,v]) => {
+            return k.toLowerCase().includes(t)
+        } )
+    }
+    for (const kv of results_people) {
+        for (const id of keys(kv[1])) {
+            for (const id2 of keys(maps.film_cast_member_inverted[id])  ) {
+                r[id2] = movie_small(id2)
+            }
+        }
+    }
+
+
     show_movies(r, str_)
+    console.log(`Done searching`)
+    document.querySelector("#infos").innerHTML = "Done searching"
 }
   
 
@@ -250,6 +278,7 @@ const main = async () => {
         'film_screenwriter',
         'film_voice_actor_inverted',
         'film_screenwriter_inverted',
+        'actor_label_inverted',
         'impawards',
     ]
     for (const k of ks) {
@@ -279,6 +308,6 @@ const main = async () => {
         load_movie(movie_ids[parseInt(movie_ids.length * Math.random())])
     }
     // load_movie("Q165325")
-    // search("totoro")
+    // search("samuel l jackson")
 }
 main()

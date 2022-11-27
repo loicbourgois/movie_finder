@@ -35,6 +35,7 @@ from . import (  # human_activity,; action,; activity,; professions,; social_sta
     screenwriter_label,
     cast_member_label,
     director_label,
+    actor_label,
 )
 
 data_builders = (
@@ -47,9 +48,10 @@ data_builders = (
     # film_omdb,
     # film_screenwriter,
     # film_voice_actor,
-    voice_actor_label,
-    screenwriter_label,
-    cast_member_label,
+    #voice_actor_label,
+    #screenwriter_label,
+    #cast_member_label,
+    actor_label,
     # director_label,
     # film_label_old,
     # film_cast_member_2,

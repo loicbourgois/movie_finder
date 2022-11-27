@@ -1,13 +1,26 @@
-from .common import instance_of, film, with_cast_member, limit
+from .common import (
+  with_occupation, 
+  instance_of_any_subclass_of, 
+  actor, 
+  with_cast_member, 
+  limit, 
+  subclass_of,
+  film_actor,
+  subclass_of_any_subclass_of
+)
 import os
 name = os.path.basename(__file__).replace('.py', '')
 query = f'''
-SELECT ?cast_member ?cast_member_label
+SELECT ?actor ?actor_label
 WHERE {{
-  ?movie {instance_of} {film} .
-  ?movie {with_cast_member} ?cast_member .
-  # ?cast_member rdfs:label ?cast_member_label.
-  ?cast_member rdfs:label ?cast_member_label filter (lang(?cast_member_label) = "en").
+  {{
+    ?actor {with_occupation} {actor} .
+  }}
+  UNION
+  {{
+    ?actor {with_occupation} {film_actor} .
+  }}
+  ?actor rdfs:label ?actor_label filter (lang(?actor_label) = "en") .
 }}
 {limit}
 '''
