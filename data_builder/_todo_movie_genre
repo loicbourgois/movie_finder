@@ -1,0 +1,22 @@
+SELECT ?movie ?movieLabel ?date
+WHERE {{
+  ?movie wdt:P31/wdt:P279* wd:Q11424 .
+  SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
+  ?movie wdt:P136 wd:Q24925.
+  ?movie wdt:P136 wd:Q3072039.
+  ?movie wdt:P577 ?date.
+}}
+
+# Q2928728 : business thriller 
+# Q3072039: trial film
+
+#SELECT ?genre ?genreLabel
+#WHERE {{
+#  ?genre wdt:P31/wdt:P279* wd:Q201658 .
+    #?movie rdfs:label ?movieLabel.
+#SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
+ # ?movie wdt:P136 wd:Q3072039.
+ # ?movie wdt:P577 ?date.
+#}}
+
+ 

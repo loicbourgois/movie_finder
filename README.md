@@ -1,8 +1,11 @@
 # Downtowhat
 
 
-## Backend
+## Dev
 ```sh
+$HOME/github.com/loicbourgois/downtowhat/movie_front/_go.sh
+$HOME/github.com/loicbourgois/downtowhat/movie_back/_go.sh
+open http://0.0.0.0/movie_front
 $HOME/github.com/loicbourgois/downtowhat/backend/go.sh
 ```
 
