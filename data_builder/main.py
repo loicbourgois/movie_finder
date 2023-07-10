@@ -1,5 +1,4 @@
 import logging
-
 logging.basicConfig(level=logging.DEBUG)
 logging.info("start")
 import json
@@ -11,33 +10,33 @@ from qwikidata.sparql import (
     return_sparql_query_results
 )
 import urllib
-
 import xmltodict
 from SPARQLWrapper import XML, SPARQLWrapper
-
-from . import (  # human_activity,; action,; activity,; professions,; social_status,
+from . import (
+    # human_activity,; action,; activity,; professions,; social_status,
     # cat, 
-    film_cast_member, 
-    film_label,
-    # film_label_2,
-    film_director,
-    film_publication,
-    # occupation,
-    # film_cast_member_2,
-    # film_cast_member_3,
-    # film_cast_member_4,
-    film_image,
-    film_imdb,
-    film_omdb,
-    film_screenwriter,
-    film_voice_actor,
-    voice_actor_label,
-    screenwriter_label,
-    cast_member_label,
-    director_label,
-    actor_label,
+    # film_cast_member, 
+    # film_label,
+    # # film_label_2,
+    # film_director,
+    # film_publication,
+    # # occupation,
+    # # film_cast_member_2,
+    # # film_cast_member_3,
+    # # film_cast_member_4,
+    # film_image,
+    # film_imdb,
+    # film_omdb,
+    # film_screenwriter,
+    # film_voice_actor,
+    # voice_actor_label,
+    # screenwriter_label,
+    # cast_member_label,
+    # director_label,
+    # actor_label,
+    # film_composer,
+    composer_label,
 )
-
 data_builders = (
     # film_label,
     # film_cast_member,
@@ -51,7 +50,7 @@ data_builders = (
     #voice_actor_label,
     #screenwriter_label,
     #cast_member_label,
-    actor_label,
+    # actor_label,
     # director_label,
     # film_label_old,
     # film_cast_member_2,
@@ -64,7 +63,10 @@ data_builders = (
     # cat,
     #professions,
     # social_status,
+    # film_composer,
+    composer_label,
 ) 
+
 
 endpoint_url = "https://query.wikidata.org/sparql"
 data = f"{os.environ['HOME']}/github.com/loicbourgois/downtowhat_local/data"

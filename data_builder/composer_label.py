@@ -1,12 +1,12 @@
-from .common import instance_of_any_subclass_of, film, with_director, limit
+from .common import instance_of_any_subclass_of, film, with_composer, limit
 import os
 name = os.path.basename(__file__).replace('.py', '')
 query = f'''
-SELECT ?director ?director_label (lang(?director_label) as ?lang)
+SELECT ?composer ?composer_label (lang(?composer_label) as ?lang)
 WHERE {{
   ?movie {instance_of_any_subclass_of} {film} .
-  ?movie {with_director} ?director .
-  ?director rdfs:label ?director_label filter (lang(?director_label) = "en").
+  ?movie {with_composer} ?composer .
+  ?composer rdfs:label ?composer_label filter (lang(?composer_label) = "en").
 }}
 {limit}
 '''

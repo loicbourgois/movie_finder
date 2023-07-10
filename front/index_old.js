@@ -110,37 +110,37 @@ const show_movies = async (movies_, id) => {
         }
         let picture_src = ``
         let imdb_link = ``
-        if (r.omdb_id) {
-            for (const omdb_id of r.omdb_id) {
-                const rr = await post("http://localhost:81/omdb", {
-                    'omdb_id': omdb_id
-                })
-                if (rr && rr.image_path) {
-                    picture_src = `../cache/${rr.image_path}`
-                    break
-                }
-            }
-        }
-        if (r.impawards && !picture_src ) {
-            for (const url of r.impawards) {
-                const rr = await post("http://localhost:81/impawards", {
-                    'url': url
-                })
-                if (rr.path) {
-                    picture_src = `../${rr.path}`
-                    break
-                }
-                if ( url.includes("/the_") ) {
-                    const r = await post("http://localhost:81/impawards", {
-                        'url': url.replace("/the_", "/")
-                    })
-                    if (rr.path) {
-                        picture_src = `../${rr.path}`
-                        break
-                    }
-                }
-            }
-        }
+        // if (r.omdb_id) {
+        //     for (const omdb_id of r.omdb_id) {
+        //         const rr = await post("http://localhost:81/omdb", {
+        //             'omdb_id': omdb_id
+        //         })
+        //         if (rr && rr.image_path) {
+        //             picture_src = `../cache/${rr.image_path}`
+        //             break
+        //         }
+        //     }
+        // }
+        // if (r.impawards && !picture_src ) {
+        //     for (const url of r.impawards) {
+        //         const rr = await post("http://localhost:81/impawards", {
+        //             'url': url
+        //         })
+        //         if (rr.path) {
+        //             picture_src = `../${rr.path}`
+        //             break
+        //         }
+        //         if ( url.includes("/the_") ) {
+        //             const r = await post("http://localhost:81/impawards", {
+        //                 'url': url.replace("/the_", "/")
+        //             })
+        //             if (rr.path) {
+        //                 picture_src = `../${rr.path}`
+        //                 break
+        //             }
+        //         }
+        //     }
+        // }
         if (r.imdb_id) {
             for (const imdb_id of r.imdb_id) {
                 imdb_link = `https://www.imdb.com/title/${imdb_id}/`
@@ -155,6 +155,12 @@ const show_movies = async (movies_, id) => {
                 // }
             }
         }
+        if (id != global_id) {
+            return
+        }
+        if (c == 0) {
+            document.querySelector("body").innerHTML = base_html
+        }
         if (picture_src.length > 1) {
             document.querySelector("#posters").innerHTML += `
                 <div class="movie">
@@ -162,7 +168,6 @@ const show_movies = async (movies_, id) => {
                         <img onclick="load_movie('${r.id}')" src="${picture_src}">
                     </div>
                     <div class="poster_links">
-                        <a href="https://rargb.to/search/?search=${r.search_query}&order=seeders&by=DESC&category[]=movies">rargb</a>
                         <a href="${imdb_link}">imdb</a>
                     </div>
                 </div>
@@ -234,8 +239,6 @@ const search = (str_) => {
             r[id] = movie_small(id)
         }
     }
-
-
     let results_people = Object.entries(maps.actor_label_inverted)
     for (const token of str_.split(" ") ) {
         const t = token.toLowerCase()
@@ -250,8 +253,6 @@ const search = (str_) => {
             }
         }
     }
-
-
     show_movies(r, str_)
     console.log(`Done searching`)
     document.querySelector("#infos").innerHTML = "Done searching"
@@ -264,9 +265,8 @@ const main = async () => {
     window.trigger_search = trigger_search
     let requests = {}
     let responses = {}
+    let jsons = {}
     let ks = [
-        'film_label',
-        'film_label_inverted',
         'film_director',
         'film_publication',
         'film_cast_member',
@@ -280,6 +280,8 @@ const main = async () => {
         'film_screenwriter_inverted',
         'actor_label_inverted',
         'impawards',
+        'film_label',
+        'film_label_inverted',
     ]
     for (const k of ks) {
         requests[k] = fetch(`/data/map/${k}.json`);
@@ -295,8 +297,16 @@ const main = async () => {
      l = ks.length
      c = 0
      document.querySelector("#infos").innerHTML = `Loading json ${c}/${l}`
+     for (const k of ks) {
+        jsons[k] = responses[k].json();
+        c+=1
+        document.querySelector("#infos").innerHTML = `Loading json ${c}/${l}`
+        console.log("aa")
+    }
+    c = 0
+    document.querySelector("#infos").innerHTML = `Loading json ${c}/${l}`
     for (const k of ks) {
-        maps[k] = await responses[k].json();
+        maps[k] = await jsons[k];
         c+=1
         document.querySelector("#infos").innerHTML = `Loading json ${c}/${l}`
     }
