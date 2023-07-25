@@ -16,7 +16,7 @@ from . import (
     # human_activity,; action,; activity,; professions,; social_status,
     # cat, 
     # film_cast_member, 
-    # film_label,
+    film_label,
     # # film_label_2,
     # film_director,
     # film_publication,
@@ -29,11 +29,11 @@ from . import (
     # film_omdb,
     # film_screenwriter,
     # film_voice_actor,
-    # voice_actor_label,
+    voice_actor_label,
     # screenwriter_label,
     # cast_member_label,
-    # director_label,
-    # actor_label,
+    director_label,
+    actor_label,
     # film_composer,
     composer_label,
 )
@@ -47,11 +47,11 @@ data_builders = (
     # film_omdb,
     # film_screenwriter,
     # film_voice_actor,
-    #voice_actor_label,
+    # voice_actor_label,
     #screenwriter_label,
     #cast_member_label,
-    # actor_label,
-    # director_label,
+    actor_label,
+    director_label,
     # film_label_old,
     # film_cast_member_2,
     # film_cast_member_3,
@@ -72,38 +72,41 @@ endpoint_url = "https://query.wikidata.org/sparql"
 data = f"{os.environ['HOME']}/github.com/loicbourgois/downtowhat_local/data"
 
 
-for data_builder in data_builders:
-    logging.info(f"fetch {data_builder.name}")
-    partial_path = f"{data}/{data_builder.name}"
-    path = f"{partial_path}.raw"
-    args = urllib.parse.urlencode({
-        'query': data_builder.query,
-        'format': 'json'
-    })
-    r = requests.get(f"{endpoint_url}?{args}")
-    with open(path, "w") as file:
-        file.write(r.text)
-    logging.info(f"  {data_builder.name} -> {path}")
+# for data_builder in data_builders:
+#     logging.info(f"fetch {data_builder.name}")
+#     partial_path = f"{data}/{data_builder.name}"
+#     path = f"{partial_path}.raw"
+#     args = urllib.parse.urlencode({
+#         'query': data_builder.query,
+#         'format': 'json'
+#     })
+#     r = requests.get(f"{endpoint_url}?{args}")
+#     with open(path, "w") as file:
+#         file.write(r.text)
+#     logging.info(f"  {data_builder.name} -> {path}")
 
 
-for data_builder in data_builders:
-    logging.info(f"converting {data_builder.name}")
-    partial_path = f"{data}/{data_builder.name}"
-    path_in = f"{partial_path}.raw"
-    path_out = f"{partial_path}.csv"
-    with open(path_in, "r") as file:
-        str_ = file.read()
-    d = json.loads(str_)
-    l = [ d['head']['vars'] ]
-    for x in d['results']['bindings']:
-        l.append( [ 
-            x[aa]['value']
-            for aa in l[0]
-        ] )
-    with open(path_out, "w") as file:
-        writer = csv.writer(file)
-        writer.writerows(l)
-    logging.info(f"  {data_builder.name} -> {path_out}")
+# for data_builder in data_builders:
+#     logging.info(f"converting {data_builder.name}")
+#     partial_path = f"{data}/{data_builder.name}"
+#     path_in = f"{partial_path}.raw"
+#     path_out = f"{partial_path}.csv"
+#     logging.info(f"  reading")
+#     with open(path_in, "r") as file:
+#         str_ = file.read()
+#     d = json.loads(str_)
+#     l = [ d['head']['vars'] ]
+#     logging.info(f"  converting")
+#     for x in d['results']['bindings']:
+#         l.append( [ 
+#             x[aa]['value']
+#             for aa in l[0]
+#         ] )
+#     logging.info(f"  writing")
+#     with open(path_out, "w") as file:
+#         writer = csv.writer(file)
+#         writer.writerows(l)
+#     logging.info(f"  {data_builder.name} -> {path_out}")
 
 
 for data_builder in data_builders:
@@ -111,6 +114,7 @@ for data_builder in data_builders:
     path_in = f"{data}/{data_builder.name}.raw"
     path_out = f"{data}/map/{data_builder.name}.json"
     path_out_2 = f"{data}/map/{data_builder.name}_inverted.json"
+    path_out_3 = f"{data}/map/{data_builder.name}_by_language.json"
     logging.info(f"  opening")
     with open(path_in, "r") as file:
         str_ = file.read()
@@ -118,6 +122,7 @@ for data_builder in data_builders:
     d = json.loads(str_)
     l = {}
     l2 = {}
+    l3 = {}
     length = len(d['results']['bindings'])
     length_100 = int(length/100)
     logging.info(f"  converting")
@@ -126,6 +131,10 @@ for data_builder in data_builders:
             logging.info(f'    {int(i/length*100)}%')
         k = x[d['head']['vars'][0]]['value'].replace('http://www.wikidata.org/entity/','')
         v = x[d['head']['vars'][1]]['value'].replace('http://www.wikidata.org/entity/','')
+        if len(d['head']['vars']) >= 3:
+            lang = x[d['head']['vars'][2]]['value'].replace('http://www.wikidata.org/entity/','')
+        else:
+            lang = ""
         if l.get(k):
             l[k][v] = ''
         else:
@@ -134,10 +143,17 @@ for data_builder in data_builders:
             l2[v][k] = ''
         else:
             l2[v] = {k:''}
+        if l3.get(k):
+            l3[k][lang] = v
+        else:
+            l3[k] = {lang:v}
+    logging.info(f"  writing")
     with open(path_out, "w", encoding='utf-8') as file:
         json.dump(l, file, indent=2,ensure_ascii=False)
     with open(path_out_2, "w", encoding='utf-8') as file:
         json.dump(l2, file, indent=2,ensure_ascii=False)
+    with open(path_out_3, "w", encoding='utf-8') as file:
+        json.dump(l3, file, indent=2,ensure_ascii=False)
     logging.info(f"  {data_builder.name} -> {path_out}")
 
 

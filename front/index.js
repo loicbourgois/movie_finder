@@ -1,8 +1,7 @@
 const base_html = `
     <div id="header">
-        <a id="random" href="/movie_front">Get lucky</a>
+        <a id="random" href="/">Get lucky</a>
         <input id="search" placeholder="Search" onchange="trigger_search()"></input>
-        <span id="infos"></span>
     </div>
 `
 
@@ -34,12 +33,70 @@ const omdb_url = (movie) => {
 }
 
 
+const languages = {
+    'en': 1,
+    'fr': 2,
+}
+
+
+const title = (movie) => {
+    let titles = Object.entries(movie.titles).sort((a,b) => {
+        const aa = languages[a[0]]
+        const bb = languages[b[0]]
+        if (aa && bb) {
+            return aa > bb
+        } else if (aa) {
+            return false
+        } else if (bb) {
+            return true
+        }
+    })
+    .map(x => {
+        return x[1]
+    })
+    return titles[0]
+}
+
+
+const get_name = (names) => {
+    let values = Object.entries(names).sort((a,b) => {
+        const aa = languages[a[0]]
+        const bb = languages[b[0]]
+        if (aa && bb) {
+            return aa > bb
+        } else if (aa) {
+            return false
+        } else if (bb) {
+            return true
+        }
+    })
+    .map(x => {
+        return x[1]
+    })
+    return values[0]
+}
+
+
+const imdb_link = (movie) => {
+    const imdb_ids = Object.keys(movie.imdb)
+    if (imdb_ids.length > 0) {
+        return `https://www.imdb.com/title/` + imdb_ids[0]
+    } else {
+        return ""
+    }
+}
+
+
 const show_movie = async (movie) => {
-    document.querySelector("#infos").innerHTML = "Ready"
-    let titles = Object.keys(movie.titles).join(" / ")
+    // document.querySelector("#infos").innerHTML = "Ready"
+    console.log(imdb_link(movie))
     document.querySelector("body").innerHTML += `
         <div>
-            <h1>${titles}</h1>
+            <h1>${title(movie)}</h1>
+            <div id="links">
+                <a href="${imdb_link(movie)}">imdb</a>
+                <a href="${imdb_link(movie)}/reviews">reviews</a>
+            </div>
             <div class="movies">
                 <div class="movie">
                     <a class="movie_poster" href="${window.location.origin}/get/${movie.id}" >
@@ -69,8 +126,8 @@ const show_movie = async (movie) => {
     ]) {
         Object.entries(movie[xx.key]).map((x)=> {
             const v = x[1]
-            const names = Object.keys(v.names).join(' / ')
-            const name_0 = Object.keys(v.names)[0]
+            // const names = Object.keys(v.names).join(' / ')
+            // const name_0 = Object.keys(v.names)[0]
             const movies = Object.entries(v.movies)
                 .filter((x2) => {
                     return omdb_url(x2[1])
@@ -86,7 +143,7 @@ const show_movie = async (movie) => {
                 })
                 .join("")
             document.querySelector("body").innerHTML += `
-                <h2><a href="${window.location.origin}/search/${name_0}">${names} (${xx.about})</a></h2>
+                <h2><a href="${window.location.origin}/search/${get_name(v.names)}">${get_name(v.names)} (${xx.about})</a></h2>
                 <div class="movies">
                     ${movies}
                 </div>

@@ -1,9 +1,7 @@
-// mod test;
 use actix_web::http::header::ContentType;
 use actix_web::{get, web, App, HttpResponse, HttpServer};
 use rand::Rng;
 use std::collections::HashMap;
-use std::collections::HashSet;
 use std::fs;
 
 #[derive(serde::Serialize)]
@@ -15,6 +13,7 @@ struct Movie {
     voice_actors: HashMap<String, VoiceActor>,
     composers: HashMap<String, Composer>,
     titles: HashMap<String, String>,
+    imdb: HashMap<String, String>,
     omdbs: HashMap<String, Omdb>,
 }
 
@@ -27,21 +26,27 @@ struct Data {
     film_cast_member_inverted: FilmCastMemberInverted,
     film_omdb: FilmOmdb,
     film_label: FilmLabel,
+    voice_actor_label_inverted: HSHSS,
     film_label_inverted: FilmLabelInverted,
+    film_label_by_language: HSHSS,
     ids: Vec<String>,
-    director_label: DirectorLabel,
+    // director_label: DirectorLabel,
     director_label_inverted: HSHSS,
     actor_label: CastMemberLabel,
+    actor_label_inverted: HSHSS,
+    voice_actor_label_by_language: HSHSS,
     movie_images: OmdbMovieImages,
-
     voice_actor_label: HSHSS,
     film_voice_actor: HSHSS,
     film_voice_actor_inverted: HSHSS,
-
     composer_label: HSHSS,
     composer_label_inverted: HSHSS,
     film_composer: HSHSS,
     film_composer_inverted: HSHSS,
+    film_imdb: HSHSS,
+    director_label_by_language: HSHSS,
+    actor_label_by_language: HSHSS,
+    composer_label_by_language: HSHSS,
 }
 
 fn index_html(data: &web::Data<Data>) -> HttpResponse {
@@ -63,7 +68,7 @@ async fn index_html_2(data: web::Data<Data>) -> HttpResponse {
 fn movie_small(data: &web::Data<Data>, id: &str) -> MovieSmall {
     MovieSmall {
         id: id.to_string(),
-        titles: match data.film_label.get(id) {
+        titles: match data.film_label_by_language.get(id) {
             None => HashMap::new(),
             Some(x) => x.clone(),
         },
@@ -91,11 +96,16 @@ fn movie_small(data: &web::Data<Data>, id: &str) -> MovieSmall {
 }
 
 fn get_movie(id: &str, data: &web::Data<Data>) -> Movie {
+    let omdb_ids = match data.film_omdb.get(id) {
+        Some(x) => x.clone(),
+        None => HashMap::new(),
+    };
     Movie {
         id: id.to_string(),
-        omdb_id: data.film_omdb[id].clone(),
-        titles: data.film_label[id].clone(),
-        omdbs: data.film_omdb[id]
+        omdb_id: omdb_ids.clone(),
+        titles: data.film_label_by_language[id].clone(),
+        imdb: data.film_imdb[id].clone(),
+        omdbs: omdb_ids
             .keys()
             .filter(|omdb_id| data.movie_images.get(*omdb_id).is_some())
             .map(|omdb_id| {
@@ -118,7 +128,7 @@ fn get_movie(id: &str, data: &web::Data<Data>) -> Movie {
                     k.clone(),
                     Director {
                         id: k.to_string(),
-                        names: data.director_label[k].clone(),
+                        names: data.director_label_by_language[k].clone(),
                         movies: data.film_director_inverted[k]
                             .keys()
                             .map(|k2| (k2.clone(), movie_small(data, k2)))
@@ -137,7 +147,7 @@ fn get_movie(id: &str, data: &web::Data<Data>) -> Movie {
                         k.clone(),
                         CastMember {
                             id: k.to_string(),
-                            names: data.actor_label[k].clone(),
+                            names: data.actor_label_by_language[k].clone(),
                             movies: data.film_cast_member_inverted[k]
                                 .keys()
                                 .map(|k2| (k2.clone(), movie_small(data, k2)))
@@ -147,7 +157,6 @@ fn get_movie(id: &str, data: &web::Data<Data>) -> Movie {
                 })
                 .collect(),
         },
-
         voice_actors: match data.film_voice_actor.get(id) {
             None => HashMap::new(),
             Some(x) => x
@@ -158,7 +167,7 @@ fn get_movie(id: &str, data: &web::Data<Data>) -> Movie {
                         k.clone(),
                         VoiceActor {
                             id: k.to_string(),
-                            names: data.voice_actor_label[k].clone(),
+                            names: data.voice_actor_label_by_language[k].clone(),
                             movies: data.film_voice_actor_inverted[k]
                                 .keys()
                                 .map(|k2| (k2.clone(), movie_small(data, k2)))
@@ -179,7 +188,7 @@ fn get_movie(id: &str, data: &web::Data<Data>) -> Movie {
                         k.clone(),
                         Composer {
                             id: k.to_string(),
-                            names: data.composer_label[k].clone(),
+                            names: data.composer_label_by_language[k].clone(),
                             movies: data.film_composer_inverted[k]
                                 .keys()
                                 .map(|k2| (k2.clone(), movie_small(data, k2)))
@@ -231,26 +240,26 @@ fn search_by(
     data: &web::Data<Data>,
 ) -> Vec<Vec<MovieSmall>> {
     let mut counter = 0;
-    let mut b: Vec<Vec<MovieSmall>> = x_label_inverted
+    x_label_inverted
         .iter()
-        .filter(|(k, v)| k.to_lowercase().contains(&search_str.to_lowercase()))
+        .filter(|(k, _)| k.to_lowercase().contains(&search_str.to_lowercase()))
         .filter(|(_, _)| {
             counter += 1;
             counter <= 1000
         })
-        .map(|(k, v)| {
+        .flat_map(|(_, v)| {
             v.keys()
+                .filter(|k2| film_x_inverted.get(*k2).is_some())
                 .map(|k2| {
                     film_x_inverted[k2]
                         .keys()
-                        .map(|k3| movie_small(&data, k3))
+                        .map(|k3| movie_small(data, k3))
                         .collect::<Vec<_>>()
                 })
-                .flatten()
+                // .flatten()
                 .collect::<Vec<_>>()
         })
-        .collect();
-    return b;
+        .collect()
 }
 
 #[get("/search_json/{search_path}")]
@@ -261,12 +270,12 @@ async fn search_json(search_path: web::Path<String>, data: web::Data<Data>) -> H
     let mut a: Vec<_> = data
         .film_label_inverted
         .iter()
-        .filter(|(k, v)| k.to_lowercase().contains(&search_str.to_lowercase()))
+        .filter(|(k, _)| k.to_lowercase().contains(&search_str.to_lowercase()))
         .filter(|(_, _)| {
             counter += 1;
             counter <= 1000
         })
-        .map(|(k, v)| {
+        .map(|(_, v)| {
             v.keys()
                 .map(|k2| movie_small(&data, k2))
                 .collect::<Vec<_>>()
@@ -286,6 +295,18 @@ async fn search_json(search_path: web::Path<String>, data: web::Data<Data>) -> H
         &data.film_composer_inverted,
         &data,
     ));
+    uu.append(&mut search_by(
+        &search_str,
+        &data.actor_label_inverted,
+        &data.film_cast_member_inverted,
+        &data,
+    ));
+    uu.append(&mut search_by(
+        &search_str,
+        &data.voice_actor_label_inverted,
+        &data.film_voice_actor_inverted,
+        &data,
+    ));
     HttpResponse::Ok().json(uu)
 }
 
@@ -294,7 +315,6 @@ type FilmOmdb = HashMap<String, HashMap<String, String>>;
 type FilmDirectorInverted = HashMap<String, HashMap<String, String>>;
 type FilmLabel = HashMap<String, HashMap<String, String>>;
 type FilmLabelInverted = HashMap<String, HashMap<String, String>>;
-type DirectorLabel = HashMap<String, HashMap<String, String>>;
 type MovieID = String;
 type OmdbMovieImages = HashMap<String, HashMap<String, String>>;
 type FilmCastMember = HashMap<String, HashMap<String, String>>;
@@ -343,10 +363,8 @@ struct Composer {
     movies: HashMap<MovieID, MovieSmall>,
 }
 
-#[actix_web::main]
-async fn main() -> std::io::Result<()> {
+fn get_movie_images() -> HSHSS {
     let mut rdr = csv::Reader::from_path("./omdb_images.csv").unwrap();
-    let mut object_types: HashSet<String> = HashSet::new();
     let mut movie_images: OmdbMovieImages = HashMap::new();
     for result in rdr.records() {
         let record = result.unwrap();
@@ -354,7 +372,6 @@ async fn main() -> std::io::Result<()> {
         let object_id = &record[1];
         let object_type = &record[2];
         let image_version = &record[3];
-        object_types.insert(object_type.to_string());
         if object_type == "Movie" {
             match movie_images.get_mut(object_id) {
                 Some(x) => {
@@ -368,11 +385,43 @@ async fn main() -> std::io::Result<()> {
             }
         }
     }
-    // println!("{:?}", object_types);
-    // println!("{:?}", movie_images["24"]);
+    movie_images
+}
+
+fn film_omdb(film_imdb_inverted: &HSHSS) -> std::io::Result<HSHSS> {
+    let mut film_omdb: HSHSS = serde_json::from_str(&fs::read_to_string(
+        "../../downtowhat_local/data/map/film_omdb.json",
+    )?)?;
+
+    let mut rdr = csv::Reader::from_path("./movie_links_imdb.csv").unwrap();
+    for result in rdr.records() {
+        let record = result.unwrap();
+        let imdb = &record[1];
+        let omdb = &record[2];
+        match film_imdb_inverted.get(imdb) {
+            Some(x) => {
+                let wikidata = x.keys().next().unwrap();
+                let mut hm = HashMap::new();
+                hm.insert(omdb.to_string(), String::new());
+                film_omdb.insert(wikidata.clone(), hm);
+            }
+            None => {}
+        }
+    }
+    Ok(film_omdb)
+}
+
+#[actix_web::main]
+async fn main() -> std::io::Result<()> {
     println!("main setup");
     let film_label: FilmLabel = serde_json::from_str(&fs::read_to_string(
         "../../downtowhat_local/data/map/film_label.json",
+    )?)?;
+    let film_imdb = serde_json::from_str(&fs::read_to_string(
+        "../../downtowhat_local/data/map/film_imdb.json",
+    )?)?;
+    let film_imdb_inverted = serde_json::from_str(&fs::read_to_string(
+        "../../downtowhat_local/data/map/film_imdb_inverted.json",
     )?)?;
     let ids: Vec<String> = film_label
         .clone()
@@ -381,22 +430,20 @@ async fn main() -> std::io::Result<()> {
         .collect::<Vec<String>>();
     let data = Data {
         index_html: fs::read_to_string("../front/index.html")?,
-        film_omdb: serde_json::from_str(&fs::read_to_string(
-            "../../downtowhat_local/data/map/film_omdb.json",
-        )?)?,
+        film_omdb: film_omdb(&film_imdb_inverted)?,
         film_label,
         ids,
         film_label_inverted: serde_json::from_str(&fs::read_to_string(
             "../../downtowhat_local/data/map/film_label_inverted.json",
+        )?)?,
+        film_label_by_language: serde_json::from_str(&fs::read_to_string(
+            "../../downtowhat_local/data/map/film_label_by_language.json",
         )?)?,
         film_director: serde_json::from_str(&fs::read_to_string(
             "../../downtowhat_local/data/map/film_director.json",
         )?)?,
         film_director_inverted: serde_json::from_str(&fs::read_to_string(
             "../../downtowhat_local/data/map/film_director_inverted.json",
-        )?)?,
-        director_label: serde_json::from_str(&fs::read_to_string(
-            "../../downtowhat_local/data/map/director_label.json",
         )?)?,
         director_label_inverted: serde_json::from_str(&fs::read_to_string(
             "../../downtowhat_local/data/map/director_label_inverted.json",
@@ -410,10 +457,28 @@ async fn main() -> std::io::Result<()> {
         actor_label: serde_json::from_str(&fs::read_to_string(
             "../../downtowhat_local/data/map/actor_label.json",
         )?)?,
+        actor_label_inverted: serde_json::from_str(&fs::read_to_string(
+            "../../downtowhat_local/data/map/actor_label_inverted.json",
+        )?)?,
 
         voice_actor_label: serde_json::from_str(&fs::read_to_string(
             "../../downtowhat_local/data/map/voice_actor_label.json",
         )?)?,
+
+        voice_actor_label_by_language: serde_json::from_str(&fs::read_to_string(
+            "../../downtowhat_local/data/map/voice_actor_label_by_language.json",
+        )?)?,
+
+        director_label_by_language: serde_json::from_str(&fs::read_to_string(
+            "../../downtowhat_local/data/map/director_label_by_language.json",
+        )?)?,
+        actor_label_by_language: serde_json::from_str(&fs::read_to_string(
+            "../../downtowhat_local/data/map/actor_label_by_language.json",
+        )?)?,
+        composer_label_by_language: serde_json::from_str(&fs::read_to_string(
+            "../../downtowhat_local/data/map/composer_label_by_language.json",
+        )?)?,
+
         film_voice_actor: serde_json::from_str(&fs::read_to_string(
             "../../downtowhat_local/data/map/film_voice_actor.json",
         )?)?,
@@ -433,8 +498,11 @@ async fn main() -> std::io::Result<()> {
         film_composer_inverted: serde_json::from_str(&fs::read_to_string(
             "../../downtowhat_local/data/map/film_composer_inverted.json",
         )?)?,
-
-        movie_images,
+        voice_actor_label_inverted: serde_json::from_str(&fs::read_to_string(
+            "../../downtowhat_local/data/map/voice_actor_label_inverted.json",
+        )?)?,
+        film_imdb,
+        movie_images: get_movie_images(),
     };
     println!("main setup ok");
     HttpServer::new(move || {

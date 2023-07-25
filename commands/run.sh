@@ -20,5 +20,6 @@ cargo clippy --release -- \
     -A clippy::missing_panics_doc \
     -A clippy::too_many_lines \
     -A clippy::unused_async \
-    -A clippy::manual_map
+    -A clippy::manual_map \
+    -A clippy::upper_case_acronyms
 cargo run --release
