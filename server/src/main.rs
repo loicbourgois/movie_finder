@@ -30,7 +30,6 @@ struct Data {
     film_label_inverted: FilmLabelInverted,
     film_label_by_language: HSHSS,
     ids: Vec<String>,
-    // director_label: DirectorLabel,
     director_label_inverted: HSHSS,
     actor_label: CastMemberLabel,
     actor_label_inverted: HSHSS,
@@ -47,6 +46,11 @@ struct Data {
     director_label_by_language: HSHSS,
     actor_label_by_language: HSHSS,
     composer_label_by_language: HSHSS,
+
+    film_main_subject_inverted: HSHSS,
+    main_subject_label_inverted: HSHSS,
+    film_genre_inverted: HSHSS,
+    genre_label_inverted: HSHSS,
 }
 
 fn index_html(data: &web::Data<Data>) -> HttpResponse {
@@ -121,22 +125,25 @@ fn get_movie(id: &str, data: &web::Data<Data>) -> Movie {
                 )
             })
             .collect(),
-        directors: data.film_director[id]
-            .keys()
-            .map(|k| {
-                (
-                    k.clone(),
-                    Director {
-                        id: k.to_string(),
-                        names: data.director_label_by_language[k].clone(),
-                        movies: data.film_director_inverted[k]
-                            .keys()
-                            .map(|k2| (k2.clone(), movie_small(data, k2)))
-                            .collect(),
-                    },
-                )
-            })
-            .collect(),
+        directors: match data.film_director.get(id) {
+            None => HashMap::new(),
+            Some(x) => x
+                .keys()
+                .map(|k| {
+                    (
+                        k.clone(),
+                        Director {
+                            id: k.to_string(),
+                            names: data.director_label_by_language[k].clone(),
+                            movies: data.film_director_inverted[k]
+                                .keys()
+                                .map(|k2| (k2.clone(), movie_small(data, k2)))
+                                .collect(),
+                        },
+                    )
+                })
+                .collect(),
+        },
         cast_members: match data.film_cast_member.get(id) {
             None => HashMap::new(),
             Some(x) => x
@@ -177,7 +184,6 @@ fn get_movie(id: &str, data: &web::Data<Data>) -> Movie {
                 })
                 .collect(),
         },
-
         composers: match data.film_composer.get(id) {
             None => HashMap::new(),
             Some(x) => x
@@ -281,33 +287,45 @@ async fn search_json(search_path: web::Path<String>, data: web::Data<Data>) -> H
                 .collect::<Vec<_>>()
         })
         .collect();
-    let mut uu = Vec::new();
-    uu.append(&mut a);
-    uu.append(&mut search_by(
+    let mut results = Vec::new();
+    results.append(&mut a);
+    results.append(&mut search_by(
         &search_str,
         &data.director_label_inverted,
         &data.film_director_inverted,
         &data,
     ));
-    uu.append(&mut search_by(
+    results.append(&mut search_by(
         &search_str,
         &data.composer_label_inverted,
         &data.film_composer_inverted,
         &data,
     ));
-    uu.append(&mut search_by(
+    results.append(&mut search_by(
         &search_str,
         &data.actor_label_inverted,
         &data.film_cast_member_inverted,
         &data,
     ));
-    uu.append(&mut search_by(
+    results.append(&mut search_by(
         &search_str,
         &data.voice_actor_label_inverted,
         &data.film_voice_actor_inverted,
         &data,
     ));
-    HttpResponse::Ok().json(uu)
+    results.append(&mut search_by(
+        &search_str,
+        &data.main_subject_label_inverted,
+        &data.film_main_subject_inverted,
+        &data,
+    ));
+    results.append(&mut search_by(
+        &search_str,
+        &data.genre_label_inverted,
+        &data.film_genre_inverted,
+        &data,
+    ));
+    HttpResponse::Ok().json(results)
 }
 
 type FilmDirector = HashMap<String, HashMap<String, String>>;
@@ -503,6 +521,19 @@ async fn main() -> std::io::Result<()> {
         )?)?,
         film_imdb,
         movie_images: get_movie_images(),
+
+        film_main_subject_inverted: serde_json::from_str(&fs::read_to_string(
+            "../../downtowhat_local/data/map/film_main_subject_inverted.json",
+        )?)?,
+        main_subject_label_inverted: serde_json::from_str(&fs::read_to_string(
+            "../../downtowhat_local/data/map/main_subject_label_inverted.json",
+        )?)?,
+        film_genre_inverted: serde_json::from_str(&fs::read_to_string(
+            "../../downtowhat_local/data/map/film_genre_inverted.json",
+        )?)?,
+        genre_label_inverted: serde_json::from_str(&fs::read_to_string(
+            "../../downtowhat_local/data/map/genre_label_inverted.json",
+        )?)?,
     };
     println!("main setup ok");
     HttpServer::new(move || {

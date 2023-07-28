@@ -87,13 +87,18 @@ const imdb_link = (movie) => {
 }
 
 
+const wikidata_link = (movie) => {
+        return `https://www.wikidata.org/wiki/` + movie.id
+}
+
+
 const show_movie = async (movie) => {
-    // document.querySelector("#infos").innerHTML = "Ready"
-    console.log(imdb_link(movie))
+    console.log(movie)
     document.querySelector("body").innerHTML += `
         <div>
             <h1>${title(movie)}</h1>
             <div id="links">
+                <a href="${wikidata_link(movie)}">wikidata</a>
                 <a href="${imdb_link(movie)}">imdb</a>
                 <a href="${imdb_link(movie)}/reviews">reviews</a>
             </div>
@@ -126,8 +131,6 @@ const show_movie = async (movie) => {
     ]) {
         Object.entries(movie[xx.key]).map((x)=> {
             const v = x[1]
-            // const names = Object.keys(v.names).join(' / ')
-            // const name_0 = Object.keys(v.names)[0]
             const movies = Object.entries(v.movies)
                 .filter((x2) => {
                     return omdb_url(x2[1])
