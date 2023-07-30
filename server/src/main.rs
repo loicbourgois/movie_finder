@@ -15,6 +15,7 @@ struct Movie {
     titles: HashMap<String, String>,
     imdb: HashMap<String, String>,
     omdbs: HashMap<String, Omdb>,
+    genres: HSHSS,
 }
 
 #[derive(Clone)]
@@ -50,7 +51,9 @@ struct Data {
     film_main_subject_inverted: HSHSS,
     main_subject_label_inverted: HSHSS,
     film_genre_inverted: HSHSS,
+    film_genre: HSHSS,
     genre_label_inverted: HSHSS,
+    genre_label: HSHSS,
 }
 
 fn index_html(data: &web::Data<Data>) -> HttpResponse {
@@ -109,6 +112,10 @@ fn get_movie(id: &str, data: &web::Data<Data>) -> Movie {
         omdb_id: omdb_ids.clone(),
         titles: data.film_label_by_language[id].clone(),
         imdb: data.film_imdb[id].clone(),
+        genres: data.film_genre[id]
+            .keys()
+            .map(|id2| (id2.to_string(), data.genre_label[id2].clone()))
+            .collect(),
         omdbs: omdb_ids
             .keys()
             .filter(|omdb_id| data.movie_images.get(*omdb_id).is_some())
@@ -262,7 +269,6 @@ fn search_by(
                         .map(|k3| movie_small(data, k3))
                         .collect::<Vec<_>>()
                 })
-                // .flatten()
                 .collect::<Vec<_>>()
         })
         .collect()
@@ -528,8 +534,14 @@ async fn main() -> std::io::Result<()> {
         main_subject_label_inverted: serde_json::from_str(&fs::read_to_string(
             "../../downtowhat_local/data/map/main_subject_label_inverted.json",
         )?)?,
+        film_genre: serde_json::from_str(&fs::read_to_string(
+            "../../downtowhat_local/data/map/film_genre.json",
+        )?)?,
         film_genre_inverted: serde_json::from_str(&fs::read_to_string(
             "../../downtowhat_local/data/map/film_genre_inverted.json",
+        )?)?,
+        genre_label: serde_json::from_str(&fs::read_to_string(
+            "../../downtowhat_local/data/map/genre_label.json",
         )?)?,
         genre_label_inverted: serde_json::from_str(&fs::read_to_string(
             "../../downtowhat_local/data/map/genre_label_inverted.json",

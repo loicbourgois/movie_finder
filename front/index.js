@@ -88,9 +88,17 @@ const imdb_link = (movie) => {
 
 
 const wikidata_link = (movie) => {
-        return `https://www.wikidata.org/wiki/` + movie.id
+    return `https://www.wikidata.org/wiki/` + movie.id
 }
 
+
+const genres = (movie) => {
+    const aa = Object.keys(movie.genres).map(x => {
+        const txt = Object.keys(movie.genres[x])[0]
+        return `<a href="/search/${txt}">${txt}</a>`
+    })
+    return aa.join('')
+}
 
 const show_movie = async (movie) => {
     console.log(movie)
@@ -101,6 +109,9 @@ const show_movie = async (movie) => {
                 <a href="${wikidata_link(movie)}">wikidata</a>
                 <a href="${imdb_link(movie)}">imdb</a>
                 <a href="${imdb_link(movie)}/reviews">reviews</a>
+            </div>
+            <div id="genres">
+                ${genres(movie)}
             </div>
             <div class="movies">
                 <div class="movie">

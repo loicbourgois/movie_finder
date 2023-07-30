@@ -148,3 +148,15 @@ body > div:nth-child(2) {
   display: flex;
 justify-content: center;
 }
+
+#genres {
+  display: flex;
+justify-content: center;
+}
+
+#genres > a {
+  flex-grow: 0;
+  margin: 1rem;
+  padding: 0;
+  margin-bottom: 0.5rem;
+}
