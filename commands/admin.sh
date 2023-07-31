@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 path=$(cat $HOME/github.com/loicbourgois/downtowhat_local/secrets.json | jq -r ".path")
 user=$(cat $HOME/github.com/loicbourgois/downtowhat_local/secrets.json | jq -r ".user")

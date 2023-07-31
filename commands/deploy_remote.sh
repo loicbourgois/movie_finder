@@ -9,5 +9,5 @@ git checkout origin/movie
 git status
 sleep 1
 # $HOME/github.com/loicbourgois/downtowhat/commands/build_data.sh
-# $HOME/github.com/loicbourgois/downtowhat/commands/tail_raw.sh
-$HOME/github.com/loicbourgois/downtowhat/commands/run.sh
+$HOME/github.com/loicbourgois/downtowhat/commands/tail_raw.sh
+$HOME/github.com/loicbourgois/downtowhat/commands/run_remote.sh

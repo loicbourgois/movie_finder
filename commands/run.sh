@@ -1,6 +1,5 @@
 #/!bin/bash
 set -e
-echo "start"
 cd $HOME/github.com/loicbourgois/downtowhat/server
 $HOME/.cargo/bin/cargo fmt
 $HOME/.cargo/bin/cargo clippy --release -- \
@@ -25,4 +24,3 @@ $HOME/.cargo/bin/cargo clippy --release -- \
     -A clippy::manual_map \
     -A clippy::upper_case_acronyms
 $HOME/.cargo/bin/cargo run --release
-echo "end"
