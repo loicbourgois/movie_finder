@@ -8,8 +8,6 @@ from .misc import (
 )
 import urllib
 from .builder import (
-    # human_activity,; action,; activity,; professions,; social_status,
-    cat,
     film_cast_member, 
     film_label,
     film_director,
@@ -53,11 +51,6 @@ data_builders = (
     film_cast_member_2,
     film_cast_member_3,
     film_cast_member_4,
-    human_activity,
-    action,
-    activity,
-    occupation,
-    cat,
     professions,
     social_status,
     film_composer,
