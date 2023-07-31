@@ -51,8 +51,6 @@ data_builders = (
     film_cast_member_2,
     film_cast_member_3,
     film_cast_member_4,
-    professions,
-    social_status,
     film_composer,
     composer_label,
     film_main_subject,
