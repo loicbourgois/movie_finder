@@ -2,8 +2,8 @@
 set -e
 echo "start"
 cd $HOME/github.com/loicbourgois/downtowhat/server
-cargo fmt
-cargo clippy --release -- \
+$HOME/.cargo/bin/cargo fmt
+$HOME/.cargo/bin/cargo clippy --release -- \
     -A clippy::single_match \
     -A clippy::too_many_arguments \
     -W clippy::pedantic \
@@ -24,5 +24,5 @@ cargo clippy --release -- \
     -A clippy::unused_async \
     -A clippy::manual_map \
     -A clippy::upper_case_acronyms
-cargo run --release
+$HOME/.cargo/bin/cargo run --release
 echo "end"
