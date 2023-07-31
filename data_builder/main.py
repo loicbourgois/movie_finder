@@ -12,7 +12,6 @@ from .builder import (
     cat,
     film_cast_member, 
     film_label,
-    film_label_2,
     film_director,
     film_publication,
     occupation,
