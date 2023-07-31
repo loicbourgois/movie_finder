@@ -36,7 +36,7 @@ from .builder import (
     genre_label,
 )
 data_builders = (
-    actor_label,
+    # actor_label,
     # film_label,
     # film_cast_member,
     # film_director,
