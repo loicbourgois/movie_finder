@@ -1,4 +1,4 @@
-#/!bin/sh
+#/!bin/bash
 set -e
 echo "start"
 cd $HOME/github.com/loicbourgois/downtowhat/server
