@@ -413,7 +413,7 @@ fn get_movie_images() -> HSHSS {
 }
 
 fn film_omdb(film_imdb_inverted: &HSHSS) -> std::io::Result<HSHSS> {
-    let mut film_omdb: HSHSS = serde_json::from_str(&fs::read_to_string(
+    let mut film_omdb: HSHSS = serde_json::from_str(&read_file(
         "../../downtowhat_local/data/map/film_omdb.json",
     )?)?;
 
@@ -435,16 +435,21 @@ fn film_omdb(film_imdb_inverted: &HSHSS) -> std::io::Result<HSHSS> {
     Ok(film_omdb)
 }
 
+fn read_file(path: &str) -> std::io::Result<String> {
+    println!("reading {path}");
+    fs::read_to_string(path)
+}
+
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     println!("main setup");
-    let film_label: FilmLabel = serde_json::from_str(&fs::read_to_string(
+    let film_label: FilmLabel = serde_json::from_str(&read_file(
         "../../downtowhat_local/data/map/film_label.json",
     )?)?;
-    let film_imdb = serde_json::from_str(&fs::read_to_string(
+    let film_imdb = serde_json::from_str(&read_file(
         "../../downtowhat_local/data/map/film_imdb.json",
     )?)?;
-    let film_imdb_inverted = serde_json::from_str(&fs::read_to_string(
+    let film_imdb_inverted = serde_json::from_str(&read_file(
         "../../downtowhat_local/data/map/film_imdb_inverted.json",
     )?)?;
     let ids: Vec<String> = film_label
@@ -453,97 +458,97 @@ async fn main() -> std::io::Result<()> {
         .map(std::clone::Clone::clone)
         .collect::<Vec<String>>();
     let data = Data {
-        index_html: fs::read_to_string("../front/index.html")?,
+        index_html: read_file("../front/index.html")?,
         film_omdb: film_omdb(&film_imdb_inverted)?,
         film_label,
         ids,
-        film_label_inverted: serde_json::from_str(&fs::read_to_string(
+        film_label_inverted: serde_json::from_str(&read_file(
             "../../downtowhat_local/data/map/film_label_inverted.json",
         )?)?,
-        film_label_by_language: serde_json::from_str(&fs::read_to_string(
+        film_label_by_language: serde_json::from_str(&read_file(
             "../../downtowhat_local/data/map/film_label_by_language.json",
         )?)?,
-        film_director: serde_json::from_str(&fs::read_to_string(
+        film_director: serde_json::from_str(&read_file(
             "../../downtowhat_local/data/map/film_director.json",
         )?)?,
-        film_director_inverted: serde_json::from_str(&fs::read_to_string(
+        film_director_inverted: serde_json::from_str(&read_file(
             "../../downtowhat_local/data/map/film_director_inverted.json",
         )?)?,
-        director_label_inverted: serde_json::from_str(&fs::read_to_string(
+        director_label_inverted: serde_json::from_str(&read_file(
             "../../downtowhat_local/data/map/director_label_inverted.json",
         )?)?,
-        film_cast_member: serde_json::from_str(&fs::read_to_string(
+        film_cast_member: serde_json::from_str(&read_file(
             "../../downtowhat_local/data/map/film_cast_member.json",
         )?)?,
-        film_cast_member_inverted: serde_json::from_str(&fs::read_to_string(
+        film_cast_member_inverted: serde_json::from_str(&read_file(
             "../../downtowhat_local/data/map/film_cast_member_inverted.json",
         )?)?,
-        actor_label: serde_json::from_str(&fs::read_to_string(
+        actor_label: serde_json::from_str(&read_file(
             "../../downtowhat_local/data/map/actor_label.json",
         )?)?,
-        actor_label_inverted: serde_json::from_str(&fs::read_to_string(
+        actor_label_inverted: serde_json::from_str(&read_file(
             "../../downtowhat_local/data/map/actor_label_inverted.json",
         )?)?,
 
-        voice_actor_label: serde_json::from_str(&fs::read_to_string(
+        voice_actor_label: serde_json::from_str(&read_file(
             "../../downtowhat_local/data/map/voice_actor_label.json",
         )?)?,
 
-        voice_actor_label_by_language: serde_json::from_str(&fs::read_to_string(
+        voice_actor_label_by_language: serde_json::from_str(&read_file(
             "../../downtowhat_local/data/map/voice_actor_label_by_language.json",
         )?)?,
 
-        director_label_by_language: serde_json::from_str(&fs::read_to_string(
+        director_label_by_language: serde_json::from_str(&read_file(
             "../../downtowhat_local/data/map/director_label_by_language.json",
         )?)?,
-        actor_label_by_language: serde_json::from_str(&fs::read_to_string(
+        actor_label_by_language: serde_json::from_str(&read_file(
             "../../downtowhat_local/data/map/actor_label_by_language.json",
         )?)?,
-        composer_label_by_language: serde_json::from_str(&fs::read_to_string(
+        composer_label_by_language: serde_json::from_str(&read_file(
             "../../downtowhat_local/data/map/composer_label_by_language.json",
         )?)?,
 
-        film_voice_actor: serde_json::from_str(&fs::read_to_string(
+        film_voice_actor: serde_json::from_str(&read_file(
             "../../downtowhat_local/data/map/film_voice_actor.json",
         )?)?,
-        film_voice_actor_inverted: serde_json::from_str(&fs::read_to_string(
+        film_voice_actor_inverted: serde_json::from_str(&read_file(
             "../../downtowhat_local/data/map/film_voice_actor_inverted.json",
         )?)?,
 
-        composer_label: serde_json::from_str(&fs::read_to_string(
+        composer_label: serde_json::from_str(&read_file(
             "../../downtowhat_local/data/map/composer_label.json",
         )?)?,
-        composer_label_inverted: serde_json::from_str(&fs::read_to_string(
+        composer_label_inverted: serde_json::from_str(&read_file(
             "../../downtowhat_local/data/map/composer_label_inverted.json",
         )?)?,
-        film_composer: serde_json::from_str(&fs::read_to_string(
+        film_composer: serde_json::from_str(&read_file(
             "../../downtowhat_local/data/map/film_composer.json",
         )?)?,
-        film_composer_inverted: serde_json::from_str(&fs::read_to_string(
+        film_composer_inverted: serde_json::from_str(&read_file(
             "../../downtowhat_local/data/map/film_composer_inverted.json",
         )?)?,
-        voice_actor_label_inverted: serde_json::from_str(&fs::read_to_string(
+        voice_actor_label_inverted: serde_json::from_str(&read_file(
             "../../downtowhat_local/data/map/voice_actor_label_inverted.json",
         )?)?,
         film_imdb,
         movie_images: get_movie_images(),
 
-        film_main_subject_inverted: serde_json::from_str(&fs::read_to_string(
+        film_main_subject_inverted: serde_json::from_str(&read_file(
             "../../downtowhat_local/data/map/film_main_subject_inverted.json",
         )?)?,
-        main_subject_label_inverted: serde_json::from_str(&fs::read_to_string(
+        main_subject_label_inverted: serde_json::from_str(&read_file(
             "../../downtowhat_local/data/map/main_subject_label_inverted.json",
         )?)?,
-        film_genre: serde_json::from_str(&fs::read_to_string(
+        film_genre: serde_json::from_str(&read_file(
             "../../downtowhat_local/data/map/film_genre.json",
         )?)?,
-        film_genre_inverted: serde_json::from_str(&fs::read_to_string(
+        film_genre_inverted: serde_json::from_str(&read_file(
             "../../downtowhat_local/data/map/film_genre_inverted.json",
         )?)?,
-        genre_label: serde_json::from_str(&fs::read_to_string(
+        genre_label: serde_json::from_str(&read_file(
             "../../downtowhat_local/data/map/genre_label.json",
         )?)?,
-        genre_label_inverted: serde_json::from_str(&fs::read_to_string(
+        genre_label_inverted: serde_json::from_str(&read_file(
             "../../downtowhat_local/data/map/genre_label_inverted.json",
         )?)?,
     };
