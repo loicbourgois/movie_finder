@@ -7,6 +7,7 @@ cd $HOME/github.com/loicbourgois/downtowhat
 git fetch --all
 git checkout origin/movie
 git status
+sleep 1
 # docker run hello-world
-# $HOME/github.com/loicbourgois/downtowhat/commands/build_data.sh
+$HOME/github.com/loicbourgois/downtowhat/commands/build_data.sh
 $HOME/github.com/loicbourgois/downtowhat/commands/tail_raw.sh
