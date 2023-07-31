@@ -1,4 +1,6 @@
 #/!bin/sh
+set -e
+echo "start"
 cd $HOME/github.com/loicbourgois/downtowhat/server
 cargo fmt
 cargo clippy --release -- \
@@ -23,3 +25,4 @@ cargo clippy --release -- \
     -A clippy::manual_map \
     -A clippy::upper_case_acronyms
 cargo run --release
+echo "end"
