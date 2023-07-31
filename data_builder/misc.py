@@ -14,35 +14,70 @@ data = f"{os.environ['HOME']}/github.com/loicbourgois/downtowhat_local/data"
 def pull_data(data_builders):
     for i_data_builder, data_builder in enumerate(data_builders):
         logging.info(f"{i_data_builder+1}/{len(data_builders)} - fetch {data_builder.name}")
-        partial_path = f"{data}/{data_builder.name}"
-        path = f"{partial_path}.raw"
-        args = urllib.parse.urlencode({
-            'query': data_builder.query,
-            'format': 'json'
-        })
-        r = requests.get(f"{endpoint_url}?{args}")
-        with open(path, "w") as file:
-            file.write(r.text)
-        logging.info(f"  {data_builder.name} -> {path}")
+        try:
+            assert data_builder.multi
+            for iq, query in enumerate(data_builder.queries):
+                partial_path = f"{data}/{data_builder.name}-{iq}"
+                path = f"{partial_path}.raw"
+                args = urllib.parse.urlencode({
+                    'query': query,
+                    'format': 'json'
+                })
+                r = requests.get(f"{endpoint_url}?{args}")
+                with open(path, "w") as file:
+                    file.write(r.text)
+                logging.info(f"  {data_builder.name} -> {path}")
+        except:
+            partial_path = f"{data}/{data_builder.name}"
+            path = f"{partial_path}.raw"
+            args = urllib.parse.urlencode({
+                'query': data_builder.query,
+                'format': 'json'
+            })
+            r = requests.get(f"{endpoint_url}?{args}")
+            with open(path, "w") as file:
+                file.write(r.text)
+            logging.info(f"  {data_builder.name} -> {path}")
 
 
 def convert_data(data_builders):
     for i_data_builder, data_builder in enumerate(data_builders):
         logging.info(f"{i_data_builder+1}/{len(data_builders)} - converting {data_builder.name}")
-        partial_path = f"{data}/{data_builder.name}"
-        path_in = f"{partial_path}.raw"
-        path_out = f"{partial_path}.csv"
-        logging.info(f"  reading")
-        with open(path_in, "r") as file:
-            str_ = file.read()
-        d = json.loads(str_)
-        l = [ d['head']['vars'] ]
-        logging.info(f"  converting")
-        for x in d['results']['bindings']:
-            l.append( [ 
-                x[aa]['value']
-                for aa in l[0]
-            ] )
+        try:
+            assert data_builder.multi
+            for iq,_ in enumerate(data_builder.queries):
+                partial_path = f"{data}/{data_builder.name}"
+                path_in = f"{partial_path}-{iq}.raw"
+                path_out = f"{partial_path}.csv"
+                logging.info(f"  reading - {iq}/{len(data_builder.queries)}")
+                with open(path_in, "r") as file:
+                    str_ = file.read()
+                d = json.loads(str_)
+                if iq == 0:
+                    l = [ d['head']['vars'] ]
+                logging.info(f"  converting - {iq}/{len(data_builder.queries)}")
+                for x in d['results']['bindings']:
+                    l.append( [ 
+                        x[aa]['value']
+                        for aa in l[0]
+                    ] )
+        except Exception as e:
+            logging.error(e)
+            partial_path = f"{data}/{data_builder.name}"
+            path_in = f"{partial_path}.raw"
+            path_out = f"{partial_path}.csv"
+            logging.info(f"  reading")
+            with open(path_in, "r") as file:
+                str_ = file.read()
+            d = json.loads(str_)
+            l = [ d['head']['vars'] ]
+            logging.info(f"  converting")
+            for x in d['results']['bindings']:
+                l.append( [ 
+                    x[aa]['value']
+                    for aa in l[0]
+                ] )
+        
         logging.info(f"  writing")
         with open(path_out, "w") as file:
             writer = csv.writer(file)
@@ -121,3 +156,60 @@ def build_impawards():
             l2[k] = [v_]
     with open(path_out, "w") as file:
         file.write(json.dumps(l2, indent=2))
+
+
+
+# def test():
+#     queries = [
+#         # """
+#         #     SELECT (COUNT(*) AS ?count)
+#         #     WHERE {
+#         #         ?actor wdt:P106 wd:Q33999 .
+#         #         ?actor wdt:P21 wd:Q6581097 .
+#         #     }
+#         # """,
+#         # """
+#         #     SELECT (COUNT(*) AS ?count)
+#         #     WHERE {
+#         #         ?actor wdt:P106 wd:Q33999 .
+#         #         ?actor wdt:P21 wd:Q6581072 .
+#         #     }
+#         # """,
+#         # """
+#         #     SELECT (COUNT(*) AS ?count)
+#         #     WHERE {
+#         #         ?actor wdt:P106 wd:Q33999 .
+#         #         FILTER NOT EXISTS {?actor wdt:P106 ?o}
+#         #     }
+#         # """,
+#         # """
+#         #     SELECT (COUNT(*) AS ?count)
+#         #     WHERE {
+#         #         ?actor wdt:P106 wd:Q33999 .
+#         #         ?actor wdt:P21 ?sex .
+#         #         FILTER ( ?sex not in ( wd:Q6581072, wd:Q6581097 ) )
+#         #     }
+#         # """,
+#         # """
+#         #     SELECT (COUNT(*) AS ?count)
+#         #     WHERE {
+#         #         ?actor wdt:P106 wd:Q33999 .
+#         #     }
+#         # """,
+#         """
+#             SELECT (COUNT(*) AS ?count)
+#             WHERE {
+#                 ?actor wdt:P106 wd:Q33999 .
+#                 ?actor wdt:P21 wd:Q6581072 .
+#                 ?actor wdt:P21 wd:Q6581097 .
+#             }
+#         """,
+#     ]
+#     for query in queries:
+#         args = urllib.parse.urlencode({
+#             'query': query,
+#             'format': 'json'
+#         })
+#         r = requests.get(f"{endpoint_url}?{args}")
+#         logging.info(r.text)
+# test()

@@ -1,46 +1,49 @@
 from .common import (
   with_occupation, 
-  actor, 
+  actor,
   limit, 
   film_actor,
+  with_sex,
+  sex_female,
+  sex_male,
 )
 import os
+multi = True
 name = os.path.basename(__file__).replace('.py', '')
-# query = f'''
-# SELECT ?actor ?actor_label
-# WHERE {{
-#   {{
-#     ?actor {with_occupation} {actor} .
-#   }}
-#   UNION
-#   {{
-#     ?actor {with_occupation} {film_actor} .
-#   }}
-#   ?actor rdfs:label ?actor_label filter (lang(?actor_label) = "en") .
-# }}
-# {limit}
-# '''
-
-query = f'''
-SELECT ?actor ?actor_label
-WHERE {{
-  {{
-    ?actor {with_occupation} {film_actor} .
-  }}
-  ?actor rdfs:label ?actor_label filter (lang(?actor_label) = "en") .
-}}
-{limit}
-'''
-
-# def to_list(dict_):
-#     data = [  [  x['@name'] for x in dict_['sparql']['head']['variable']  ] ]
-#     for x in dict_['sparql']['results']['result']:
-#       try:
-#         data.append([ 
-#           x['binding'][0]['uri'].replace('http://www.wikidata.org/entity/Q',''),
-#           x['binding'][1]['literal']['#text'],
-#           # x['binding'][2]['literal']['#text'],
-#         ])
-#       except Exception as e:
-#         pass
-#     return data
+queries = [
+    f'''
+        SELECT ?actor ?actor_label
+        WHERE {{
+          ?actor {with_occupation} {actor} .
+          ?actor {with_sex} {sex_male} .
+          ?actor rdfs:label ?actor_label filter (lang(?actor_label) = "en") .
+        }}
+    ''',
+    f'''
+        SELECT ?actor ?actor_label
+        WHERE {{
+          ?actor {with_occupation} {actor} .
+          ?actor {with_sex} {sex_female} .
+          ?actor rdfs:label ?actor_label filter (lang(?actor_label) = "en") .
+        }}
+    ''',
+    f'''
+        SELECT ?actor ?actor_label
+        WHERE {{
+          ?actor {with_occupation} {actor} .
+          ?actor {with_sex} ?sex .
+          FILTER ( ?sex not in ( {sex_male}, {sex_female} ) )
+          ?actor rdfs:label ?actor_label filter (lang(?actor_label) = "en") .
+        }}
+    ''',
+    f'''
+        SELECT ?actor ?actor_label
+        WHERE {{
+          {{
+            ?actor {with_occupation} {film_actor} .
+          }}
+          ?actor rdfs:label ?actor_label filter (lang(?actor_label) = "en") .
+        }}
+        {limit}
+    ''',
+]
