@@ -65,8 +65,8 @@ def build_mappings(data_builders):
         l = {}
         l2 = {}
         l3 = {}
-        length = len(d['results']['bindings'])
-        length_100 = int(length/100)
+        # length = len(d['results']['bindings'])
+        # length_100 = int(length/100)
         logging.info(f"  converting")
         for i,x in enumerate(d['results']['bindings']):
             # if i % max(length_100, 1) == 0:
