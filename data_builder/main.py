@@ -67,8 +67,8 @@ data_builders = (
     # film_main_subject,
     # main_subject_label,
     # film_genre,
-    # genre_label,
+    genre_label,
 )
-# pull_data(data_builders)
+pull_data(data_builders)
 # convert_data(data_builders)
 # build_mappings(data_builders)
