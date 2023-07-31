@@ -57,45 +57,45 @@ def build_mappings(data_builders):
         path_out = f"{data}/map/{data_builder.name}.json"
         path_out_2 = f"{data}/map/{data_builder.name}_inverted.json"
         path_out_3 = f"{data}/map/{data_builder.name}_by_language.json"
-        logging.info(f"  opening")
-        with open(path_in, "r") as file:
-            str_ = file.read()
-        logging.info(f"  loading")
-        d = json.loads(str_)
+        # logging.info(f"  opening")
+        # with open(path_in, "r") as file:
+        #     str_ = file.read()
+        # logging.info(f"  loading")
+        # d = json.loads(str_)
         l = {}
         l2 = {}
         l3 = {}
-        # length = len(d['results']['bindings'])
-        # length_100 = int(length/100)
-        logging.info(f"  converting")
-        for i,x in enumerate(d['results']['bindings']):
-            # if i % max(length_100, 1) == 0:
-            #     logging.info(f'    {int(i/length*100)}%')
-            k = x[d['head']['vars'][0]]['value'].replace('http://www.wikidata.org/entity/','')
-            v = x[d['head']['vars'][1]]['value'].replace('http://www.wikidata.org/entity/','')
-            if len(d['head']['vars']) >= 3:
-                lang = x[d['head']['vars'][2]]['value'].replace('http://www.wikidata.org/entity/','')
-            else:
-                lang = ""
-            if l.get(k):
-                l[k][v] = ''
-            else:
-                l[k] = {v:''}
-            if l2.get(v):
-                l2[v][k] = ''
-            else:
-                l2[v] = {k:''}
-            if l3.get(k):
-                l3[k][lang] = v
-            else:
-                l3[k] = {lang:v}
+        # # length = len(d['results']['bindings'])
+        # # length_100 = int(length/100)
+        # logging.info(f"  converting")
+        # for i,x in enumerate(d['results']['bindings']):
+        #     # if i % max(length_100, 1) == 0:
+        #     #     logging.info(f'    {int(i/length*100)}%')
+        #     k = x[d['head']['vars'][0]]['value'].replace('http://www.wikidata.org/entity/','')
+        #     v = x[d['head']['vars'][1]]['value'].replace('http://www.wikidata.org/entity/','')
+        #     if len(d['head']['vars']) >= 3:
+        #         lang = x[d['head']['vars'][2]]['value'].replace('http://www.wikidata.org/entity/','')
+        #     else:
+        #         lang = ""
+        #     if l.get(k):
+        #         l[k][v] = ''
+        #     else:
+        #         l[k] = {v:''}
+        #     if l2.get(v):
+        #         l2[v][k] = ''
+        #     else:
+        #         l2[v] = {k:''}
+        #     if l3.get(k):
+        #         l3[k][lang] = v
+        #     else:
+        #         l3[k] = {lang:v}
         logging.info(f"  writing")
         with open(path_out, "w", encoding='utf-8') as file:
-            json.dump(l, file, indent=2,ensure_ascii=False)
+            json.dump(l, file, indent=2, ensure_ascii=False)
         with open(path_out_2, "w", encoding='utf-8') as file:
-            json.dump(l2, file, indent=2,ensure_ascii=False)
+            json.dump(l2, file, indent=2, ensure_ascii=False)
         with open(path_out_3, "w", encoding='utf-8') as file:
-            json.dump(l3, file, indent=2,ensure_ascii=False)
+            json.dump(l3, file, indent=2, ensure_ascii=False)
         logging.info(f"  {data_builder.name} -> {path_out}")
 
 
