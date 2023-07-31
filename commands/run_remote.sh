@@ -1,5 +1,6 @@
 #/!bin/bash
 set -e
+echo "Starting downtowhat.server"
 cd $HOME/github.com/loicbourgois/downtowhat/server
 $HOME/.cargo/bin/cargo fmt
 $HOME/.cargo/bin/cargo clippy --release -- \

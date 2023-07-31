@@ -1,5 +1,6 @@
 #!/bin/sh
 set -e
+echo ""
 mkdir -p $HOME/github.com/loicbourgois
 cd $HOME/github.com/loicbourgois
 git clone https://github.com/loicbourgois/downtowhat.git || true
