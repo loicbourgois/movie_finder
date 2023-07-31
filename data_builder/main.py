@@ -34,26 +34,25 @@ from .builder import (
     genre_label,
 )
 data_builders = (
-    # film_label,
-    # film_cast_member,
-    # film_director,
-    # film_publication,
-    # film_image,
-    # film_imdb,
-    # film_omdb,
-    # film_screenwriter,
-    # film_voice_actor,
-    # voice_actor_label,
-    actor_label,
-    # director_label,
-    # screenwriter_label,
-    # film_composer,
-    # composer_label,
-    # film_main_subject,
-    # main_subject_label,
-    # film_genre,
-    # genre_label,
+    film_label,
+    film_cast_member,
+    film_director,
+    film_publication,
+    film_image,
+    film_imdb,
+    film_omdb,
+    film_screenwriter,
+    film_voice_actor,
+    voice_actor_label,
+    director_label,
+    screenwriter_label,
+    film_composer,
+    composer_label,
+    film_main_subject,
+    main_subject_label,
+    film_genre,
+    genre_label,
 )
-pull_data(data_builders)
-# convert_data(data_builders)
-# build_mappings(data_builders)
+# pull_data(data_builders)
+convert_data(data_builders)
+build_mappings(data_builders)
