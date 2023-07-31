@@ -12,8 +12,8 @@ data = f"{os.environ['HOME']}/github.com/loicbourgois/downtowhat_local/data"
 
 
 def pull_data(data_builders):
-    for data_builder in data_builders:
-        logging.info(f"fetch {data_builder.name}")
+    for i_data_builder, data_builder in enumerate(data_builders):
+        logging.info(f"{i_data_builder+1}/{len(data_builders)} - fetch {data_builder.name}")
         partial_path = f"{data}/{data_builder.name}"
         path = f"{partial_path}.raw"
         args = urllib.parse.urlencode({
@@ -27,8 +27,8 @@ def pull_data(data_builders):
 
 
 def convert_data(data_builders):
-    for data_builder in data_builders:
-        logging.info(f"converting {data_builder.name}")
+    for i_data_builder, data_builder in enumerate(data_builders):
+        logging.info(f"{i_data_builder+1}/{len(data_builders)} - converting {data_builder.name}")
         partial_path = f"{data}/{data_builder.name}"
         path_in = f"{partial_path}.raw"
         path_out = f"{partial_path}.csv"
@@ -51,8 +51,8 @@ def convert_data(data_builders):
 
 
 def build_mappings(data_builders):
-    for data_builder in data_builders:
-        logging.info(f"building map {data_builder.name}")
+    for i_data_builder, data_builder in enumerate(data_builders):
+        logging.info(f"{i_data_builder+1}/{len(data_builders)} - building map {data_builder.name}")
         path_in = f"{data}/{data_builder.name}.raw"
         path_out = f"{data}/map/{data_builder.name}.json"
         path_out_2 = f"{data}/map/{data_builder.name}_inverted.json"
