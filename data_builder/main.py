@@ -50,7 +50,6 @@ data_builders = (
     cast_member_label,
     actor_label,
     director_label,
-    film_label_old,
     film_cast_member_2,
     film_cast_member_3,
     film_cast_member_4,
