@@ -112,10 +112,13 @@ fn get_movie(id: &str, data: &web::Data<Data>) -> Movie {
         omdb_id: omdb_ids.clone(),
         titles: data.film_label_by_language[id].clone(),
         imdb: data.film_imdb[id].clone(),
-        genres: data.film_genre[id]
-            .keys()
-            .map(|id2| (id2.to_string(), data.genre_label[id2].clone()))
-            .collect(),
+        genres: match data.film_genre.get(id) {
+            None => HashMap::new(),
+            Some(x) => x
+                .keys()
+                .map(|id2| (id2.to_string(), data.genre_label[id2].clone()))
+                .collect(),
+        },
         omdbs: omdb_ids
             .keys()
             .filter(|omdb_id| data.movie_images.get(*omdb_id).is_some())

@@ -5,7 +5,7 @@
 $HOME/github.com/loicbourgois/downtowhat/commands/build_data.sh
 $HOME/github.com/loicbourgois/downtowhat/commands/run.sh
 $HOME/github.com/loicbourgois/downtowhat/commands/test.sh
-open http://127.0.0.1:8080
+open http://127.0.0.1:9000
 $HOME/github.com/loicbourgois/downtowhat/commands/deploy.sh
 $HOME/github.com/loicbourgois/downtowhat/commands/tail_raw.sh
 $HOME/github.com/loicbourgois/downtowhat/commands/remote_logs.sh
