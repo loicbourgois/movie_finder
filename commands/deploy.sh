@@ -2,7 +2,7 @@
 set -e
 cd $HOME/github.com/loicbourgois/downtowhat
 git add .
-git commit -m "up"
+git commit -m "up" || true
 git push
 path=$(cat $HOME/github.com/loicbourgois/downtowhat_local/secrets.json | jq -r ".path")
 path_root=$(cat $HOME/github.com/loicbourgois/downtowhat_local/secrets.json | jq -r ".path_root")
