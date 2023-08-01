@@ -24,6 +24,7 @@ $HOME/.cargo/bin/cargo clippy --release -- \
     -A clippy::unused_async \
     -A clippy::manual_map \
     -A clippy::upper_case_acronyms
+screen -X -S downtowhat_server
 screen -L -Logfile /home/gravitle/downtowhat_server.log \
     -d -m -S downtowhat_server \
     /home/gravitle/.cargo/bin/cargo run --release --manifest-path $HOME/github.com/loicbourgois/downtowhat/server/Cargo.toml
