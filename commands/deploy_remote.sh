@@ -6,6 +6,7 @@ cd $HOME/github.com/loicbourgois
 git clone https://github.com/loicbourgois/downtowhat.git || true
 cd $HOME/github.com/loicbourgois/downtowhat
 git fetch --all
+git reset --hard
 git checkout origin/movie
 git status
 sleep 1
