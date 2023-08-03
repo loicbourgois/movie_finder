@@ -1,5 +1,6 @@
 use actix_web::http::header::ContentType;
 use actix_web::{get, web, App, HttpResponse, HttpServer};
+use actix_cors::{Cors};
 use rand::Rng;
 use std::collections::HashMap;
 use std::fs;
@@ -558,8 +559,15 @@ async fn main() -> std::io::Result<()> {
     println!("main setup ok");
     HttpServer::new(move || {
         println!("setup");
+        let cors = Cors::default()
+            .allowed_origin("http://localhost")
+            .allowed_origin("localhost")
+            .allowed_origin("loicbourgois.com")
+            .allowed_origin("http://loicbourgois.com")
+            .allowed_origin("https://loicbourgois.com");
         let app = App::new()
             .app_data(web::Data::new(data.clone()))
+            .wrap(cors)
             .service(index_html_1)
             .service(index_html_2)
             .service(random_movie)

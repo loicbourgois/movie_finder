@@ -13,3 +13,4 @@ serde = { version = "*", features = ["derive"] }
 rand = "*"
 reqwest = { version = "*", features = ["blocking"] }
 csv = "*"
+actix-cors = "*"
