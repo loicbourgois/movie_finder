@@ -4,6 +4,7 @@ use actix_cors::{Cors};
 use rand::Rng;
 use std::collections::HashMap;
 use std::fs;
+use openssl::ssl::{SslAcceptor, SslFiletype, SslMethod};
 
 #[derive(serde::Serialize)]
 struct Movie {
@@ -557,6 +558,13 @@ async fn main() -> std::io::Result<()> {
         )?)?,
     };
     println!("main setup ok");
+
+    let mut builder = SslAcceptor::mozilla_intermediate(SslMethod::tls()).unwrap();
+    builder
+        .set_private_key_file("/etc/letsencrypt/live/api.loicbourgois.com/privkey.pem", SslFiletype::PEM)
+        .unwrap();
+    builder.set_certificate_chain_file("/etc/letsencrypt/live/api.loicbourgois.com/fullchain.pem").unwrap();
+    
     HttpServer::new(move || {
         println!("setup");
         let cors = Cors::default()
@@ -580,7 +588,8 @@ async fn main() -> std::io::Result<()> {
         app
     })
     .workers(1)
-    .bind(("0.0.0.0", 9000))?
+    // .bind(("0.0.0.0", 9000))?
+    .bind_openssl("0.0.0.0:9000", builder)?
     .run()
     .await
 }
