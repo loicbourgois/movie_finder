@@ -558,13 +558,11 @@ async fn main() -> std::io::Result<()> {
         )?)?,
     };
     println!("main setup ok");
-
     let mut builder = SslAcceptor::mozilla_intermediate(SslMethod::tls()).unwrap();
     builder
-        .set_private_key_file("/etc/letsencrypt/live/api.loicbourgois.com/privkey.pem", SslFiletype::PEM)
+        .set_private_key_file("/home/gravitle/privkey.pem", SslFiletype::PEM)
         .unwrap();
-    builder.set_certificate_chain_file("/etc/letsencrypt/live/api.loicbourgois.com/fullchain.pem").unwrap();
-    
+    builder.set_certificate_chain_file("/home/gravitle/fullchain.pem").unwrap();
     HttpServer::new(move || {
         println!("setup");
         let cors = Cors::default()
