@@ -16,3 +16,9 @@ $HOME/github.com/loicbourgois/downtowhat/commands/remote_logs.sh
 
 - https://www.omdb.org/en/us/content/Help:DataDownload 
 - wikidata
+
+
+## Misc
+```
+certbot certonly --standalone --preferred-challenges http -d example.com
+```
