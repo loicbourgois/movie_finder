@@ -581,7 +581,7 @@ async fn main() -> std::io::Result<()> {
         app
     })
     .workers(1);
-    let secure = true;
+    let secure = false;
     if secure {
         let mut builder = SslAcceptor::mozilla_intermediate(SslMethod::tls()).unwrap();
         builder
@@ -590,9 +590,9 @@ async fn main() -> std::io::Result<()> {
         builder
             .set_certificate_chain_file("/home/gravitle/fullchain.pem")
             .unwrap();
-        aa = aa.bind_openssl("0.0.0.0:9000", builder)?
+        aa = aa.bind_openssl("0.0.0.0:9000", builder)?;
     } else {
-        aa = aa.bind(("0.0.0.0", 9000))?
+        aa = aa.bind(("0.0.0.0", 9000))?;
     }
     aa.run().await
 }
