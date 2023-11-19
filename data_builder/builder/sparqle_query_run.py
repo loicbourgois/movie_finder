@@ -12,10 +12,10 @@ from .sparqle_query import (
     root
 )
 endpoint_url = "https://query.wikidata.org/sparql"
-data = f"{os.environ['HOME']}/github.com/loicbourgois/downtowhat_local/data"
+data = f"{os.environ['HOME']}/github.com/loicbourgois/movie_finder_local/data"
 def get_response(endpoint_url, query):
     # TODO better user agent; see https://w.wiki/CX6
-    user_agent = "downtowhat/latest (downtowhat.com)"
+    user_agent = "movie_finder/latest (movie_finder.com)"
     sparql = SPARQLWrapper(endpoint_url, agent=user_agent)
     sparql.setQuery(query)
     sparql.setReturnFormat(JSON)

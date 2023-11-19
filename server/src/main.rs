@@ -1,10 +1,10 @@
+use actix_cors::Cors;
 use actix_web::http::header::ContentType;
 use actix_web::{get, web, App, HttpResponse, HttpServer};
-use actix_cors::{Cors};
+use openssl::ssl::{SslAcceptor, SslFiletype, SslMethod};
 use rand::Rng;
 use std::collections::HashMap;
 use std::fs;
-use openssl::ssl::{SslAcceptor, SslFiletype, SslMethod};
 
 #[derive(serde::Serialize)]
 struct Movie {
@@ -419,7 +419,7 @@ fn get_movie_images() -> HSHSS {
 
 fn film_omdb(film_imdb_inverted: &HSHSS) -> std::io::Result<HSHSS> {
     let mut film_omdb: HSHSS = serde_json::from_str(&read_file(
-        "../../downtowhat_local/data/map/film_omdb.json",
+        "../../movie_finder_local/data/map/film_omdb.json",
     )?)?;
 
     let mut rdr = csv::Reader::from_path("./movie_links_imdb.csv").unwrap();
@@ -449,13 +449,13 @@ fn read_file(path: &str) -> std::io::Result<String> {
 async fn main() -> std::io::Result<()> {
     println!("main setup");
     let film_label: FilmLabel = serde_json::from_str(&read_file(
-        "../../downtowhat_local/data/map/film_label.json",
+        "../../movie_finder_local/data/map/film_label.json",
     )?)?;
     let film_imdb = serde_json::from_str(&read_file(
-        "../../downtowhat_local/data/map/film_imdb.json",
+        "../../movie_finder_local/data/map/film_imdb.json",
     )?)?;
     let film_imdb_inverted = serde_json::from_str(&read_file(
-        "../../downtowhat_local/data/map/film_imdb_inverted.json",
+        "../../movie_finder_local/data/map/film_imdb_inverted.json",
     )?)?;
     let ids: Vec<String> = film_label
         .clone()
@@ -468,102 +468,97 @@ async fn main() -> std::io::Result<()> {
         film_label,
         ids,
         film_label_inverted: serde_json::from_str(&read_file(
-            "../../downtowhat_local/data/map/film_label_inverted.json",
+            "../../movie_finder_local/data/map/film_label_inverted.json",
         )?)?,
         film_label_by_language: serde_json::from_str(&read_file(
-            "../../downtowhat_local/data/map/film_label_by_language.json",
+            "../../movie_finder_local/data/map/film_label_by_language.json",
         )?)?,
         film_director: serde_json::from_str(&read_file(
-            "../../downtowhat_local/data/map/film_director.json",
+            "../../movie_finder_local/data/map/film_director.json",
         )?)?,
         film_director_inverted: serde_json::from_str(&read_file(
-            "../../downtowhat_local/data/map/film_director_inverted.json",
+            "../../movie_finder_local/data/map/film_director_inverted.json",
         )?)?,
         director_label_inverted: serde_json::from_str(&read_file(
-            "../../downtowhat_local/data/map/director_label_inverted.json",
+            "../../movie_finder_local/data/map/director_label_inverted.json",
         )?)?,
         film_cast_member: serde_json::from_str(&read_file(
-            "../../downtowhat_local/data/map/film_cast_member.json",
+            "../../movie_finder_local/data/map/film_cast_member.json",
         )?)?,
         film_cast_member_inverted: serde_json::from_str(&read_file(
-            "../../downtowhat_local/data/map/film_cast_member_inverted.json",
+            "../../movie_finder_local/data/map/film_cast_member_inverted.json",
         )?)?,
         actor_label: serde_json::from_str(&read_file(
-            "../../downtowhat_local/data/map/actor_label.json",
+            "../../movie_finder_local/data/map/actor_label.json",
         )?)?,
         actor_label_inverted: serde_json::from_str(&read_file(
-            "../../downtowhat_local/data/map/actor_label_inverted.json",
+            "../../movie_finder_local/data/map/actor_label_inverted.json",
         )?)?,
 
         voice_actor_label: serde_json::from_str(&read_file(
-            "../../downtowhat_local/data/map/voice_actor_label.json",
+            "../../movie_finder_local/data/map/voice_actor_label.json",
         )?)?,
 
         voice_actor_label_by_language: serde_json::from_str(&read_file(
-            "../../downtowhat_local/data/map/voice_actor_label_by_language.json",
+            "../../movie_finder_local/data/map/voice_actor_label_by_language.json",
         )?)?,
 
         director_label_by_language: serde_json::from_str(&read_file(
-            "../../downtowhat_local/data/map/director_label_by_language.json",
+            "../../movie_finder_local/data/map/director_label_by_language.json",
         )?)?,
         actor_label_by_language: serde_json::from_str(&read_file(
-            "../../downtowhat_local/data/map/actor_label_by_language.json",
+            "../../movie_finder_local/data/map/actor_label_by_language.json",
         )?)?,
         composer_label_by_language: serde_json::from_str(&read_file(
-            "../../downtowhat_local/data/map/composer_label_by_language.json",
+            "../../movie_finder_local/data/map/composer_label_by_language.json",
         )?)?,
 
         film_voice_actor: serde_json::from_str(&read_file(
-            "../../downtowhat_local/data/map/film_voice_actor.json",
+            "../../movie_finder_local/data/map/film_voice_actor.json",
         )?)?,
         film_voice_actor_inverted: serde_json::from_str(&read_file(
-            "../../downtowhat_local/data/map/film_voice_actor_inverted.json",
+            "../../movie_finder_local/data/map/film_voice_actor_inverted.json",
         )?)?,
 
         composer_label: serde_json::from_str(&read_file(
-            "../../downtowhat_local/data/map/composer_label.json",
+            "../../movie_finder_local/data/map/composer_label.json",
         )?)?,
         composer_label_inverted: serde_json::from_str(&read_file(
-            "../../downtowhat_local/data/map/composer_label_inverted.json",
+            "../../movie_finder_local/data/map/composer_label_inverted.json",
         )?)?,
         film_composer: serde_json::from_str(&read_file(
-            "../../downtowhat_local/data/map/film_composer.json",
+            "../../movie_finder_local/data/map/film_composer.json",
         )?)?,
         film_composer_inverted: serde_json::from_str(&read_file(
-            "../../downtowhat_local/data/map/film_composer_inverted.json",
+            "../../movie_finder_local/data/map/film_composer_inverted.json",
         )?)?,
         voice_actor_label_inverted: serde_json::from_str(&read_file(
-            "../../downtowhat_local/data/map/voice_actor_label_inverted.json",
+            "../../movie_finder_local/data/map/voice_actor_label_inverted.json",
         )?)?,
         film_imdb,
         movie_images: get_movie_images(),
 
         film_main_subject_inverted: serde_json::from_str(&read_file(
-            "../../downtowhat_local/data/map/film_main_subject_inverted.json",
+            "../../movie_finder_local/data/map/film_main_subject_inverted.json",
         )?)?,
         main_subject_label_inverted: serde_json::from_str(&read_file(
-            "../../downtowhat_local/data/map/main_subject_label_inverted.json",
+            "../../movie_finder_local/data/map/main_subject_label_inverted.json",
         )?)?,
         film_genre: serde_json::from_str(&read_file(
-            "../../downtowhat_local/data/map/film_genre.json",
+            "../../movie_finder_local/data/map/film_genre.json",
         )?)?,
         film_genre_inverted: serde_json::from_str(&read_file(
-            "../../downtowhat_local/data/map/film_genre_inverted.json",
+            "../../movie_finder_local/data/map/film_genre_inverted.json",
         )?)?,
         genre_label: serde_json::from_str(&read_file(
-            "../../downtowhat_local/data/map/genre_label.json",
+            "../../movie_finder_local/data/map/genre_label.json",
         )?)?,
         genre_label_inverted: serde_json::from_str(&read_file(
-            "../../downtowhat_local/data/map/genre_label_inverted.json",
+            "../../movie_finder_local/data/map/genre_label_inverted.json",
         )?)?,
     };
     println!("main setup ok");
-    let mut builder = SslAcceptor::mozilla_intermediate(SslMethod::tls()).unwrap();
-    builder
-        .set_private_key_file("/home/gravitle/privkey.pem", SslFiletype::PEM)
-        .unwrap();
-    builder.set_certificate_chain_file("/home/gravitle/fullchain.pem").unwrap();
-    HttpServer::new(move || {
+    let mut aa = HttpServer::new(move || {
         println!("setup");
         let cors = Cors::default()
             .allowed_origin("http://localhost")
@@ -585,9 +580,19 @@ async fn main() -> std::io::Result<()> {
         println!("setup ok");
         app
     })
-    .workers(1)
-    // .bind(("0.0.0.0", 9000))?
-    .bind_openssl("0.0.0.0:9000", builder)?
-    .run()
-    .await
+    .workers(1);
+    let secure = true;
+    if secure {
+        let mut builder = SslAcceptor::mozilla_intermediate(SslMethod::tls()).unwrap();
+        builder
+            .set_private_key_file("/home/gravitle/privkey.pem", SslFiletype::PEM)
+            .unwrap();
+        builder
+            .set_certificate_chain_file("/home/gravitle/fullchain.pem")
+            .unwrap();
+        aa = aa.bind_openssl("0.0.0.0:9000", builder)?
+    } else {
+        aa = aa.bind(("0.0.0.0", 9000))?
+    }
+    aa.run().await
 }

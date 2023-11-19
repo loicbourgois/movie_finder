@@ -8,7 +8,7 @@ logging.basicConfig(level=logging.DEBUG)
 
 
 endpoint_url = "https://query.wikidata.org/sparql"
-data = f"{os.environ['HOME']}/github.com/loicbourgois/downtowhat_local/data"
+data = f"{os.environ['HOME']}/github.com/loicbourgois/movie_finder_local/data"
 
 
 def pull_data(data_builders):

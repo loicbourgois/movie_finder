@@ -1,6 +1,6 @@
 #/!bin/bash
 set -e
-cd $HOME/github.com/loicbourgois/downtowhat/server
+cd $HOME/github.com/loicbourgois/movie_finder/server
 $HOME/.cargo/bin/cargo fmt
 $HOME/.cargo/bin/cargo clippy --release -- \
     -A clippy::single_match \

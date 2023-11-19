@@ -1,4 +1,0 @@
-from postgres
-run mkdir -p /docker-entrypoint-initdb.d
-copy database/docker_init /docker-entrypoint-initdb.d/
-copy submodules/temporal_tables/versioning_function.sql /docker-entrypoint-initdb.d/
