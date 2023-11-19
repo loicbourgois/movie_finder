@@ -581,7 +581,7 @@ async fn main() -> std::io::Result<()> {
         app
     })
     .workers(1);
-    let secure = false;
+    let secure = true;
     if secure {
         let mut builder = SslAcceptor::mozilla_intermediate(SslMethod::tls()).unwrap();
         builder
