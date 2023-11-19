@@ -1,6 +1,6 @@
 #/!bin/bash
 set -e
-echo "Starting movie_finder.server"
+echo "Building movie_finder.server"
 cd $HOME/github.com/loicbourgois/movie_finder/server
 $HOME/.cargo/bin/cargo fmt
 $HOME/.cargo/bin/cargo clippy --release -- \
@@ -25,6 +25,8 @@ $HOME/.cargo/bin/cargo clippy --release -- \
     -A clippy::manual_map \
     -A clippy::upper_case_acronyms
 screen -S movie_finder_server -X quit || true
+
+echo "Starting movie_finder.server"
 screen -L -Logfile /home/gravitle/movie_finder_server.log \
     -d -m -S movie_finder_server \
     /home/gravitle/.cargo/bin/cargo run --release --manifest-path $HOME/github.com/loicbourgois/movie_finder/server/Cargo.toml
