@@ -1,4 +1,5 @@
 limit = ""
+limit = "limit 10"
 
 human_activity = "wd:Q61788060"
 activity = "wd:Q1914636"
@@ -11,6 +12,7 @@ film_actor = "wd:Q10800557"
 cat = "wd:Q146"
 sex_male = "wd:Q6581097"
 sex_female = "wd:Q6581072"
+television_series = "wd:Q5398426"
 
 languages = "[AUTO_LANGUAGE],en,fr,ar,be,bg,bn,ca,cs,da,de,el,es,et,fa,fi,he,hi,hu,hy,id,it,ja,jv,ko,nb,nl,eo,pa,pl,pt,ro,ru,sh,sk,sr,sv,sw,te,th,tr,uk,yue,vec,vi,zh"
 
@@ -32,3 +34,5 @@ with_composer = "wdt:P86"
 with_main_subject = "wdt:P921"
 with_genre = "wdt:P136"
 with_sex = "wdt:P21"
+with_creator = "wdt:P170"
+with_producer = "wdt:P162"
