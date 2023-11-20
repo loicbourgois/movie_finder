@@ -1,3 +1,11 @@
+mod data;
+mod data_2;
+mod load;
+mod search;
+#[cfg(test)]
+mod test;
+use crate::data::load_data;
+use crate::data::Data;
 use actix_cors::Cors;
 use actix_web::http::header::ContentType;
 use actix_web::{get, web, App, HttpResponse, HttpServer};
@@ -5,6 +13,10 @@ use openssl::ssl::{SslAcceptor, SslFiletype, SslMethod};
 use rand::Rng;
 use std::collections::HashMap;
 use std::fs;
+
+type MovieID = String;
+type HSHSS = HashMap<String, HashMap<String, String>>;
+type HSHSHSS = HashMap<String, HashMap<String, HashMap<String, String>>>;
 
 #[derive(serde::Serialize)]
 struct Movie {
@@ -20,42 +32,45 @@ struct Movie {
     genres: HSHSS,
 }
 
-#[derive(Clone)]
-struct Data {
-    index_html: String,
-    film_director: FilmDirector,
-    film_director_inverted: FilmDirectorInverted,
-    film_cast_member: FilmCastMember,
-    film_cast_member_inverted: FilmCastMemberInverted,
-    film_omdb: FilmOmdb,
-    film_label: FilmLabel,
-    voice_actor_label_inverted: HSHSS,
-    film_label_inverted: FilmLabelInverted,
-    film_label_by_language: HSHSS,
-    ids: Vec<String>,
-    director_label_inverted: HSHSS,
-    actor_label: CastMemberLabel,
-    actor_label_inverted: HSHSS,
-    voice_actor_label_by_language: HSHSS,
-    movie_images: OmdbMovieImages,
-    voice_actor_label: HSHSS,
-    film_voice_actor: HSHSS,
-    film_voice_actor_inverted: HSHSS,
-    composer_label: HSHSS,
-    composer_label_inverted: HSHSS,
-    film_composer: HSHSS,
-    film_composer_inverted: HSHSS,
-    film_imdb: HSHSS,
-    director_label_by_language: HSHSS,
-    actor_label_by_language: HSHSS,
-    composer_label_by_language: HSHSS,
+#[derive(serde::Serialize, Debug)]
+struct MovieSmall {
+    id: String,
+    titles: HashMap<String, String>,
+    omdbs: Option<HashMap<String, Omdb>>,
+}
 
-    film_main_subject_inverted: HSHSS,
-    main_subject_label_inverted: HSHSS,
-    film_genre_inverted: HSHSS,
-    film_genre: HSHSS,
-    genre_label_inverted: HSHSS,
-    genre_label: HSHSS,
+#[derive(serde::Serialize, Debug)]
+struct Omdb {
+    id: String,
+    img_url: String,
+}
+
+#[derive(serde::Serialize)]
+struct Director {
+    id: String,
+    names: HashMap<String, String>,
+    movies: HashMap<MovieID, MovieSmall>,
+}
+
+#[derive(serde::Serialize)]
+struct CastMember {
+    id: String,
+    names: HashMap<String, String>,
+    movies: HashMap<MovieID, MovieSmall>,
+}
+
+#[derive(serde::Serialize)]
+struct VoiceActor {
+    id: String,
+    names: HashMap<String, String>,
+    movies: HashMap<MovieID, MovieSmall>,
+}
+
+#[derive(serde::Serialize)]
+struct Composer {
+    id: String,
+    names: HashMap<String, String>,
+    movies: HashMap<MovieID, MovieSmall>,
 }
 
 fn index_html(data: &web::Data<Data>) -> HttpResponse {
@@ -81,9 +96,7 @@ fn movie_small(data: &web::Data<Data>, id: &str) -> MovieSmall {
             None => HashMap::new(),
             Some(x) => x.clone(),
         },
-        omdbs: match data.film_omdb.get(id) {
-            Some(x) => {
-                Some(x.iter()
+        omdbs: data.film_omdb.get(id).map(|x| x.iter()
                 .filter(|(omdb_id, _)| data.movie_images.get(*omdb_id).is_some() )
                 .map(|(omdb_id, _)| {
                     let (omdb_img_v, omdb_img_id) = data.movie_images[omdb_id].iter().next().unwrap();
@@ -98,9 +111,6 @@ fn movie_small(data: &web::Data<Data>, id: &str) -> MovieSmall {
                     )
                 })
                 .collect())
-            }
-            None => None
-        }
     }
 }
 
@@ -298,7 +308,7 @@ async fn search_json(search_path: web::Path<String>, data: web::Data<Data>) -> H
                 .collect::<Vec<_>>()
         })
         .collect();
-    let mut results = Vec::new();
+    let mut results: Vec<Vec<MovieSmall>> = Vec::new();
     results.append(&mut a);
     results.append(&mut search_by(
         &search_str,
@@ -339,62 +349,9 @@ async fn search_json(search_path: web::Path<String>, data: web::Data<Data>) -> H
     HttpResponse::Ok().json(results)
 }
 
-type FilmDirector = HashMap<String, HashMap<String, String>>;
-type FilmOmdb = HashMap<String, HashMap<String, String>>;
-type FilmDirectorInverted = HashMap<String, HashMap<String, String>>;
-type FilmLabel = HashMap<String, HashMap<String, String>>;
-type FilmLabelInverted = HashMap<String, HashMap<String, String>>;
-type MovieID = String;
-type OmdbMovieImages = HashMap<String, HashMap<String, String>>;
-type FilmCastMember = HashMap<String, HashMap<String, String>>;
-type FilmCastMemberInverted = HashMap<String, HashMap<String, String>>;
-type CastMemberLabel = HashMap<String, HashMap<String, String>>;
-type HSHSS = HashMap<String, HashMap<String, String>>;
-
-#[derive(serde::Serialize, Debug)]
-struct Omdb {
-    id: String,
-    img_url: String,
-}
-
-#[derive(serde::Serialize, Debug)]
-struct MovieSmall {
-    id: String,
-    titles: HashMap<String, String>,
-    omdbs: Option<HashMap<String, Omdb>>,
-}
-
-#[derive(serde::Serialize)]
-struct Director {
-    id: String,
-    names: HashMap<String, String>,
-    movies: HashMap<MovieID, MovieSmall>,
-}
-
-#[derive(serde::Serialize)]
-struct CastMember {
-    id: String,
-    names: HashMap<String, String>,
-    movies: HashMap<MovieID, MovieSmall>,
-}
-
-#[derive(serde::Serialize)]
-struct VoiceActor {
-    id: String,
-    names: HashMap<String, String>,
-    movies: HashMap<MovieID, MovieSmall>,
-}
-
-#[derive(serde::Serialize)]
-struct Composer {
-    id: String,
-    names: HashMap<String, String>,
-    movies: HashMap<MovieID, MovieSmall>,
-}
-
 fn get_movie_images() -> HSHSS {
     let mut rdr = csv::Reader::from_path("./omdb_images.csv").unwrap();
-    let mut movie_images: OmdbMovieImages = HashMap::new();
+    let mut movie_images: HSHSS = HashMap::new();
     for result in rdr.records() {
         let record = result.unwrap();
         let image_id = &record[0];
@@ -448,115 +405,7 @@ fn read_file(path: &str) -> std::io::Result<String> {
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     println!("main setup");
-    let film_label: FilmLabel = serde_json::from_str(&read_file(
-        "../../movie_finder_local/data/map/film_label.json",
-    )?)?;
-    let film_imdb = serde_json::from_str(&read_file(
-        "../../movie_finder_local/data/map/film_imdb.json",
-    )?)?;
-    let film_imdb_inverted = serde_json::from_str(&read_file(
-        "../../movie_finder_local/data/map/film_imdb_inverted.json",
-    )?)?;
-    let ids: Vec<String> = film_label
-        .clone()
-        .keys()
-        .map(std::clone::Clone::clone)
-        .collect::<Vec<String>>();
-    let data = Data {
-        index_html: read_file("../front/index.html")?,
-        film_omdb: film_omdb(&film_imdb_inverted)?,
-        film_label,
-        ids,
-        film_label_inverted: serde_json::from_str(&read_file(
-            "../../movie_finder_local/data/map/film_label_inverted.json",
-        )?)?,
-        film_label_by_language: serde_json::from_str(&read_file(
-            "../../movie_finder_local/data/map/film_label_by_language.json",
-        )?)?,
-        film_director: serde_json::from_str(&read_file(
-            "../../movie_finder_local/data/map/film_director.json",
-        )?)?,
-        film_director_inverted: serde_json::from_str(&read_file(
-            "../../movie_finder_local/data/map/film_director_inverted.json",
-        )?)?,
-        director_label_inverted: serde_json::from_str(&read_file(
-            "../../movie_finder_local/data/map/director_label_inverted.json",
-        )?)?,
-        film_cast_member: serde_json::from_str(&read_file(
-            "../../movie_finder_local/data/map/film_cast_member.json",
-        )?)?,
-        film_cast_member_inverted: serde_json::from_str(&read_file(
-            "../../movie_finder_local/data/map/film_cast_member_inverted.json",
-        )?)?,
-        actor_label: serde_json::from_str(&read_file(
-            "../../movie_finder_local/data/map/actor_label.json",
-        )?)?,
-        actor_label_inverted: serde_json::from_str(&read_file(
-            "../../movie_finder_local/data/map/actor_label_inverted.json",
-        )?)?,
-
-        voice_actor_label: serde_json::from_str(&read_file(
-            "../../movie_finder_local/data/map/voice_actor_label.json",
-        )?)?,
-
-        voice_actor_label_by_language: serde_json::from_str(&read_file(
-            "../../movie_finder_local/data/map/voice_actor_label_by_language.json",
-        )?)?,
-
-        director_label_by_language: serde_json::from_str(&read_file(
-            "../../movie_finder_local/data/map/director_label_by_language.json",
-        )?)?,
-        actor_label_by_language: serde_json::from_str(&read_file(
-            "../../movie_finder_local/data/map/actor_label_by_language.json",
-        )?)?,
-        composer_label_by_language: serde_json::from_str(&read_file(
-            "../../movie_finder_local/data/map/composer_label_by_language.json",
-        )?)?,
-
-        film_voice_actor: serde_json::from_str(&read_file(
-            "../../movie_finder_local/data/map/film_voice_actor.json",
-        )?)?,
-        film_voice_actor_inverted: serde_json::from_str(&read_file(
-            "../../movie_finder_local/data/map/film_voice_actor_inverted.json",
-        )?)?,
-
-        composer_label: serde_json::from_str(&read_file(
-            "../../movie_finder_local/data/map/composer_label.json",
-        )?)?,
-        composer_label_inverted: serde_json::from_str(&read_file(
-            "../../movie_finder_local/data/map/composer_label_inverted.json",
-        )?)?,
-        film_composer: serde_json::from_str(&read_file(
-            "../../movie_finder_local/data/map/film_composer.json",
-        )?)?,
-        film_composer_inverted: serde_json::from_str(&read_file(
-            "../../movie_finder_local/data/map/film_composer_inverted.json",
-        )?)?,
-        voice_actor_label_inverted: serde_json::from_str(&read_file(
-            "../../movie_finder_local/data/map/voice_actor_label_inverted.json",
-        )?)?,
-        film_imdb,
-        movie_images: get_movie_images(),
-
-        film_main_subject_inverted: serde_json::from_str(&read_file(
-            "../../movie_finder_local/data/map/film_main_subject_inverted.json",
-        )?)?,
-        main_subject_label_inverted: serde_json::from_str(&read_file(
-            "../../movie_finder_local/data/map/main_subject_label_inverted.json",
-        )?)?,
-        film_genre: serde_json::from_str(&read_file(
-            "../../movie_finder_local/data/map/film_genre.json",
-        )?)?,
-        film_genre_inverted: serde_json::from_str(&read_file(
-            "../../movie_finder_local/data/map/film_genre_inverted.json",
-        )?)?,
-        genre_label: serde_json::from_str(&read_file(
-            "../../movie_finder_local/data/map/genre_label.json",
-        )?)?,
-        genre_label_inverted: serde_json::from_str(&read_file(
-            "../../movie_finder_local/data/map/genre_label_inverted.json",
-        )?)?,
-    };
+    let data = load_data()?;
     println!("main setup ok");
     let mut aa = HttpServer::new(move || {
         println!("setup");
@@ -581,7 +430,7 @@ async fn main() -> std::io::Result<()> {
         app
     })
     .workers(1);
-    let secure = true;
+    let secure = false;
     if secure {
         let mut builder = SslAcceptor::mozilla_intermediate(SslMethod::tls()).unwrap();
         builder
