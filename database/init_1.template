@@ -1,0 +1,14 @@
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+create type kind AS ENUM (
+  {kinds_str}
+);
+CREATE TABLE item (
+  item_id int not null,
+  kind kind not null
+);
+CREATE TABLE item___label (
+  item_id int not null,
+  language text not null,
+  label text not null
+);
+{create_table_str}

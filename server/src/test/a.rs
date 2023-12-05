@@ -1,5 +1,5 @@
 use crate::data_2::load_data_2;
-
+use crate::get_movie_images;
 use crate::search::search_media;
 #[test]
 fn test_load_data() {
@@ -8,6 +8,7 @@ fn test_load_data() {
 #[test]
 fn test_search() {
     let data_2 = load_data_2();
+    let movie_images = get_movie_images();
     // let results = search("mr robot", &data_2);
     // println!("{results:?}");
     // let results = search("Sean Connery", &data_2);
@@ -19,8 +20,10 @@ fn test_search() {
     // let results = search("ghost in the shell", &data_2);
     // println!("{results:?}");
 
-    let results = search_media("ghost in the shell", &data_2);
+    let results = search_media("ghost in the shell", &data_2, &movie_images);
     println!("{results:?}");
+    let _results = search_media("v", &data_2, &movie_images);
+    // println!("{results:?}");
 
     // for x in results.values() {
     //     for y in x {

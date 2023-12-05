@@ -6,6 +6,8 @@ mod search;
 mod test;
 use crate::data::load_data;
 use crate::data::Data;
+use crate::data_2::MediaSmall;
+use crate::search::search_media;
 use actix_cors::Cors;
 use actix_web::http::header::ContentType;
 use actix_web::{get, web, App, HttpResponse, HttpServer};
@@ -13,7 +15,6 @@ use openssl::ssl::{SslAcceptor, SslFiletype, SslMethod};
 use rand::Rng;
 use std::collections::HashMap;
 use std::fs;
-
 type MovieID = String;
 type HSHSS = HashMap<String, HashMap<String, String>>;
 type HSHSHSS = HashMap<String, HashMap<String, HashMap<String, String>>>;
@@ -289,6 +290,14 @@ fn search_by(
         .collect()
 }
 
+#[get("/search_json_v2/{search_path}")]
+async fn search_json_v2(search_path: web::Path<String>, data: web::Data<Data>) -> HttpResponse {
+    let search_str: String = search_path.into_inner();
+    let results: HashMap<String, MediaSmall> =
+        search_media(&search_str, &data.v2, &data.movie_images);
+    HttpResponse::Ok().json(results)
+}
+
 #[get("/search_json/{search_path}")]
 async fn search_json(search_path: web::Path<String>, data: web::Data<Data>) -> HttpResponse {
     println!("{search_path}");
@@ -425,6 +434,7 @@ async fn main() -> std::io::Result<()> {
             .service(get_item_json)
             .service(search_html)
             .service(search_json)
+            .service(search_json_v2)
             .service(actix_files::Files::new("/", "../front/"));
         println!("setup ok");
         app

@@ -1,0 +1,298 @@
+SELECT ?director
+WHERE {
+    ?film wdt:P31/wdt:P279* wd:Q11424 .
+    ?film wdt:P57 ?director .
+    # ?director rdfs:label ?director_label filter (lang(?director_label) = "fr").
+}
+limit 10
+
+
+
+SELECT ?film ?film_label (lang(?film_label) as ?lang)
+    WHERE {
+        ?film wdt:P31/wdt:P279* wd:Q11424 .
+        ?film rdfs:label ?film_label filter (lang(?film_label) = "fr").
+    }
+
+
+
+SELECT ?director ?gender
+    WHERE {
+        ?film wdt:P31/wdt:P279* wd:Q11424 .
+        ?film wdt:P57 ?director .
+        ?film wdt:P21 ?gender .
+    }
+
+
+SELECT ?{wk} ?{wk}_label (lang(?{wk}_label) as ?lang)
+with {{
+    SELECT distinct ?{wk}
+    WHERE {{
+        ?{media_types_k} {common.instance_of_any_subclass_of} {media_types_v} .
+        ?{media_types_k} {wv} ?{wk} .
+    }}
+}} as %i
+where {{
+    include %i
+    ?{wk} rdfs:label ?{wk}_label filter (lang(?{wk}_label) = "{lang}").
+}}
+
+
+SELECT distinct ?director ?gender
+with {
+    SELECT distinct ?director ?film
+    WHERE {
+        ?film wdt:P31/wdt:P279* wd:Q11424 .
+        ?film wdt:P57 ?director .
+    } 
+} as q1
+WHERE {
+    include %q1
+    ?director wdt:P21 ?gender .
+}
+
+
+SELECT distinct ?director ?gender
+with {
+    SELECT distinct ?director ?film
+    WHERE {
+        ?film wdt:P31/wdt:P279* wd:Q11424 .
+        ?film wdt:P57 ?director .
+    } 
+} as q1
+WHERE {
+    include %q1
+    ?director wdt:P21 ?gender .
+}
+
+
+with {
+    SELECT distinct ?gender
+    WHERE {
+        ?item wdt:P21 ?gender .
+    } 
+} as %q1
+SELECT distinct  ?gender ?gender_label
+where {
+    include %q1
+    OPTIONAL{ ?gender rdfs:label ?gender_label filter (lang(?gender_label) = "en"). }
+}
+# // Haute savoie
+
+
+SELECT distinct  ?gender  ?director ?director_label ?gender_label
+with {
+    SELECT distinct ?gender
+    WHERE {
+        ?item wdt:P21 ?gender
+        filter(?gender = wd:Q6581072)
+    } 
+} as %q1
+# with {
+#     SELECT distinct  ?gender ?gender_label 
+#     where {
+#         include %q1 
+#         # ?gender rdfs:label ?gender_label filter (lang(?gender_label) in ("en"))
+#         #filter(?gender != wd:Q6581097)
+#         filter(?gender = wd:Q6581072)
+#     }
+# } as %q2
+where {
+    include %q1
+    ?director wdt:P21 ?gender .
+    ?film wdt:P57 ?director .
+    ?film wdt:P31/wdt:P279* wd:Q11424 .
+    # ?director rdfs:label ?director_label filter (lang(?director_label) in ("en")) .
+}
+
+
+
+
+SELECT distinct  ?gender ?gender_label ?director ?director_label
+with {
+    SELECT distinct ?gender
+    WHERE {
+        ?item wdt:P21 ?gender filter(?gender = wd:Q6581072)
+    } 
+} as %q1
+with {
+    SELECT distinct ?director
+    WHERE {
+        ?director wdt:P21 ?gender .
+        ?film wdt:P57 ?director .
+        ?film wdt:P31/wdt:P279* wd:Q11424 .
+    } 
+} as %q2
+where {
+    include %q1
+    include %q2
+    ?director rdfs:label ?director_label filter (lang(?director_label) in ("en")) .
+    ?gender rdfs:label ?gender_label filter (lang(?gender_label) in ("en"))
+}
+
+
+
+
+SELECT  ?director ?film
+with {
+        ?director wdt:P21 wd:Q6581072 .
+        ?film wdt:P57 ?director .
+        ?film wdt:P31/wdt:P279* wd:Q11424 .
+        ?film wdt:P921 ?subject .
+        VALUES ?subject { wd:Q19809 wd:Q315796 }
+}
+
+
+
+SELECT distinct  ?director ?film ?director_label ?film_label
+with {
+    SELECT distinct ?director ?film
+    where {
+            ?director wdt:P21 wd:Q6581072 .
+            ?film wdt:P57 ?director .
+            ?film wdt:P31/wdt:P279* wd:Q11424 .
+            ?film wdt:P136 wd:Q28026639 .
+    }
+} as %q1
+where {
+    include %q1
+    ?director rdfs:label ?director_label filter (lang(?director_label) in ("en")) .
+    ?film rdfs:label ?film_label filter (lang(?film_label) in ("en"))
+}
+
+
+
+SELECT distinct  ?director ?film ?director_label ?film_label ?review ?imdb
+with {
+    SELECT distinct ?director ?film
+    where {
+            # ?director wdt:P21 wd:Q6581072 .
+            ?film wdt:P57 ?director .
+            ?film wdt:P31/wdt:P279* wd:Q11424 .
+            ?film wdt:P136 wd:Q28026639 .
+    }
+} as %q1
+where {
+    include %q1
+    ?director rdfs:label ?director_label filter (lang(?director_label) in ("en")) .
+    ?film rdfs:label ?film_label filter (lang(?film_label) in ("en")) .
+    ?film wdt:P444 ?review .
+    ?film wdt:P345 ?imdb .
+}
+
+
+select ?sex_worker ?sex_worker_label
+with {
+    select distinct ?sex_worker
+    where {
+        ?sex_worker wdt:P31/wdt:P279* wd:Q14915751 .
+    }
+} as %q1
+where {
+    include %q1
+    ?sex_worker rdfs:label ?sex_worker_label filter (lang(?sex_worker_label) in ("en")) .
+}
+
+
+select ?sex_worker ?occupation ?sex_worker_label ?occupation_label
+with {
+    select distinct ?sex_worker ?occupation
+    where {
+        ?sex_worker wdt:P106 ?occupation .
+        ?occupation wdt:P31/wdt:P279* wd:Q852857 .
+    }
+} as %q1
+where {
+    include %q1
+    ?sex_worker rdfs:label ?sex_worker_label filter (lang(?sex_worker_label) in ("en")) .
+    ?occupation rdfs:label ?occupation_label filter (lang(?occupation_label) in ("en")) .
+}
+
+
+
+
+
+select ?country ?head_of_state ?country_label ?head_of_state_label
+with {
+    select distinct ?country ?head_of_state
+    where {
+        ?country wdt:P35 ?head_of_state .
+    }
+} as %q1
+where {
+    include %q1
+    ?country rdfs:label ?country_label filter (lang(?country_label) in ("en")) .
+    ?head_of_state rdfs:label ?head_of_state_label filter (lang(?head_of_state_label) in ("en")) .
+}
+
+
+
+
+select ?sex_worker ?occupation ?sex_worker_label ?occupation_label
+with {
+    select distinct ?sex_worker ?occupation
+    where {
+        ?sex_worker wdt:P106 ?occupation .
+        ?occupation wdt:P279* wd:Q852857 .
+    }
+} as %q1
+where {
+    include %q1
+    ?sex_worker rdfs:label ?sex_worker_label filter (lang(?sex_worker_label) in ("en")) .
+    ?occupation rdfs:label ?occupation_label filter (lang(?occupation_label) in ("en")) .
+}
+
+
+
+
+select ?sex_worker_label ?occupation_label ?country_label ?head_of_state_label ?link
+with {
+    select distinct ?sex_worker ?occupation ?country ?head_of_state ?link
+    where {
+        ?sex_worker wdt:P106 ?occupation .
+        ?occupation wdt:P279* wd:Q852857 .
+        ?country wdt:P35 ?head_of_state .
+        ?head_of_state ?link ?sex_worker .
+    }
+} as %q1
+where {
+    include %q1
+    ?sex_worker rdfs:label ?sex_worker_label filter (lang(?sex_worker_label) in ("en")) .
+    ?occupation rdfs:label ?occupation_label filter (lang(?occupation_label) in ("en")) .
+    ?country rdfs:label ?country_label filter (lang(?country_label) in ("en")) .
+    ?head_of_state rdfs:label ?head_of_state_label filter (lang(?head_of_state_label) in ("en")) .
+    ?link rdfs:label ?link_label filter (lang(?link_label) in ("en")) .
+}
+
+select ?sex_worker_label ?occupation_label ?country_label ?head_of_state_label ?head_of_state ?link
+with {
+    select distinct ?sex_worker ?occupation ?country ?head_of_state ?link
+    where {
+        ?sex_worker wdt:P106 ?occupation .
+        ?occupation wdt:P279* wd:Q852857 .
+        ?country wdt:P35 ?head_of_state .
+        ?head_of_state ?link ?sex_worker .
+    }
+} as %q1
+where {
+    include %q1
+    ?sex_worker rdfs:label ?sex_worker_label filter (lang(?sex_worker_label) in ("en")) .
+    ?occupation rdfs:label ?occupation_label filter (lang(?occupation_label) in ("en")) .
+    ?country rdfs:label ?country_label filter (lang(?country_label) in ("en")) .
+    ?head_of_state rdfs:label ?head_of_state_label filter (lang(?head_of_state_label) in ("en")) .
+    #?link rdfs:label ?link_label filter (lang(?link_label) in ("en")) .
+}
+
+
+
+select ?occupation ?occupation_label
+with {
+    select distinct ?sex_worker ?occupation ?country ?head_of_state ?link
+    where {
+        ?occupation wdt:P279* wd:Q852857 .
+    }
+} as %q1
+where {
+    include %q1
+    ?occupation rdfs:label ?occupation_label filter (lang(?occupation_label) in ("en")) .
+}

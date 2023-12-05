@@ -1,9 +1,10 @@
+use crate::data_2::load_data_2;
 use crate::film_omdb;
 use crate::get_movie_images;
 use crate::load::load;
 use crate::read_file;
+use crate::HSHSHSS;
 use crate::HSHSS;
-
 #[derive(Clone)]
 pub struct Data {
     pub index_html: String,
@@ -40,6 +41,8 @@ pub struct Data {
     pub film_genre: HSHSS,
     pub genre_label_inverted: HSHSS,
     pub genre_label: HSHSS,
+
+    pub v2: HSHSHSS,
 }
 
 pub fn load_data() -> std::io::Result<Data> {
@@ -50,6 +53,7 @@ pub fn load_data() -> std::io::Result<Data> {
         .map(std::clone::Clone::clone)
         .collect::<Vec<String>>();
     Ok(Data {
+        v2: load_data_2(),
         index_html: read_file("../front/index.html")?,
         film_omdb: film_omdb(&hs3_s["film_imdb_inverted"])?,
         film_label: hs3_s["film_label"].clone(),

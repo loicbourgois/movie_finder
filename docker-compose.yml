@@ -1,0 +1,33 @@
+services:
+  data_builder:
+    build:
+      context: $HOME/github.com/loicbourgois/movie_finder/data_builder
+      dockerfile: Dockerfile
+    command: /root/github.com/loicbourgois/movie_finder/data_builder/_main.sh
+    volumes:
+      - $HOME/github.com/loicbourgois/movie_finder_local/data:/root/github.com/loicbourgois/movie_finder_local/data:rw
+      - $HOME/github.com/loicbourgois/movie_finder_local/data_v2:/root/github.com/loicbourgois/movie_finder_local/data_v2:rw
+      - $HOME/github.com/loicbourgois/movie_finder_local/data_v3:/root/github.com/loicbourgois/movie_finder_local/data_v3:rw
+      - $HOME/github.com/loicbourgois/movie_finder:/root/github.com/loicbourgois/movie_finder:ro
+  database:
+    image: postgres:14
+    environment:
+      - POSTGRES_PASSWORD=local_dev_password
+      - POSTGRES_USER=root
+      - DATABASE_NAME=local_dev
+    ports:
+      - 5432:5432
+    volumes:
+      - $HOME/github.com/loicbourgois/movie_finder_local/data_v3/database/go_inner.sh:/docker-entrypoint-initdb.d/01_main.sh:ro
+      - $HOME/github.com/loicbourgois/movie_finder_local/data_v3/database/init_1.sql:/var/lib/postgresql/github.com/loicbourgois/movie_finder/database/init_1.sql:ro
+      - $HOME/github.com/loicbourgois/movie_finder/database/init_2.sql:/var/lib/postgresql/github.com/loicbourgois/movie_finder/database/init_2.sql:ro
+      - $HOME/github.com/loicbourgois/movie_finder_local/data_v3/database:/var/lib/postgresql/github.com/loicbourgois/movie_finder_local/data_v3/database:ro
+  database_client:
+    build:
+        context: $HOME/github.com/loicbourgois/movie_finder/database_client
+        dockerfile: Dockerfile
+    environment:
+      - QUERY_ID=$QUERY_ID
+    command: /go_inner.sh
+    volumes:
+      - $HOME/github.com/loicbourgois/movie_finder/database_client:/root/github.com/loicbourgois/movie_finder/database_client:ro
