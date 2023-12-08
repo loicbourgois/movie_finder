@@ -9,6 +9,8 @@ import time
 from datetime import datetime
 logging.basicConfig(level=logging.INFO)
 logging.info("start")
+
+
 def read(path):
     with open(path, "r") as file:
         return file.read()
@@ -72,12 +74,12 @@ def get_config():
         "creator": media_person,
         "screen_writer": media_person,
         "publication_date": {},
-        # "cast_member": media_person,
+        "cast_member": media_person,
         # "omdb_id": {},
         # "imdb_id": {},
-        # "narrator": media_person,
+        "narrator": media_person,
         "award_received": {},
-        # "characters": media_person,
+        "characters": media_person,
     }
     data = {
         "documentary": media,
@@ -617,6 +619,6 @@ def convert_to_sql():
     )
 
 
-# pull_data()
-# convert_to_csv()
-convert_to_sql()
+pull_data()
+convert_to_csv()
+# convert_to_sql()

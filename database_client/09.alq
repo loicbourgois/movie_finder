@@ -1,0 +1,7 @@
+select
+    media as (
+        documentary 
+    )
+    media.director.gender
+    media.director
+limit 2

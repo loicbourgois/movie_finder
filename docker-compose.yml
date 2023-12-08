@@ -30,4 +30,4 @@ services:
       - QUERY_ID=$QUERY_ID
     command: /go_inner.sh
     volumes:
-      - $HOME/github.com/loicbourgois/movie_finder/database_client:/root/github.com/loicbourgois/movie_finder/database_client:ro
+      - $HOME/github.com/loicbourgois/movie_finder/database_client:/root/github.com/loicbourgois/movie_finder/database_client:rw

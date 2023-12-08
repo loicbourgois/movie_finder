@@ -1,72 +1,80 @@
-with media as (
-    select 
-        item___label.label, 
-        item___label.language, 
-        item.*
-    from item
-    inner join item___label
-        on item.item_id = item___label.item_id
+WITH media AS (
+  SELECT
+    item.*,
+    item___label.label,
+    item___label.language
+  FROM item
+  INNER JOIN item___label
+    ON item.item_id = item___label.item_id
+),
+
+media___director AS (
+  SELECT
+    item___director.*,
+    item___label.label,
+    item___label.language
+  FROM item___director
+  INNER JOIN item___label
+    ON item___director.director_id = item___label.item_id
+),
+
+director___gender AS (
+  SELECT
+    item___gender.*,
+    item___label.label,
+    item___label.language
+  FROM item___gender
+  INNER JOIN item___label
+    ON item___gender.gender_id = item___label.item_id
+),
+
+media___creator AS (
+  SELECT
+    item___creator.*,
+    item___label.label,
+    item___label.language
+  FROM item___creator
+  INNER JOIN item___label
+    ON item___creator.creator_id = item___label.item_id
+),
+
+media___publication_date AS (
+  SELECT *
+  FROM item___publication_date
+),
+
+q AS (
+  SELECT
+    media.item_id AS media_id,
+    media.label AS media,
+    media.kind AS kind,
+    media___director.label AS director,
+    media___creator.label AS creator,
+    media___publication_date.publication_date AS publication_date
+  -- ,media___director.item_id as director_id
+  -- ,director___gender.label as director_gender
+  FROM media
+  LEFT OUTER JOIN media___director
+    ON media.item_id = media___director.item_id
+  LEFT OUTER JOIN director___gender
+    ON media___director.director_id = director___gender.item_id
+  LEFT OUTER JOIN media___creator
+    ON media.item_id = media___creator.item_id
+  LEFT OUTER JOIN media___publication_date
+    ON media.item_id = media___publication_date.item_id
+  WHERE
+    media.language = 'en'
+    AND (media___director.language = 'en' OR media___director.language IS null)
+    AND (media___creator.language = 'en' OR media___creator.language IS null)
+    AND (
+      director___gender.language = 'en' OR director___gender.language IS null
+    )
 )
-,media___director as (
-    select 
-        item___label.label, 
-        item___label.language, 
-        item___director.*
-    from item___director
-    inner join item___label
-        on item___director.director_id = item___label.item_id
-)
-,director___gender as (
-    select 
-        item___label.label, 
-        item___label.language, 
-        item___gender.*
-    from item___gender
-    inner join item___label
-        on item___gender.gender_id = item___label.item_id
-)
-,media___creator as (
-    select 
-        item___label.label, 
-        item___label.language, 
-        item___creator.*
-    from item___creator
-    inner join item___label
-        on item___creator.creator_id = item___label.item_id
-)
-,media___publication_date as (
-    select * 
-    from item___publication_date
-)
-, q as (
-    select
-        media.item_id as media_id
-        ,media.label as media
-        ,media.kind as kind
-        ,media___director.label as director
-        ,media___creator.label as creator
-        ,media___publication_date.publication_date as publication_date
-        -- ,media___director.item_id as director_id
-        -- ,director___gender.label as director_gender
-    from media
-    left outer join media___director
-        on media.item_id = media___director.item_id
-    left outer join director___gender
-        on media___director.director_id = director___gender.item_id
-    left outer join media___creator
-        on media.item_id = media___creator.item_id
-    left outer join media___publication_date
-        on media.item_id = media___publication_date.item_id
-    where
-        media.language = 'en'
-        and (media___director.language = 'en' or media___director.language is null)
-        and (media___creator.language = 'en' or media___creator.language is null)
-        and (director___gender.language = 'en' or director___gender.language is null)
-)
-select distinct *
-from q
-where 
-    media ilike '%christ%'
-    -- director ilike 'Christopher Nolan'
-    -- or  creator ilike 'trey parker'
-limit 100
+
+SELECT DISTINCT *
+FROM q
+WHERE
+  media ILIKE '%christ%'
+-- director ilike 'Christopher Nolan'
+-- or  creator ilike 'trey parker'
+LIMIT 100

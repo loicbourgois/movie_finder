@@ -1,40 +1,46 @@
-with media as (
-    select * from item
-    where item.kind in ('anime', 'documentary', 'film')
+WITH media AS (
+  SELECT * FROM item
+  WHERE item.kind IN ('anime', 'documentary', 'film')
+),
+
+media___label AS (
+  SELECT * FROM item___label
+),
+
+media___director AS (
+  SELECT * FROM item___director
+),
+
+director AS (
+  SELECT * FROM item
+  WHERE item.kind IN ('director')
+),
+
+director___label AS (
+  SELECT *
+  FROM item___label
+),
+
+q AS (
+  SELECT
+    media.item_id AS media_id,
+    media___label.label AS media,
+    -- ,media___publication_date.publication_date as release
+    media.kind AS media_kind,
+    director___label.label AS director,
+    director.item_id AS director_id
+  FROM media, media___label, director___label, director, media___director
+  WHERE
+    media.item_id = media___label.item_id
+    AND media.item_id = media___director.item_id
+    AND media___director.director_id = director.item_id
+    AND director.item_id = director___label.item_id
+    AND media___label.language = 'en'
+    AND director___label.language = 'en'
 )
-,media___label as (
-    select * from item___label
-)
-,media___director as (
-    select * from item___director
-)
-,director as (
-    select * from item
-    where item.kind in ('director')
-)
-,director___label as (
-    select * 
-    from item___label
-)
-, q as (
-    select
-        media.item_id as media_id
-        ,media___label.label as media
-        -- ,media___publication_date.publication_date as release
-        ,media.kind as media_kind
-        ,director___label.label as director
-        ,director.item_id as director_id
-    from media, media___label, director___label, director, media___director
-    where
-        media.item_id = media___label.item_id
-        and  media.item_id = media___director.item_id
-        and media___director.director_id = director.item_id
-        and director.item_id = director___label.item_id
-        and media___label.language = 'en'
-        and director___label.language = 'en'
-)
-select *
-from q
+
+SELECT *
+FROM q
 -- where media_kind = 'anime'
-where director ilike '%tom tykwer%'
-limit 100
+WHERE director ILIKE '%tom tykwer%'
+LIMIT 100

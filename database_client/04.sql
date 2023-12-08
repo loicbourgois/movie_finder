@@ -1,5 +1,4 @@
-select count(*) from item___label;
-select * from item___label 
-where label like '%ski%'
-limit 10;
-
+SELECT count(*) FROM item___label;
+SELECT * FROM item___label
+WHERE label LIKE '%ski%'
+LIMIT 10;

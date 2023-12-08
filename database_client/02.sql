@@ -1,2 +1,2 @@
-select * from item 
-where item_id = 3414468
+SELECT * FROM item
+WHERE item_id = 3414468
