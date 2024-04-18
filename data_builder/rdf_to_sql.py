@@ -18,7 +18,6 @@ def read(path):
 
 endpoint_url = "https://query.wikidata.org/sparql"
 instance_of_any_subclass_of = "wdt:P31/wdt:P279*"
-subclass_of_any_subclass_of = "wdt:P279/wdt:P279"
 
 
 def get_config():
@@ -360,6 +359,7 @@ def query_to_file(path, query):
         'query': query,
         'format': 'json'
     })
+    # logging.info(f"{args}")
     r = requests.get(f"{endpoint_url}?{args}", timeout=3600)
     logging.info(f"CODE: {r.status_code}")
     write_force(path, r.text)

@@ -6,11 +6,9 @@ from .utils import logging
 
 
 def fields_str(kf, alq):
-    # logging.info(f"{kf}.fields")
     fields = []
     for k, v in alq['select'].items():
         oo = v.get('field')
-        # logging.info(f"  {v.get('item_full')}")
         if v.get('item_full') == kf:
             if column_type(k) == 'int':
                 fields.append(f"""
