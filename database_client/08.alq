@@ -1,0 +1,10 @@
+select
+    media as (
+        documentary 
+    )
+    media.director
+    media.director.gender
+where
+    media ilike '%beau%'
+    director ilike '%mari%'
+limit 2

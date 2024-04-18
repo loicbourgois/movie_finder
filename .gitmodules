@@ -1,0 +1,3 @@
+[submodule "database_client/submodules/utils"]
+	path = database_client/submodules/utils
+	url = git@github.com:loicbourgois/utils.git

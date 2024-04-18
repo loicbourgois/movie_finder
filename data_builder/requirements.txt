@@ -2,3 +2,5 @@ sparqlwrapper
 xmltodict
 requests
 qwikidata
+pandas
+pylint

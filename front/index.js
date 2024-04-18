@@ -167,26 +167,23 @@ const show_movie = async (movie) => {
 }
 
 
-const show_movies = async (moviess) => {
+const show_movies = async (movies) => {
     let str_ =  `<div class="movies"></div><div class="movies">`
-    const ids = {}
-    for (const movies of moviess) {
-        for (const movie of movies) {
-            if (!omdb_url(movie)) {
-                continue
-            }
-            if (ids[movie.id]) {
-                continue
-            }
-            ids[movie.id] = true
-            str_ += `
-                <div class="movie">
-                    <a class="movie_poster" href="${window.location.origin}/get/${movie.id}" >
-                        <img src="${omdb_url(movie)}">
-                    </a>
-                </div>
-            `
+    for (const k in movies) {
+        const movie = movies[k];
+        const omdbs = Object.entries(movie.omdbs)
+        console.log(k)
+        if (omdbs.length == 0) {
+            continue
         }
+        console.log(omdbs)
+        str_ += `
+            <div class="movie">
+                <a class="movie_poster" href="${window.location.origin}/get/${movie.wikidata_id}" >
+                    <img src="https://www.omdb.org/image/default/${omdbs[0][0]}.jpeg?v=${omdbs[0][1]}">
+                </a>
+            </div>
+        `
     }
     str_ += `
         </div>
@@ -217,7 +214,7 @@ const main = async () => {
             show_movie(r)
         }
         else if (wlhs[3] == "search") {
-            const r = await get(`/search_json/${wlhs[4]}`)
+            const r = await get(`/search_json_v2/${wlhs[4]}`)
             show_movies(r)
         }
     } else {

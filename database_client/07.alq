@@ -1,0 +1,14 @@
+select
+    media as (
+        documentary 
+        or film_series 
+        or western_animation 
+        or anime 
+        or animated_television_series
+    )
+    media.publication_date
+    media.director
+where
+    language = 'en'
+    media ilike '%christ%'
+limit 2

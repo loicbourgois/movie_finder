@@ -1,0 +1,11 @@
+select
+    media as (
+        documentary
+        anime
+        animated_television_series
+    )
+    media.director
+    media.director.gender
+    media.producer
+    media.producer.gender
+limit 1

@@ -1,0 +1,20 @@
+{
+    "select": {
+        "media": {
+            "kinds": {
+                "documentary": ""
+            }
+        },
+        "gender": {
+            "item": "director",
+            "field": "gender",
+            "parent_item": "media"
+        },
+        "director": {
+            "item": "media",
+            "field": "director"
+        }
+    },
+    "where": [],
+    "limit": "2"
+}

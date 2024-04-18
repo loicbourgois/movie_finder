@@ -1,0 +1,42 @@
+{
+    "select": {
+        "media": {
+            "kinds": {
+                "documentary": "",
+                "anime": "",
+                "animated_television_series": ""
+            }
+        },
+        "media_director": {
+            "item": "media",
+            "item_full": "media",
+            "field": "director"
+        },
+        "media_director_gender": {
+            "item": "director",
+            "item_full": "media_director",
+            "field": "gender",
+            "parent_item": "media"
+        },
+        "media_producer": {
+            "item": "media",
+            "item_full": "media",
+            "field": "producer"
+        },
+        "media_producer_gender": {
+            "item": "producer",
+            "item_full": "media_producer",
+            "field": "gender",
+            "parent_item": "media"
+        }
+    },
+    "select_keys": [
+        "media",
+        "media_producer",
+        "media_producer_gender",
+        "media_director",
+        "media_director_gender"
+    ],
+    "where": [],
+    "limit": "1"
+}

@@ -1,0 +1,2 @@
+SELECT * FROM item
+WHERE item_id = 3414468

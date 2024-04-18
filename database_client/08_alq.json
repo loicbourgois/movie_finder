@@ -1,0 +1,36 @@
+{
+    "select": {
+        "media": {
+            "kinds": {
+                "documentary": ""
+            }
+        },
+        "media_director": {
+            "item": "media",
+            "field": "director"
+        },
+        "media_director_gender": {
+            "item": "director",
+            "field": "gender",
+            "parent_item": "media"
+        }
+    },
+    "select_keys": [
+        "media",
+        "media_director",
+        "media_director_gender"
+    ],
+    "where": [
+        {
+            "field": "media",
+            "comparator": "ilike",
+            "value": "%beau%"
+        },
+        {
+            "field": "director",
+            "comparator": "ilike",
+            "value": "%mari%"
+        }
+    ],
+    "limit": "2"
+}
