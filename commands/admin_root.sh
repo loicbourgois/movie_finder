@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 set -e
 path_root=$(cat $HOME/github.com/loicbourgois/movie_finder_local/secrets.json | jq -r ".path_root")
 host=$(cat $HOME/github.com/loicbourgois/movie_finder_local/secrets.json | jq -r ".host")

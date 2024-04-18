@@ -1,6 +1,17 @@
 # movie_finder
 
 
+## Renew certificate
+
+```sh
+$HOME/github.com/loicbourgois/movie_finder/commands/admin_root.sh
+    vs $HOME/github.com/loicbourgois/movie_finder/commands/renew_certificate.sh
+$HOME/github.com/loicbourgois/movie_finder/commands/deploy.sh
+```
+
+
+## Misc
+
 ```sh
 $HOME/github.com/loicbourgois/movie_finder/commands/run.sh
 $HOME/github.com/loicbourgois/movie_finder/commands/test.sh
