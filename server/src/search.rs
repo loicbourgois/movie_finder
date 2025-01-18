@@ -8,8 +8,10 @@ pub fn search_media(
     data_2: &HSHSHSS,
     movie_images: &HSHSS,
 ) -> HashMap<String, MediaSmall> {
+    println!("search_media - search_str: {search_str}");
     let mut counter = 0;
-    data_2
+    println!("search_media - data_2.keys: {:?}", data_2.keys());
+    let data_3 = data_2
         .keys()
         .filter(|key| key.contains("inverted/label/"))
         .flat_map(|kind| {
@@ -17,12 +19,16 @@ pub fn search_media(
                 .iter()
                 .filter(|(label, _)| label.to_lowercase().contains(&search_str.to_lowercase()))
                 .flat_map(|(_, v)| v.keys().map(std::string::ToString::to_string))
-        })
+        });
+    println!("search_media - data_3: {:?}", data_3);
+    data_3
         .filter(|_| {
+            println!("search_media - counter: {counter}");
             counter += 1;
             counter <= 1000
         })
         .map(|k| {
+            println!("search_media - wikidata_id: {k}");
             let mut m = MediaSmall {
                 wikidata_id: k.clone(),
                 omdbs: HashMap::new(),

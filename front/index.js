@@ -100,6 +100,7 @@ const genres = (movie) => {
     return aa.join('')
 }
 
+
 const show_movie = async (movie) => {
     console.log(movie)
     document.querySelector("body").innerHTML += `
@@ -171,19 +172,37 @@ const show_movies = async (movies) => {
     let str_ =  `<div class="movies"></div><div class="movies">`
     for (const k in movies) {
         const movie = movies[k];
-        const omdbs = Object.entries(movie.omdbs)
-        console.log(k)
-        if (omdbs.length == 0) {
-            continue
+        if (movie && movie.omdbs) {
+            const omdbs = Object.entries(movie.omdbs)
+            if (omdbs.length == 0) {
+                continue
+            }
+            str_ += `
+                <div class="movie">
+                    <a class="movie_poster" href="${window.location.origin}/get/${movie.wikidata_id}" >
+                        <img src="https://www.omdb.org/image/default/${omdbs[0][0]}.jpeg?v=${omdbs[0][1]}">
+                    </a>
+                </div>
+            `
+        } else if (movie && movie.length) {
+            for (const m of movie) {
+                if (m.omdbs) {
+                    const omdbs = Object.entries(m.omdbs)
+                    if (omdbs.length == 0) {
+                        continue
+                    }
+                    const link = `${window.location.origin}/get/${m.id}`
+                    const img_link = omdbs[0][1].img_url
+                    str_ += `
+                        <div class="movie">
+                            <a class="movie_poster" href="${link}" >
+                                <img src="${img_link}">
+                            </a>
+                        </div>
+                    `
+                }
+            }
         }
-        console.log(omdbs)
-        str_ += `
-            <div class="movie">
-                <a class="movie_poster" href="${window.location.origin}/get/${movie.wikidata_id}" >
-                    <img src="https://www.omdb.org/image/default/${omdbs[0][0]}.jpeg?v=${omdbs[0][1]}">
-                </a>
-            </div>
-        `
     }
     str_ += `
         </div>
@@ -210,12 +229,18 @@ const main = async () => {
     const wlhs = window.location.href.split('/')
     if (wlhs.length == 5) {
         if (wlhs[3] == "get") {
-            const r = await get(`/get_json/${wlhs[4]}`)
+            const url = `/get_json/${wlhs[4]}`
+            console.info(`url: ${url}`)
+            const r = await get(url)
             show_movie(r)
-        }
-        else if (wlhs[3] == "search") {
-            const r = await get(`/search_json_v2/${wlhs[4]}`)
+        } else if (wlhs[3] == "search") {
+            // const url = `/search_json_v2/${wlhs[4]}`
+            const url = `/search_json/${wlhs[4]}`
+            console.info(`url: ${url}`)
+            const r = await get(url)
             show_movies(r)
+        } else {
+            console.error(`error: ${wlhs}`)
         }
     } else {
         show_random_movie()

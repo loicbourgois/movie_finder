@@ -413,11 +413,11 @@ fn read_file(path: &str) -> std::io::Result<String> {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    println!("main setup");
+    println!("[start] load_data");
     let data = load_data()?;
-    println!("main setup ok");
+    println!("[ end ] load_data");
     let mut aa = HttpServer::new(move || {
-        println!("setup");
+        println!("[start] setup");
         let cors = Cors::default()
             .allowed_origin("http://localhost")
             .allowed_origin("localhost")
@@ -436,7 +436,7 @@ async fn main() -> std::io::Result<()> {
             .service(search_json)
             .service(search_json_v2)
             .service(actix_files::Files::new("/", "../front/"));
-        println!("setup ok");
+        println!("[ end ] setup");
         app
     })
     .workers(1);
