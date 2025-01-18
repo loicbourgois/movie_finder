@@ -36,6 +36,7 @@ const omdb_url = (movie) => {
 const languages = {
     'en': 1,
     'fr': 2,
+    'ja': 2,
 }
 
 
@@ -211,6 +212,36 @@ const show_movies = async (movies) => {
 }
 
 
+const show_movies_v2 = async (movies) => {
+    let str_ =  `<div class="movies"></div><div class="movies">`
+    for (const wikidata_id in movies) {
+        // console.log(wikidata_id)
+        const movie  = movies[wikidata_id]
+        // console.log(movie)
+        if (movie.omdbs) {
+            const omdbs = Object.entries(movie.omdbs)
+            if (omdbs.length) {
+                console.log(movie)
+                const link = `${window.location.origin}/get/${wikidata_id}`
+                const img_link = `https://www.omdb.org/image/default/${omdbs[0][0]}.jpeg?v=${omdbs[0][1]}`
+                console.log(img_link)
+                str_ += `
+                    <div class="movie">
+                        <a class="movie_poster" href="${link}" >
+                            <img src="${img_link}">
+                        </a>
+                    </div>
+                `
+            }
+        }
+    }
+    str_ += `
+        </div>
+    `
+    document.querySelector("body").innerHTML += str_
+}
+
+
 const show_random_movie = async () => {
     const r = await get("/random-movie")
     show_movie(r)
@@ -234,11 +265,15 @@ const main = async () => {
             const r = await get(url)
             show_movie(r)
         } else if (wlhs[3] == "search") {
-            // const url = `/search_json_v2/${wlhs[4]}`
             const url = `/search_json/${wlhs[4]}`
             console.info(`url: ${url}`)
             const r = await get(url)
             show_movies(r)
+        } else if (wlhs[3] == "search_v2") {
+            const url = `/search_json_v2/${wlhs[4]}`
+            console.info(`url: ${url}`)
+            const r = await get(url)
+            show_movies_v2(r)
         } else {
             console.error(`error: ${wlhs}`)
         }

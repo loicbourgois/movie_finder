@@ -16,6 +16,7 @@ def alq_to_sql(text):
             ,q_all as (
                 select distinct * from {kf}  
                 {' '.join(x['joins'])}
+                where {' and '.join(x['where'])}
             )
             ,q_limit as (
                 select distinct {kf}_id from q_all

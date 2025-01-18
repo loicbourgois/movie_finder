@@ -1,0 +1,41 @@
+{
+    "select": {
+        "media": {
+            "kinds": {
+                "documentary": "",
+                "film_series": "",
+                "western_animation": "",
+                "anime": "",
+                "animated_television_series": ""
+            }
+        },
+        "media_publication_date": {
+            "item": "media",
+            "item_full": "media",
+            "field": "publication_date"
+        },
+        "media_director": {
+            "item": "media",
+            "item_full": "media",
+            "field": "director"
+        }
+    },
+    "select_keys": [
+        "media",
+        "media_director",
+        "media_publication_date"
+    ],
+    "where": [
+        {
+            "field": "language",
+            "comparator": "=",
+            "value": "en"
+        },
+        {
+            "field": "media",
+            "comparator": "ilike",
+            "value": "%christ%"
+        }
+    ],
+    "limit": "2"
+}

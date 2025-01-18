@@ -7,104 +7,22 @@ import csv
 import pandas
 import time
 from datetime import datetime
-logging.basicConfig(level=logging.INFO)
-logging.info("start")
+from functools import cmp_to_key
+from .config import get_config
+from .query import (
+    query_0,
+    query_1,
+    query_2,
+    q0l,
+    q1l,
+    q2l,
+    query_by,
+)
 
 
 def read(path):
     with open(path, "r") as file:
         return file.read()
-
-
-endpoint_url = "https://query.wikidata.org/sparql"
-instance_of_any_subclass_of = "wdt:P31/wdt:P279*"
-
-
-def get_config():
-    wikidata_fields = {
-        "director": "wdt:P57",
-        "producer": "wdt:P162",
-        "main_subject": "wdt:P921",
-        "genre": "wdt:P136",
-        "original_language": "wdt:P364", # of_film_or_TV_show
-        "date_of_birth": "wdt:P569",
-        "gender": "wdt:P21",
-        "publication_date": "wdt:P577",
-        "screen_writer": "wdt:P58",
-        "cast_member": "wdt:P161",
-        "occupation": "wdt:P106",
-        "composer": "wdt:P86",
-        "narrator": "wdt:P2438",
-        "production_company": "wdt:P272",
-        "distributed_by": "wdt:P750",
-        "inspired_by": "wdt:P941",
-        "set_in_period": "wdt:P2408",
-        "narrative_location": "wdt:P840",
-        "filming_location": "wdt:P915",
-        "duration": "wdt:P2047",
-        "review_score": "wdt:P444",
-        "award_received": "wdt:P166",
-        "nominated_for": "wdt:P1411",
-        "box_office": "wdt:P2142",
-        "cost": "wdt:P2130",
-        "characters": "wdt:P674",
-        "depicts": "wdt:P180",
-        "imdb_id": "wdt:P345",
-        "omdb_id": "wdt:P3302",
-        "creator": "wdt:P170",
-    }
-    wikidata_items = {
-        "documentary": "wd:Q4164344",
-        "film": "wd:Q11424",
-        "television_series": "wd:Q5398426",
-        "anime": "wd:Q1107",
-        "film_series": "wd:Q24856",
-        "western_animation": "wd:Q83646243",
-        "animated_television_series": "wd:Q117467246",
-    }
-    media_person = {
-        "gender": {},
-        "date_of_birth": {},
-        "occupation": {},
-    }
-    media = {
-        "director": media_person,
-        "producer": media_person,
-        "creator": media_person,
-        "screen_writer": media_person,
-        "publication_date": {},
-        "cast_member": media_person,
-        # "omdb_id": {},
-        # "imdb_id": {},
-        "narrator": media_person,
-        "award_received": {},
-        "characters": media_person,
-    }
-    data = {
-        "documentary": media,
-        "film_series": media,
-        "western_animation": media,
-        "anime": media,
-        "animated_television_series": media,
-        # "television_series": media,
-        # "film": media,
-    }
-    languages = {
-        "en": {},
-        "fr": {},
-    }
-    return {
-        "data": data,
-        "languages": languages,
-        "wikidata_fields": wikidata_fields,
-        "wikidata_items": wikidata_items,
-        "custom": {
-            "en/film/cast_member": {},
-            "fr/film/cast_member": {},
-            "fr/television_series/cast_member": {},
-        }
-    }
-config = get_config()
 
 
 def with_qx(x):
@@ -115,69 +33,18 @@ def with_qx(x):
     """.replace("x", f"{x}")
 
 
-query_0 = """
-SELECT distinct ?{item_k}
-WHERE {{
-    ?{item_k} {instance_of_any_subclass_of} {item_v} .
-}}
-"""
-query_1 = """# {item_k} -.-> {field_k}
-SELECT distinct ?{item_k} ?{field_k}
-{with_q0}
-WHERE {{
-    include %q0
-    ?{item_k} {field_v} ?{field_k} .
-}}
-"""
-query_2 = """# {item_k}__{field_k} -.-> {sub_field_k}
-select distinct ?{field_k} ?{sub_field_k}
-{with_q0}
-{with_q1}
-where {{
-    include %q1
-    ?{field_k} {sub_field_v} ?{sub_field_k} .
-}}
-"""
-
-q0l = """
-SELECT ?{item_k} ?{item_k}_label (lang(?{item_k}_label) as ?lang)
-{with_q0}
-WHERE {{
-    include %q0
-    ?{item_k} rdfs:label ?{item_k}_label filter (lang(?{item_k}_label) = "{lang}").
-}}
-"""
-q1l = """
-SELECT ?{field_k} ?{field_k}_label (lang(?{field_k}_label) as ?lang)
-{with_q0}
-{with_q1}
-with {{
-    SELECT distinct ?{field_k}
-    WHERE {{
-        include %q1
-    }}
-}} as %q
-WHERE {{
-    include %q
-    ?{field_k} rdfs:label ?{field_k}_label filter (lang(?{field_k}_label) = "{lang}").
-}}
-"""
-q2l = """
-SELECT ?{sub_field_k} ?{sub_field_k}_label (lang(?{sub_field_k}_label) as ?lang)
-{with_q0}
-{with_q1}
-{with_q2}
-with {{
-    SELECT distinct ?{sub_field_k}
-    WHERE {{
-        include %q2
-    }}
-}} as %q
-WHERE {{
-    include %q
-    ?{sub_field_k} rdfs:label ?{sub_field_k}_label filter (lang(?{sub_field_k}_label) = "{lang}").
-}}
-"""
+def wikidata_ids_from_csv(path, csv_file):
+    df = pandas.read_csv(path)
+    data = df.to_dict(orient="records")
+    data = [
+        x[csv_file].replace('http://www.wikidata.org/entity/', '')
+        for x in data
+    ]
+    def cmp_(a,b):
+        return len(a) - len(b)
+    cmp_key = cmp_to_key(cmp_)
+    data.sort(key=cmp_key)
+    return data
 
 
 def write_force(path, content):
@@ -186,182 +53,32 @@ def write_force(path, content):
         os.makedirs(folder)
     with open(path, 'w') as f:
         f.write(content)
-lines = ""
-
-queries = {}
 
 
 def add_query(path, q):
     assert queries.get(path) is None
     queries[path] = q
+    path = f"/root/github.com/loicbourgois/movie_finder_local/data_v3/query/{path}.sparql"
+    # logging.info(path.replace("/root", "$HOME"))
+    write_force(
+        path, 
+        q,
+    )
 
 
-for lang in config['languages']:
-    for item_k, v in config['data'].items():
-        item_v = config['wikidata_items'][item_k]
-        add_query(
-            f"{lang}/{item_k}",
-            q0l.format(
-                item_k=item_k,
-                lang=lang,
-                with_q0=with_qx(0).format(
-                    query_0=query_0.format(
-                        item_k=item_k,
-                        item_v=item_v,
-                        instance_of_any_subclass_of=instance_of_any_subclass_of,
-                    ),
-                ),
-            )
-        )
-        for field_k, subfields in v.items():
-            field_v = config['wikidata_fields'][field_k]
-            add_query(
-                f"{lang}/{item_k}/{field_k}",
-                q1l.format(
-                    field_k=field_k,
-                    lang=lang,
-                    with_q0=with_qx(0).format(
-                        query_0=query_0.format(
-                            item_k=item_k,
-                            item_v=item_v,
-                            instance_of_any_subclass_of=instance_of_any_subclass_of,
-                        ),
-                    ),
-                    with_q1=with_qx(1).format(
-                        query_1=query_1.format(
-                            item_k=item_k,
-                            item_v=item_v,
-                            field_k=field_k,
-                            field_v=field_v,
-                            with_q0="",
-                            instance_of_any_subclass_of=instance_of_any_subclass_of,
-                        ),
-                    ),
-                )
-            )
-            for sub_field_k in subfields:
-                sub_field_v = config['wikidata_fields'][sub_field_k]
-                add_query(
-                    f"{lang}/{item_k}/{field_k}/{sub_field_k}",
-                    q2l.format(
-                        sub_field_k=sub_field_k,
-                        lang=lang,
-                        with_q0=with_qx(0).format(
-                            query_0=query_0.format(
-                                item_k=item_k,
-                                item_v=item_v,
-                                instance_of_any_subclass_of=instance_of_any_subclass_of,
-                            ),
-                        ),
-                        with_q1=with_qx(1).format(
-                            query_1=query_1.format(
-                                item_k=item_k,
-                                item_v=item_v,
-                                field_k=field_k,
-                                field_v=field_v,
-                                with_q0="",
-                                instance_of_any_subclass_of=instance_of_any_subclass_of,
-                            ),
-                        ),
-                        with_q2=with_qx(2).format(
-                            query_2=query_2.format(
-                                item_k=item_k,
-                                item_v=item_v,
-                                field_k=field_k,
-                                field_v=field_v,
-                                sub_field_k=sub_field_k,
-                                sub_field_v=sub_field_v,
-                                with_q0="",
-                                with_q1="",
-                                instance_of_any_subclass_of=instance_of_any_subclass_of,
-                            ),
-                        ),
-                    )
-                )
-for item_k, v in config['data'].items():
-    item_v = config['wikidata_items'][item_k]
-    add_query(
-        f"{item_k}",
-        query_0.format(
-            item_k=item_k,
-            item_v=item_v,
-            instance_of_any_subclass_of=instance_of_any_subclass_of,
-        )
-    )
-    for field_k, subfields in v.items():
-        field_v = config['wikidata_fields'][field_k]
-        add_query(
-            f"{item_k}/{field_k}",
-            query_1.format(
-                item_k=item_k,
-                item_v=item_v,
-                field_k=field_k,
-                field_v=field_v,
-                with_q0=with_qx(0).format(
-                    query_0=query_0.format(
-                        item_k=item_k,
-                        item_v=item_v,
-                        instance_of_any_subclass_of=instance_of_any_subclass_of,
-                    ),
-                ),
-                instance_of_any_subclass_of=instance_of_any_subclass_of,
-            )
-        )
-        for sub_field_k in subfields:
-            sub_field_v = config['wikidata_fields'][sub_field_k]
-            add_query(
-                f"{item_k}/{field_k}/{sub_field_k}",
-                query_2.format(
-                    item_k=item_k,
-                    item_v=item_v,
-                    with_q0=with_qx(0).format(
-                        query_0=query_0.format(
-                            item_k=item_k,
-                            item_v=item_v,
-                            instance_of_any_subclass_of=instance_of_any_subclass_of,
-                        ),
-                    ),
-                    with_q1=with_qx(1).format(
-                        query_1=query_1.format(
-                            item_k=item_k,
-                            item_v=item_v,
-                            field_k=field_k,
-                            field_v=field_v,
-                            with_q0="",
-                            instance_of_any_subclass_of=instance_of_any_subclass_of,
-                        ),
-                    ),
-                    field_k=field_k,
-                    field_v=field_v,
-                    sub_field_k=sub_field_k,
-                    sub_field_v=sub_field_v,
-                    instance_of_any_subclass_of=instance_of_any_subclass_of,
-                )
-            )
-write_force(
-    "/root/github.com/loicbourgois/movie_finder_local/data_v3/rdf_to_sql.sparql", 
-    "\n".join(
-        [
-            f"# {k}\n{v}" for k, v in queries.items()
-        ]
-    )
-)
-shared = {
-    "sleep_time": 0,
-}
+def replace_root(str_):
+    return str_.replace("/root/", "$HOME/")
+
+
 def query_to_file(path, query):
-    logging.info(f"sleep_time: {shared['sleep_time']}")
     time.sleep( shared['sleep_time'] )
     start = time.time()
-    # logging.info(path)
-    # logging.info(query)
     args = urllib.parse.urlencode({
         'query': query,
         'format': 'json'
     })
-    # logging.info(f"{args}")
     r = requests.get(f"{endpoint_url}?{args}", timeout=3600)
-    logging.info(f"CODE: {r.status_code}")
+    logging.info(f"  {r.status_code} | {replace_root(path)}")
     write_force(path, r.text)
     end = time.time()
     shared['sleep_time'] = max(0, 3 - (end - start))
@@ -370,19 +87,19 @@ def query_to_file(path, query):
 def pull_data():
     remaining_queries = {}
     for i, (k, v) in enumerate(queries.items()):
-        logging.info(f"{i+1}/{len(queries)} - {k}")
+        path_json = "/root/github.com/loicbourgois/movie_finder_local/data_v3/json/" + k + ".json"
         try:
-            c = json.loads(read("/root/github.com/loicbourgois/movie_finder_local/data_v3/json/"+k+".json"))
-            logging.info(f"  count: {len(c['results']['bindings'])}")
+            c = json.loads(read(path_json))
+            logging.info(f"(skip) {i+1}/{len(queries)} - {path_json.replace('/root', '$HOME')} - {len(c['results']['bindings'])}")
         except Exception as e:
-            logging.error(f"  {e}")
+            logging.info(f"(todo) {i+1}/{len(queries)} - {k}")
             remaining_queries[k] = v
     for i, (k, v) in enumerate(remaining_queries.items()):
-        logging.info(f"{i}/{len(remaining_queries)} - {k}")
+        logging.info(f"{i+1}/{len(remaining_queries)} - {k}")
         if k in config['custom']:
             logging.info("  skip")
         else:
-            query_to_file("/root/github.com/loicbourgois/movie_finder_local/data_v3/json/"+k+".json", v)
+            query_to_file("/root/github.com/loicbourgois/movie_finder_local/data_v3/json/" + k + ".json", v)
 
 
 def create_parent_folder(path):
@@ -401,25 +118,28 @@ def write_force_csv(path, rows):
 def convert_to_csv():
     remaining_queries = {}
     for i, (k, v) in enumerate(queries.items()):
-        logging.info(f"{i+1}/{len(queries)} - {k}")
         try:
             pandas.read_csv("/root/github.com/loicbourgois/movie_finder_local/data_v3/csv/"+k+".csv")
+            logging.info(f"(skip) {i+1}/{len(queries)} - {k}")
         except Exception as e:
-            logging.error(f"  {e}")
+            logging.info(f"(todo) {i+1}/{len(queries)} - {k}")
             remaining_queries[k] = v
     for i, (k, v) in enumerate(remaining_queries.items()):
-        logging.info(f"{i}/{len(remaining_queries)} - {k}")
         if k in config['custom']:
-            logging.info("  skip")
+            logging.info(f"(skip) {i+1}/{len(remaining_queries)} - {k}")
         else:
-            d = json.loads(read("/root/github.com/loicbourgois/movie_finder_local/data_v3/json/"+k+".json"))
-            rows = [ d['head']['vars'] ]
-            for x in d['results']['bindings']:
-                rows.append( [
-                    x[column_id]['value']
-                    for column_id in rows[0]
-                ] )
-            write_force_csv("/root/github.com/loicbourgois/movie_finder_local/data_v3/csv/"+k+".csv", rows)
+            try:
+                d = json.loads(read("/root/github.com/loicbourgois/movie_finder_local/data_v3/json/"+k+".json"))
+                rows = [ d['head']['vars'] ]
+                for x in d['results']['bindings']:
+                    rows.append( [
+                        x[column_id]['value']
+                        for column_id in rows[0]
+                    ] )
+                write_force_csv("/root/github.com/loicbourgois/movie_finder_local/data_v3/csv/"+k+".csv", rows)
+                logging.info(f"( ok ) {i+1}/{len(remaining_queries)} - {k}")
+            except:
+                logging.info(f"(fail) {i+1}/{len(remaining_queries)} - {k}")
 
 
 def column_type(ck):
@@ -427,12 +147,13 @@ def column_type(ck):
         "date_of_birth": "date",
         "publication_date": "date",
     }.get(ck, 'uuid')
+
+
 def column_name(ck):
     return {
         "date_of_birth": "date_of_birth",
         "publication_date": "publication_date",
     }.get(ck, f"{ck}_id")
-
 
 
 def get_df_label(path=None, k=None):
@@ -472,13 +193,15 @@ def to_database(
                 if "http://www.wikidata.org/entity/Q" in row[k4]:
                     row[k4] = int(row[k4].replace("http://www.wikidata.org/entity/Q", ''))
                 else:
-                    logging.info(f"error: {k4}: {row[k4]}")
+                    # logging.info(f"error: {k4}: {row[k4]}")
                     row[k4] = None
             elif column_type(k4) == "date":
                 try:
                     row[k4] = datetime.strptime(row[k4], "%Y-%m-%dT%H:%M:%SZ").strftime("%Y-%m-%d")
+                    assert len(row[k4]) == 10
                 except Exception as e:
-                    logging.info(e)
+                    logging.error(row[k4])
+                    logging.error(e)
                     row[k4] = None
             else:
                 raise "Bob"
@@ -520,12 +243,15 @@ def create_table(table_create_queries, k, v):
 
 
 def convert_to_sql():
+    logging.info("convert_to_sql - A")
     tables = {
         "item": pandas.DataFrame({c: pandas.Series(dtype=t) for c, t in {'item_id': 'int', 'type': 'str'}.items()}),
         "item___label": pandas.DataFrame({c: pandas.Series(dtype=t) for c, t in {'item_id': 'int', 'language': 'str', 'label': 'str'}.items()}),
     }
     kinds = {}
     table_create_queries = {}
+
+    logging.info("convert_to_sql - B")
     for k, v in config['data'].items():
         add_kind(kinds, k, v)
         create_table(table_create_queries, k, v)
@@ -535,10 +261,12 @@ def convert_to_sql():
             item_id int not null,
             {v['column']} {v['column_type']} not null
         );"""
-        for k, v in table_create_queries.items()
+        for k, v in table_create_queries.items() if "-by-" not in v['name']
     ])
     logging.info(kinds_str)
     logging.info(create_table_str)
+
+    logging.info("convert_to_sql - C")
     for k, v in config['data'].items():
         logging.info(f"{k}")
         df = pandas.read_csv(f"/root/github.com/loicbourgois/movie_finder_local/data_v3/csv/{k}.csv")
@@ -551,20 +279,25 @@ def convert_to_sql():
         tables["item"] = pandas.concat([tables["item"], df])
         for k2, v2 in v.items():
             logging.info(f"{k}/{k2}")
-            tables = to_database(
-                tables=tables,
-                k=k2,
-                k_parent=k,
-                path=f"/root/github.com/loicbourgois/movie_finder_local/data_v3/csv/{k}/{k2}.csv",
-            )
-            for k3, v3 in v2.items():
-                logging.info(f"{k}/{k2}/{k3}")
+            if "-by-" in k2:
+                pass # by only useful for labels with language
+            else:
                 tables = to_database(
                     tables=tables,
-                    k=k3,
-                    k_parent=k2,
-                    path=f"/root/github.com/loicbourgois/movie_finder_local/data_v3/csv/{k}/{k2}/{k3}.csv",
+                    k=k2,
+                    k_parent=k,
+                    path=f"/root/github.com/loicbourgois/movie_finder_local/data_v3/csv/{k}/{k2}.csv",
                 )
+                for k3, v3 in v2.items():
+                    logging.info(f"{k}/{k2}/{k3}")
+                    tables = to_database(
+                        tables=tables,
+                        k=k3,
+                        k_parent=k2,
+                        path=f"/root/github.com/loicbourgois/movie_finder_local/data_v3/csv/{k}/{k2}/{k3}.csv",
+                    )
+
+    logging.info("convert_to_sql - D")
     for l in config['languages']:
         logging.info(f"{l}")
         for k, v in config['data'].items():
@@ -577,29 +310,52 @@ def convert_to_sql():
                 )
             ])
             for k2, v2 in v.items():
-                logging.info(f"{l}/{k}/{k2}")
-                tables["item___label"] = pandas.concat([
-                    tables["item___label"],
-                    get_df_label(
-                        path=f"/root/github.com/loicbourgois/movie_finder_local/data_v3/csv/{l}/{k}/{k2}.csv",
-                        k=k2
-                    )
-                ])
-                for k3, v3 in v2.items():
-                    logging.info(f"{l}/{k}/{k2}/{k3}")
-                    tables["item___label"] = pandas.concat([
-                        tables["item___label"],
-                        get_df_label(
-                            path=f"/root/github.com/loicbourgois/movie_finder_local/data_v3/csv/{l}/{k}/{k2}/{k3}.csv",
-                            k=k3
-                        )
-                    ])
+                if f"{l}/{k}/{k2}" in config['custom']:
+                    logging.info(f"(skip) {l}/{k}/{k2}")
+                else:
+                    logging.info(f"( ok ) {l}/{k}/{k2}")
+                    if "-by-" in k2:
+                        k2a = k2.split("-by-")[0]
+                        k2b = k2.split("-by-")[1]
+                        csv_file = config['bys'][k2b]['csv']
+                        path = f"/root/github.com/loicbourgois/movie_finder_local/data_v3/csv/{csv_file}.csv"
+                        for with_wd in wikidata_ids_from_csv(path, csv_file):
+                            uu = f"{l}/{k}/{k2a}/by/{k2b}/{with_wd}"
+                            logging.info(uu)
+                            tables["item___label"] = pandas.concat([
+                                tables["item___label"],
+                                get_df_label(
+                                    path=f"/root/github.com/loicbourgois/movie_finder_local/data_v3/csv/{uu}.csv",
+                                    k=k2a,
+                                )
+                            ])
+                    else:
+                        tables["item___label"] = pandas.concat([
+                            tables["item___label"],
+                            get_df_label(
+                                path=f"/root/github.com/loicbourgois/movie_finder_local/data_v3/csv/{l}/{k}/{k2}.csv",
+                                k=k2
+                            )
+                        ])
+                        for k3, v3 in v2.items():
+                            logging.info(f"{l}/{k}/{k2}/{k3}")
+                            tables["item___label"] = pandas.concat([
+                                tables["item___label"],
+                                get_df_label(
+                                    path=f"/root/github.com/loicbourgois/movie_finder_local/data_v3/csv/{l}/{k}/{k2}/{k3}.csv",
+                                    k=k3
+                                )
+                            ])
+
+    logging.info("convert_to_sql - E")
     for i, (k, v) in enumerate(tables.items()):
         logging.info(f"{i+1}/{len(tables)} - {k}")
         path = f"/root/github.com/loicbourgois/movie_finder_local/data_v3/database/{k}.csv"
         create_parent_folder(path)
         v.drop_duplicates(inplace=True)
         v.to_csv(path, index=False)
+
+    logging.info("convert_to_sql - F")
     import_csv_str = "\n".join(
         [
             f'''    -c "\copy {table_name} FROM '$HOME/github.com/loicbourgois/movie_finder_local/data_v3/database/{table_name}.csv' CSV HEADER;" \\'''
@@ -617,6 +373,196 @@ def convert_to_sql():
             kinds_str=kinds_str,
         )
     )
+
+
+logging.basicConfig(level=logging.INFO)
+logging.info("start")
+endpoint_url = "https://query.wikidata.org/sparql"
+instance_of_any_subclass_of = "wdt:P31/wdt:P279*"
+config = get_config()
+queries = {}
+
+
+for lang in config['languages']:
+    for item_k, v in config['data'].items():
+        item_v = config['wikidata_items'][item_k]
+        add_query(
+            f"{lang}/{item_k}",
+            q0l.format(
+                item_k=item_k,
+                lang=lang,
+                with_q0=with_qx(0).format(
+                    query_0=query_0.format(
+                        item_k=item_k,
+                        item_v=item_v,
+                        instance_of_any_subclass_of=instance_of_any_subclass_of,
+                    ),
+                ),
+            )
+        )
+        for field_k, subfields in v.items():
+            if "-by-" in field_k:
+                field_ka = field_k.split("-by-")[0]
+                field_kb = field_k.split("-by-")[1]
+                item_wdt = config['wikidata_fields'][field_ka]
+                with_wdt = config['wikidata_fields'][field_kb]
+                qk = f"{lang}/{item_k}/{field_ka}/by/{field_kb}"
+                csv_file = config['bys'][field_kb]['csv']
+                path = f"/root/github.com/loicbourgois/movie_finder_local/data_v3/csv/{csv_file}.csv"
+                for with_wd in wikidata_ids_from_csv(path, csv_file):
+                    add_query(
+                        f"{qk}/{with_wd}",
+                        query_by.format(
+                            parent=item_k,
+                            instance_of_any_subclass_of=instance_of_any_subclass_of,
+                            parent_wd=item_v,
+                            item_wdt=item_wdt,
+                            item=field_ka,
+                            with_wdt=with_wdt,
+                            with_wd=with_wd,
+                            lang=lang,
+                        ),
+                    )
+            else:
+                field_v = config['wikidata_fields'][field_k]
+                add_query(
+                    f"{lang}/{item_k}/{field_k}",
+                    q1l.format(
+                        field_k=field_k,
+                        lang=lang,
+                        with_q0=with_qx(0).format(
+                            query_0=query_0.format(
+                                item_k=item_k,
+                                item_v=item_v,
+                                instance_of_any_subclass_of=instance_of_any_subclass_of,
+                            ),
+                        ),
+                        with_q1=with_qx(1).format(
+                            query_1=query_1.format(
+                                item_k=item_k,
+                                item_v=item_v,
+                                field_k=field_k,
+                                field_v=field_v,
+                                with_q0="",
+                                instance_of_any_subclass_of=instance_of_any_subclass_of,
+                            ),
+                        ),
+                    )
+                )
+                for sub_field_k in subfields:
+                    sub_field_v = config['wikidata_fields'][sub_field_k]
+                    add_query(
+                        f"{lang}/{item_k}/{field_k}/{sub_field_k}",
+                        q2l.format(
+                            sub_field_k=sub_field_k,
+                            lang=lang,
+                            with_q0=with_qx(0).format(
+                                query_0=query_0.format(
+                                    item_k=item_k,
+                                    item_v=item_v,
+                                    instance_of_any_subclass_of=instance_of_any_subclass_of,
+                                ),
+                            ),
+                            with_q1=with_qx(1).format(
+                                query_1=query_1.format(
+                                    item_k=item_k,
+                                    item_v=item_v,
+                                    field_k=field_k,
+                                    field_v=field_v,
+                                    with_q0="",
+                                    instance_of_any_subclass_of=instance_of_any_subclass_of,
+                                ),
+                            ),
+                            with_q2=with_qx(2).format(
+                                query_2=query_2.format(
+                                    item_k=item_k,
+                                    item_v=item_v,
+                                    field_k=field_k,
+                                    field_v=field_v,
+                                    sub_field_k=sub_field_k,
+                                    sub_field_v=sub_field_v,
+                                    with_q0="",
+                                    with_q1="",
+                                    instance_of_any_subclass_of=instance_of_any_subclass_of,
+                                ),
+                            ),
+                        )
+                    )
+for item_k, v in config['data'].items():
+    item_v = config['wikidata_items'][item_k]
+    add_query(
+        f"{item_k}",
+        query_0.format(
+            item_k=item_k,
+            item_v=item_v,
+            instance_of_any_subclass_of=instance_of_any_subclass_of,
+        )
+    )
+    for field_k, subfields in v.items():
+        if "-by-" in field_k:
+            # -by- is only useful for labels so far
+            pass
+        else:
+            field_v = config['wikidata_fields'][field_k]
+            add_query(
+                f"{item_k}/{field_k}",
+                query_1.format(
+                    item_k=item_k,
+                    item_v=item_v,
+                    field_k=field_k,
+                    field_v=field_v,
+                    with_q0=with_qx(0).format(
+                        query_0=query_0.format(
+                            item_k=item_k,
+                            item_v=item_v,
+                            instance_of_any_subclass_of=instance_of_any_subclass_of,
+                        ),
+                    ),
+                    instance_of_any_subclass_of=instance_of_any_subclass_of,
+                )
+            )
+            for sub_field_k in subfields:
+                sub_field_v = config['wikidata_fields'][sub_field_k]
+                add_query(
+                    f"{item_k}/{field_k}/{sub_field_k}",
+                    query_2.format(
+                        item_k=item_k,
+                        item_v=item_v,
+                        with_q0=with_qx(0).format(
+                            query_0=query_0.format(
+                                item_k=item_k,
+                                item_v=item_v,
+                                instance_of_any_subclass_of=instance_of_any_subclass_of,
+                            ),
+                        ),
+                        with_q1=with_qx(1).format(
+                            query_1=query_1.format(
+                                item_k=item_k,
+                                item_v=item_v,
+                                field_k=field_k,
+                                field_v=field_v,
+                                with_q0="",
+                                instance_of_any_subclass_of=instance_of_any_subclass_of,
+                            ),
+                        ),
+                        field_k=field_k,
+                        field_v=field_v,
+                        sub_field_k=sub_field_k,
+                        sub_field_v=sub_field_v,
+                        instance_of_any_subclass_of=instance_of_any_subclass_of,
+                    )
+                )
+write_force(
+    "/root/github.com/loicbourgois/movie_finder_local/data_v3/rdf_to_sql.sparql", 
+    "\n".join(
+        [
+            f"# {k}\n{v}" for k, v in queries.items()
+        ]
+    )
+)
+shared = {
+    "sleep_time": 0,
+}
 
 
 pull_data()

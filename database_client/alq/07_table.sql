@@ -1,0 +1,53 @@
+WITH media AS (
+  SELECT
+    item___label.label AS media,
+    item___label.language AS media_language,
+    item.item_id AS media_id,
+    item.kind AS media_kind
+  FROM item
+  INNER JOIN item___label
+    ON item.item_id = item___label.item_id
+  WHERE
+    item.kind IN ('documentary', 'film_series', 'western_animation', 'anime', 'animated_television_series')
+    AND item___label.label ILIKE '%christ%'
+), media_director AS (
+  SELECT
+    item___label.label AS media_director,
+    item___label.language AS media_director_language,
+    item___director.item_id AS media_director_up_id,
+    item___director.director_id AS media_director_id
+  FROM item___director
+  INNER JOIN item___label
+    ON item___director.director_id = item___label.item_id
+  WHERE
+    TRUE
+), media_publication_date AS (
+  SELECT
+    item___label.label AS media_publication_date,
+    item___label.language AS media_publication_date_language,
+    item___publication_date.item_id AS media_publication_date_up_id,
+    item___publication_date.publication_date_id AS media_publication_date_id
+  FROM item___publication_date
+  INNER JOIN item___label
+    ON item___publication_date.publication_date_id = item___label.item_id
+  WHERE
+    TRUE
+), q_all AS (
+  SELECT DISTINCT
+    *
+  FROM media
+  LEFT OUTER JOIN media_director
+    ON media.media_id = media_director.media_director_up_id
+  LEFT OUTER JOIN media_publication_date
+    ON media.media_id = media_publication_date.media_publication_date_up_id
+), q_limit AS (
+  SELECT DISTINCT
+    media_id
+  FROM q_all
+  LIMIT 2
+)
+SELECT
+  q_all.*
+FROM q_all
+INNER JOIN q_limit
+  ON q_all.media_id = q_limit.media_id

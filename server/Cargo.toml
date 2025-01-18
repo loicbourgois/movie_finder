@@ -15,4 +15,4 @@ reqwest = { version = "*", features = ["blocking"] }
 csv = "*"
 actix-cors = "*"
 openssl = { version = "*" }
-time = "0.3.35"
+time = "*"

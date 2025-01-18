@@ -3,99 +3,110 @@ use crate::HSHSHSS;
 use crate::HSHSS;
 use std::collections::HashMap;
 
+#[derive(Debug)]
+pub struct SourceItem<'a> {
+    source: &'a String,
+    wikidata_id: &'a String,
+}
+
+pub fn is_label(k: &str) -> bool {
+    k.contains("by_language/label")
+}
+
+pub fn is_inverted(k: &str) -> bool {
+    k.contains("inverted/")
+}
+
 pub fn search_media(
     search_str: &str,
     data_2: &HSHSHSS,
     movie_images: &HSHSS,
 ) -> HashMap<String, MediaSmall> {
-    println!("search_media - search_str: {search_str}");
     let mut counter = 0;
-    println!("search_media - data_2.keys: {:?}", data_2.keys());
-    let data_3 = data_2
+    // "inverted/relation/anime/genre"
+    data_2
         .keys()
-        .filter(|key| key.contains("inverted/label/"))
-        .flat_map(|kind| {
-            data_2[&(*kind).to_string()]
+        .filter(|mapping_kind| mapping_kind.contains("inverted/label/fr/anime/genre"))
+        .flat_map(|mapping_kind| {
+            println!("mapping_kind: {mapping_kind}");
+            data_2[&(*mapping_kind).to_string()]
                 .iter()
                 .filter(|(label, _)| label.to_lowercase().contains(&search_str.to_lowercase()))
-                .flat_map(|(_, v)| v.keys().map(std::string::ToString::to_string))
-        });
-    println!("search_media - data_3: {:?}", data_3);
-    data_3
-        .filter(|_| {
-            println!("search_media - counter: {counter}");
+                .flat_map(|(_, v)| {
+                    v.keys().map(|k| SourceItem {
+                        source: mapping_kind,
+                        wikidata_id: k,
+                    })
+                })
+        })
+        .filter(|source_item: &SourceItem| {
             counter += 1;
             counter <= 1000
         })
-        .map(|k| {
-            println!("search_media - wikidata_id: {k}");
+        .map(|source_item: SourceItem| {
+            let wikidata_id = source_item.wikidata_id;
             let mut m = MediaSmall {
-                wikidata_id: k.clone(),
+                wikidata_id: wikidata_id.clone(),
                 omdbs: HashMap::new(),
                 titles: HashMap::new(),
             };
-            get_mappings(&k, data_2)
-                .iter()
-                .map(|(k2, v2)| match k2.as_str() {
-                    "base/relation/anime/omdb_id" | "base/relation/film/omdb_id" => {
-                        for k3 in v2.keys() {
-                            match movie_images.get(k3) {
-                                Some(aa) => {
-                                    match aa.iter().max_by_key(|(k, _v)| match k.parse::<i32>() {
-                                        Ok(kv) => kv,
-                                        Err(_) => {
-                                            println!("{k}");
-                                            0
-                                        }
-                                    }) {
-                                        Some(v) => {
-                                            m.omdbs.insert(v.1.to_string(), v.0.to_string());
-                                        }
-                                        None => {}
-                                    }
-                                }
-                                None => {}
-                            }
-                        }
-                    }
-                    "by_language/label/film/film" | "by_language/label/anime/anime" => {
-                        for (k3, v3) in v2 {
+            for (msk, msv) in get_mappings(&wikidata_id, data_2) {
+                let msk_str = msk.as_str();
+                match msk_str {
+                    msk_str if is_label(msk_str) => {
+                        for (k3, v3) in msv {
                             m.titles.insert(k3.to_string(), v3.to_string());
                         }
                     }
-                    _ => {
-                        if !v2.is_empty() {
-                            println!("todo: {k2} {v2:?}");
+                    "base/relation/anime/omdb_id" | "base/relation/film/omdb_id" => {
+                        for k3 in msv.keys() {
+                            match movie_images.get(k3) {
+                                Some(imgs) => {
+                                    for (version, image_id) in imgs {
+                                        m.omdbs.insert(image_id.to_string(), version.to_string());
+                                    }
+                                }
+                                None => {
+                                    println!("no image for: wikidata_id={wikidata_id} k3={k3}");
+                                }
+                            }
                         }
                     }
-                });
-            (k, m)
+                    msk_str if is_inverted(msk_str) => {
+                        // pass
+                    }
+                    other => {
+                        println!("no implemented: {other}");
+                    }
+                }
+            }
+            (wikidata_id.clone(), m)
         })
         .collect::<HashMap<String, MediaSmall>>()
 }
 
-pub fn search(search_str: &str, data_2: &HSHSHSS) -> HashMap<String, Vec<String>> {
-    data_2
-        .keys()
-        .filter(|key| key.contains("inverted/label/"))
-        .map(|kind| {
-            (
-                (*kind).to_string(),
-                data_2[&(*kind).to_string()]
-                    .iter()
-                    .filter(|(label, _)| label.to_lowercase().contains(&search_str.to_lowercase()))
-                    .flat_map(|(_, v)| v.keys().map(std::string::ToString::to_string))
-                    .collect::<Vec<String>>(),
-            )
-        })
-        .collect::<HashMap<String, Vec<String>>>()
-}
+// pub fn search(search_str: &str, data_2: &HSHSHSS) -> HashMap<String, Vec<String>> {
+//     data_2
+//         .keys()
+//         .filter(|key| key.contains("inverted/label/"))
+//         .map(|kind| {
+//             (
+//                 (*kind).to_string(),
+//                 data_2[&(*kind).to_string()]
+//                     .iter()
+//                     .filter(|(label, _)| label.to_lowercase().contains(&search_str.to_lowercase()))
+//                     .flat_map(|(_, v)| v.keys().map(std::string::ToString::to_string))
+//                     .collect::<Vec<String>>(),
+//             )
+//         })
+//         .collect::<HashMap<String, Vec<String>>>()
+// }
 
 pub fn get_mappings(
     wikidata_id: &str,
     data_2: &HSHSHSS,
 ) -> HashMap<String, HashMap<String, String>> {
-    data_2
+    let r = data_2
         .iter()
         .map(|(kind, _)| {
             (
@@ -107,5 +118,6 @@ pub fn get_mappings(
                     .collect::<HashMap<String, String>>(),
             )
         })
-        .collect::<HashMap<String, HashMap<String, String>>>()
+        .collect::<HashMap<String, HashMap<String, String>>>();
+    r
 }

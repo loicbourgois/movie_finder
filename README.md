@@ -10,6 +10,14 @@ $HOME/github.com/loicbourgois/movie_finder/commands/deploy.sh
 ```
 
 
+## V3
+```sh
+$HOME/github.com/loicbourgois/movie_finder/commands/build_data.sh
+$HOME/github.com/loicbourgois/movie_finder/database/go.sh
+$HOME/github.com/loicbourgois/movie_finder/database_client/go.sh
+```
+
+
 ## Misc
 
 ```sh
@@ -21,16 +29,14 @@ $HOME/github.com/loicbourgois/movie_finder/commands/tail_raw.sh
 $HOME/github.com/loicbourgois/movie_finder/commands/remote_logs.sh
 
 
-$HOME/github.com/loicbourgois/movie_finder/commands/build_data.sh
-$HOME/github.com/loicbourgois/movie_finder/database/go.sh
-$HOME/github.com/loicbourgois/movie_finder/database_client/go.sh
+
 ```
 
 
 ## Sources
 
 - https://www.omdb.org/en/us/content/Help:DataDownload 
-- wikidata
+- https://query.wikidata.org/
 
 ```sh
 cd $HOME/github.com/loicbourgois/movie_finder_local/data_v2 \

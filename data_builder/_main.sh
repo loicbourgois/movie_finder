@@ -1,5 +1,6 @@
 #!/bin/sh
 cd /root/github.com/loicbourgois
+# python -m movie_finder.data_builder.old.main
 # python -m movie_finder.data_builder.main
 python -m movie_finder.data_builder.rdf_to_sql
 # pylint --jobs=0 \
