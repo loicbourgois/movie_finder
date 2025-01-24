@@ -12,9 +12,10 @@ $HOME/github.com/loicbourgois/movie_finder/commands/deploy.sh
 
 ## V3
 ```sh
+$HOME/github.com/loicbourgois/movie_finder/commands/lint.sh
 $HOME/github.com/loicbourgois/movie_finder/commands/build_data.sh
 $HOME/github.com/loicbourgois/movie_finder/database/go.sh
-$HOME/github.com/loicbourgois/movie_finder/database_client/go.sh
+$HOME/github.com/loicbourgois/movie_finder/database_client/go.sh sql/02
 ```
 
 

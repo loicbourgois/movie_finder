@@ -1,3 +1,46 @@
+query_relation_0 = """
+    select ?{subject}
+    where {{
+        ?a wdt:P279* {object}.
+        ?{subject} {predicate} ?a.
+    }}
+"""
+
+query_relation_1 = """
+    select ?{subject} ?{subject_field}
+    where {{
+        ?a wdt:P279* {object}.
+        ?{subject} {predicate} ?a.
+        ?{subject} {subject_field_predicate} ?{subject_field}.
+    }}
+"""
+
+query_language_relation_0 = """
+    select ?{subject} ?{subject}_label (lang(?{subject}_label) as ?lang)
+    where {{
+        ?a wdt:P279* {object}.
+        ?{subject} {predicate} ?a.
+        ?{subject} rdfs:label ?{subject}_label filter (lang(?{subject}_label) = "{language}").
+    }}
+"""
+
+query_language_relation_1 = """
+    select ?{subject_field} ?{subject_field}_label (lang(?{subject_field}_label) as ?lang)
+    with {{
+        select distinct ?{subject_field}
+        where {{
+            ?a wdt:P279* {object}.
+            ?{subject} {predicate} ?a.
+            ?{subject} {subject_field_predicate} ?{subject_field}.
+        }}
+    }} as %q1
+    where {{
+        include %q1
+        ?{subject_field} rdfs:label ?{subject_field}_label filter (lang(?{subject_field}_label) = "{language}").
+    }}
+"""
+
+
 query_0 = """
 SELECT distinct ?{item_k}
 WHERE {{
