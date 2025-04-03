@@ -50,6 +50,7 @@ def column_type_sql(ck, kind="wikidata"):
             "name": "text",
             "type": "text",
             "vote_average": "float",
+            "date": "date",
         },
     }[kind].get(ck, 'int')
 
@@ -63,6 +64,7 @@ def nullability_sql(ck, kind):
             "image_version": "",
             "type": "",
             "parent_id": "",
+            "date": "",
         },
     }[kind].get(ck, "not null")
 

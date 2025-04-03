@@ -149,5 +149,7 @@ def get_config():
             "movie_categories": {},
             "all_categories": {},
             "all_votes": {},
+            "all_movies": {},
+            "all_series": {},
         },
     }

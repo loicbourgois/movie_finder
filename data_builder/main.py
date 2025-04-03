@@ -22,19 +22,8 @@ def omdb_pull(config):
         runcmd_list(["bzip2", "-d", file], cwd=omdb_folder)
 
 
-
-# def omdb_convert_to_sql():
-#     for x in []:
-
-#         CREATE TABLE item (
-#   item_id int not null,
-#   kind kind not null
-# );
-
-
-# omdb_pull()
-# omdb_convert_to_sql()
 config = get_config()
+# omdb_pull(config)
 # queries = get_queries(config)
 # pull_data(config, queries)
 # convert_to_csv(config, queries)
