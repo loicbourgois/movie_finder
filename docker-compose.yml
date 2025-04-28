@@ -9,6 +9,13 @@ services:
       - $HOME/github.com/loicbourgois/movie_finder_local/data_v2:/root/github.com/loicbourgois/movie_finder_local/data_v2:rw
       - $HOME/github.com/loicbourgois/movie_finder_local/data_v3:/root/github.com/loicbourgois/movie_finder_local/data_v3:rw
       - $HOME/github.com/loicbourgois/movie_finder:/root/github.com/loicbourgois/movie_finder:ro
+  lint:
+    build:
+      context: $HOME/github.com/loicbourgois/movie_finder/data_builder
+      dockerfile: Dockerfile
+    command: /root/github.com/loicbourgois/movie_finder/data_builder/lint.sh
+    volumes:
+      - $HOME/github.com/loicbourgois/movie_finder:/root/github.com/loicbourgois/movie_finder:ro
   database:
     image: postgres:14
     environment:

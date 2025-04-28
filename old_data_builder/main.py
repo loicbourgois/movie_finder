@@ -1,6 +1,5 @@
 import logging
 logging.basicConfig(level=logging.INFO)
-logging.info("start")
 import requests
 import pandas
 from .misc import (
@@ -19,7 +18,7 @@ limit = ""
 
 base_data_path = f"{os.environ['HOME']}/github.com/loicbourgois/movie_finder_local/data_v2"
 withs = {
-    "director": "wdt:P57",
+    # "director": "wdt:P57",
     # "creator": common.with_creator,
     # "producer": common.with_producer,
     # "voice_actor": common.with_voice_actor,
@@ -28,7 +27,7 @@ withs = {
     # "cast_member": common.with_cast_member,
     # "omdb_id": "wdt:P3302",
     # "imdb_id": "wdt:P345",
-    # "genre": "wdt:P136",
+    "genre": "wdt:P136",
     # "review_score": "wdt:P444", -- deprecated
 }
 media_types = {
@@ -41,8 +40,8 @@ media_types = {
 }
 languages = {
     'en',
-    'fr',
-    'ja',
+    # 'fr',
+    # 'ja',
 }
 folders = ['label', 'relation']
 
@@ -54,7 +53,11 @@ subject_predicate_object = {
 }
 
 
-def query_to_file(path, query):
+def query_to_file(
+    path, 
+    query, 
+    dry_run=False,
+):
     logging.info(path)
     logging.info(query)
     try:
@@ -66,9 +69,12 @@ def query_to_file(path, query):
             'query': query,
             'format': 'json'
         })
-        r = requests.get(f"{endpoint_url}?{args}")
-        logging.info(f"CODE: {r.status_code}")
-        write_force(path, r.text)
+        if dry_run:
+            pass
+        else:
+            r = requests.get(f"{endpoint_url}?{args}")
+            logging.info(f"CODE: {r.status_code}")
+            write_force(path, r.text)
 
 
 def pull_data_relations():
@@ -757,6 +763,7 @@ def top_director():
         # logging.info(f"{x}")
 
 
+logging.info("start v2")
 # transform_omdb_data()
 # omdb_id__omdb_image_id__omdb_image_version()
 # omdb_id__omdb_image_id()
@@ -780,7 +787,7 @@ build_mappings_v2()
 # wikidata_id__imdb_id()
 # wmedia_id__wdirector_id()
 # media_wikidata_id__media_with_image()
-director__language__label()
-directors()
+# director__language__label()
+# directors()
 # top_media()
-top_director()
+# top_director()

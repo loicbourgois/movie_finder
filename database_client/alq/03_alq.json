@@ -1,0 +1,32 @@
+{
+    "select": {
+        "media": {
+            "kinds": {
+                "anime": ""
+            }
+        },
+        "media_genre": {
+            "item": "media",
+            "item_full": "media",
+            "field": "genre"
+        },
+        "media_cast_member": {
+            "item": "media",
+            "item_full": "media",
+            "field": "cast_member"
+        }
+    },
+    "select_keys": [
+        "media",
+        "media_cast_member",
+        "media_genre"
+    ],
+    "where": [
+        {
+            "field": "media.genre",
+            "comparator": "ilike",
+            "value": "%psychologie%"
+        }
+    ],
+    "limit": "3"
+}

@@ -12,6 +12,11 @@ media___label AS (
   SELECT * FROM label
 ),
 
+
+media___genre AS (
+  SELECT * FROM label
+),
+
 media___director AS (
   SELECT * FROM item___director
 ),
@@ -30,17 +35,14 @@ director___label AS (
 
 q AS (
   SELECT
-    media.item_id AS media_id,
-    media___label.label AS media,
-    -- ,media___publication_date.publication_date as release
-    media.kind AS media_kind,
-    director___label.label AS director,
-    director.item_id AS director_id
+    media.item_id AS media_id
+    ,media___label.label AS media
+    ,media.kind AS media_kind
+    ,director___label.label AS director
+    ,director.item_id AS director_id
   FROM media
   INNER JOIN media___label
     ON media.item_id = media___label.item_id
-    -- inner join media___publication_date
-    --     on media.item_id = media___publication_date.item_id
   INNER JOIN media___director
     ON media.item_id = media___director.item_id
   INNER JOIN director
@@ -48,8 +50,7 @@ q AS (
   INNER JOIN director___label
     ON director.item_id = director___label.item_id
 )
-
 SELECT *
 FROM q
-WHERE media_kind = 'anime'
+--WHERE media_kind = 'anime'
 LIMIT 10

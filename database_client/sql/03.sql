@@ -35,8 +35,8 @@ q AS (
     AND media.item_id = media___director.item_id
     AND media___director.director_id = director.item_id
     AND director.item_id = director___label.item_id
-    AND media___label.language = 'en'
-    AND director___label.language = 'en'
+    --AND media___label.language = 'en'
+    --AND director___label.language = 'en'
 )
 
 SELECT *

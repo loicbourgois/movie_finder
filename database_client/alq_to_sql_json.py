@@ -30,7 +30,7 @@ def joins_str(kf, alq):
         if v.get('item') == kf :
             join_type = "left outer"
             for uu in alq['where']:
-                if uu['field'] == k:
+                if uu['field'] == k or uu['field'].replace(".", "_") == k:
                     join_type = "inner"
             joins.append(
                 f"""
@@ -42,7 +42,7 @@ def joins_str(kf, alq):
             join_type = "left outer"
             for uu in alq['where']:
                 if uu['field'] == k:
-                    join_type = "inner"
+                    join_type = "inner /*j2*/ "
             joins.append(
                 f"""
                     /* c4 */
@@ -130,7 +130,7 @@ def alq_to_sql_json(text):
             {kf}_j.{kf}_id, {kf}_j.{kf}_data
         ) AS data
         FROM {kf}_j
-        INNER JOIN q_limit
+        INNER /*j3*/ JOIN q_limit
             ON {kf}_j.{kf}_id = q_limit.{kf}_id
             LIMIT 3
         )

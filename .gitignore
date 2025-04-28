@@ -2,3 +2,4 @@ cli/target/
 database/query/__pycache__
 server/target
 data_builder/.DS_Store
+database_client/__pycache__
