@@ -19,12 +19,17 @@ def omdb_pull(config):
         url = f"https://www.omdb.org/data/{item}.csv.bz2"
         file = f"{item}.csv.bz2"
         runcmd_list(["curl", url, "-O"], cwd=omdb_folder)
+        runcmd_list(["rm", file.replace(".csv.bz2", ".csv")], cwd=omdb_folder)
         runcmd_list(["bzip2", "-d", file], cwd=omdb_folder)
 
 
-config = get_config()
-# omdb_pull(config)
-# queries = get_queries(config)
-# pull_data(config, queries)
-# convert_to_csv(config, queries)
-convert_to_sql(config)
+def main():
+    config = get_config()
+    omdb_pull(config)
+    queries = get_queries(config)
+    pull_data(config, queries)
+    convert_to_csv(config, queries)
+    convert_to_sql(config)
+
+if __name__ == "__main__":
+    main()

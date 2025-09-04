@@ -69,7 +69,7 @@ def nullability_sql(ck, kind):
     }[kind].get(ck, "not null")
 
 
-def column_name(ck):
+def get_column_name(ck):
     return {
         "date_of_birth": "date_of_birth",
         "publication_date": "publication_date",
@@ -112,7 +112,7 @@ def transform_review_score(row):
             else:
                 row['review_score'] = s / 10
     except Exception:
-        logger.warn(f"could not transform review_score: {row['review_score']}")
+        logger.warning(f"could not transform review_score: {row['review_score']}")
         row['review_score'] = None
     return row
 
@@ -125,12 +125,12 @@ def to_database(
 ):
     table_name = f"item___{k}"
     if tables.get(table_name, pandas.DataFrame()).empty:
-        tables[table_name] = pandas.DataFrame({c: pandas.Series(dtype=t) for c, t in {'item_id': 'int', column_name(k): 'int'}.items()})
+        tables[table_name] = pandas.DataFrame({c: pandas.Series(dtype=t) for c, t in {'item_id': 'int', get_column_name(k): 'int'}.items()})
     df = pandas.read_csv(path)
     df.rename(
         columns={
             k_parent: "item_id",
-            k: column_name(k),
+            k: get_column_name(k),
         },
         inplace=True
     )
@@ -158,11 +158,11 @@ def to_database(
             raise Exception("error in to_database")
     df = df.dropna()
     tables[table_name] = pandas.concat([tables[table_name], df])
-    if column_type(column_name(k)) == "qid":
+    if column_type(get_column_name(k)) == "qid":
         df.rename(
             columns={
                 "item_id": "type",
-                column_name(k): "item_id",
+                get_column_name(k): "item_id",
             },
             inplace=True
         )
@@ -172,7 +172,7 @@ def to_database(
 
 
 def add_kind(kinds, k, v):
-    if column_type(column_name(k)) == "qid":
+    if column_type(get_column_name(k)) == "qid":
         kinds[k] = k
     for k2, v2 in v.items():
         add_kind(kinds, k2, v2)
@@ -182,9 +182,9 @@ def create_table(table_create_queries, k, v):
     table_create_queries[k] = {
         'name': f"item___{k}",
         'column': f"{k}_id",
-        'column_type': column_type_sql(column_name(k)),
+        'column_type': column_type_sql(get_column_name(k)),
     }
-    if column_type(column_name(k)) != "qid":
+    if column_type(get_column_name(k)) != "qid":
         table_create_queries[k]["column"] = k
     for k2, v2 in v.items():
         create_table(table_create_queries, k2, v2)

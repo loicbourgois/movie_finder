@@ -15,6 +15,10 @@ disable=invalid-name,
         too-many-nested-blocks,
         too-many-branches,
         logging-format-interpolation,
+        too-many-arguments,
+        consider-using-with,
+        wrong-import-position,
+        too-many-positional-arguments,
 
 [TYPECHECK]
 # List of members which are set dynamically and missed by Pylint inference

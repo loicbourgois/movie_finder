@@ -1,6 +1,6 @@
-from .logger import get_logger
 from functools import cmp_to_key
 import pandas
+from .logger import get_logger
 from .query import (
     query_0,
     query_1,
