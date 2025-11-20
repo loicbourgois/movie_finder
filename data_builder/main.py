@@ -11,12 +11,12 @@ from .pull_data import pull_data
 def main():
     logger.info("start")
     config = get_config()
-    queries = get_queries(config)
-    omdb_pull(config)
-    pull_data(config, queries)
-    convert_to_csv(config, queries)
-    convert_to_sql(config)
-    generate_database_config(config)
+    # queries = get_queries(config)
+    # omdb_pull(config)
+    # pull_data(config, queries)
+    # convert_to_csv(config, queries)
+    # convert_to_sql(config)
+    # generate_database_config(config)
 
 
 if __name__ == "__main__":

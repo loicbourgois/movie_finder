@@ -37,12 +37,12 @@ logging.setLogRecordFactory(record_factory)
 
 
 def set_up_logger(name):
-    os.environ['logger_name'] = name
+    os.environ["logger_name"] = name
 
 
 def get_logger(name=None):
     if name is None:
-        name = os.environ.get('logger_name', 'default_logger')
+        name = os.environ.get("logger_name", "default_logger")
     logger = logging.getLogger(name)
     if len(logger.handlers) > 0:
         return logger

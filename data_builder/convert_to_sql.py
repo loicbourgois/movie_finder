@@ -6,11 +6,11 @@ import pandas
 from .logger import get_logger
 from .shared import aligned_advancement
 
-logger = get_logger('data_builder')
+logger = get_logger("data_builder")
 
 
 def create_parent_folder(path):
-    folder = path.replace(path.split("/")[-1], '')
+    folder = path.replace(path.split("/")[-1], "")
     if not os.path.exists(folder):
         os.makedirs(folder)
 
@@ -26,7 +26,7 @@ def column_type(ck):
         "omdb_id": "numeric",
         "review_score": "review_score",
         "imdb_id": "string",
-    }.get(ck, 'qid')
+    }.get(ck, "qid")
 
 
 def column_type_sql(ck, kind="wikidata"):
@@ -55,7 +55,7 @@ def column_type_sql(ck, kind="wikidata"):
             "vote_average": "float",
             "date": "date",
         },
-    }[kind].get(ck, 'int')
+    }[kind].get(ck, "int")
 
 
 def nullability_sql(ck, kind):
@@ -94,28 +94,28 @@ def get_df_label(path=None, k=None):
         "lang": "language"
     }, inplace=True)
     col = "item_id"
-    df = df[df[col].str.contains('http://www.wikidata.org/entity/Q')]
-    df[col] = df[col].str.replace("http://www.wikidata.org/entity/Q", '')
+    df = df[df[col].str.contains("http://www.wikidata.org/entity/Q")]
+    df[col] = df[col].str.replace("http://www.wikidata.org/entity/Q", "")
     return df.astype({col: int})
 
 
 def transform_review_score(row):
     try:
-        str_ = row['review_score'].replace(",", ".")
+        str_ = row["review_score"].replace(",", ".")
         split_1 = str_.split("/")
         if str_.endswith("%"):
-            row['review_score'] = float(str_.replace("%", "")) / 100.0
+            row["review_score"] = float(str_.replace("%", "")) / 100.0
         elif len(split_1) == 2:
-            row['review_score'] = float(split_1[0]) / float(split_1[1])
+            row["review_score"] = float(split_1[0]) / float(split_1[1])
         else:
             s = float(str_)
             if s > 10:
-                row['review_score'] = s / 100
+                row["review_score"] = s / 100
             else:
-                row['review_score'] = s / 10
+                row["review_score"] = s / 10
     except Exception:
         logger.warning(f"could not transform review_score: {row['review_score']}")
-        row['review_score'] = None
+        row["review_score"] = None
     return row
 
 
@@ -127,7 +127,7 @@ def to_database(
 ):
     table_name = f"item___{k}"
     if tables.get(table_name, pandas.DataFrame()).empty:
-        tables[table_name] = pandas.DataFrame({c: pandas.Series(dtype=t) for c, t in {'item_id': 'int', get_column_name(k): 'int'}.items()})
+        tables[table_name] = pandas.DataFrame({c: pandas.Series(dtype=t) for c, t in {"item_id": "int", get_column_name(k): "int"}.items()})
     df = pandas.read_csv(path)
     df.rename(
         columns={
@@ -139,8 +139,8 @@ def to_database(
     df = df.dropna()
     for col in list(df.columns):
         if column_type(col) == "qid":
-            df = df[df[col].str.contains('http://www.wikidata.org/entity/Q')]
-            df[col] = df[col].str.replace("http://www.wikidata.org/entity/Q", '')
+            df = df[df[col].str.contains("http://www.wikidata.org/entity/Q")]
+            df[col] = df[col].str.replace("http://www.wikidata.org/entity/Q", "")
             df = df.astype({col: int})
         elif column_type(col) == "date":
             df[col] = pandas.to_datetime(df[col], format="%Y-%m-%dT%H:%M:%SZ", errors="coerce")
@@ -148,7 +148,7 @@ def to_database(
             df = df.astype({col: int})
         elif column_type(col) == "numeric":
             df = df.astype({col: str})
-            df = df[~df[col].str.contains('http://www.wikidata.org/.well-known/genid') ]
+            df = df[~df[col].str.contains("http://www.wikidata.org/.well-known/genid") ]
             df[col] = pandas.to_numeric(df[col])
         elif column_type(col) == "string":
             df = df.astype({col: str})
@@ -167,7 +167,7 @@ def to_database(
             },
             inplace=True
         )
-        df['type'] = k
+        df["type"] = k
         tables["item"] = pandas.concat([tables["item"], df])
     return tables
 
@@ -176,7 +176,7 @@ def wikidata_ids_from_csv(path, csv_file):
     df = pandas.read_csv(path)
     data = df.to_dict(orient="records")
     data = [
-        x[csv_file].replace('http://www.wikidata.org/entity/', '')
+        x[csv_file].replace("http://www.wikidata.org/entity/", "")
         for x in data
     ]
     def cmp_(a,b):
@@ -189,12 +189,12 @@ def wikidata_ids_from_csv(path, csv_file):
 
 def get_todos(config):
     todos = []
-    for k, v in config['data'].items():
+    for k, v in config["data"].items():
         todos.append({
-            'short_path': f'{k}',
-            'table': 'item',
-            'type': k,
-            'level': 1,
+            "short_path": f"{k}",
+            "table": "item",
+            "type": k,
+            "level": 1,
         })
         for k2, v2 in v.items():
             if "-by-" in k2:
@@ -202,60 +202,60 @@ def get_todos(config):
                 logger.info(f"(skip) {k}/{k2}")
             else:
                 todos.append({
-                    'short_path': f'{k}/{k2}',
-                    'k_parent': k,
-                    'k': k2,
-                    'level': 2,
+                    "short_path": f"{k}/{k2}",
+                    "k_parent": k,
+                    "k": k2,
+                    "level": 2,
                 })
                 for k3 in v2.keys():
-                    if f"{k}/{k2}/{k3}" in config['custom']:
+                    if f"{k}/{k2}/{k3}" in config["custom"]:
                         logger.info(f"(skip) {k}/{k2}/{k3}")
                     else:
                         todos.append({
-                            'short_path': f'{k}/{k2}/{k3}',
-                            'k_parent': k2,
-                            'k': k3,
-                            'level': 3,
+                            "short_path": f"{k}/{k2}/{k3}",
+                            "k_parent": k2,
+                            "k": k3,
+                            "level": 3,
                         })
-    for l in config['languages']:
-        for k, v in config['data'].items():
+    for l in config["languages"]:
+        for k, v in config["data"].items():
             todos.append({
-                'short_path': f'{l}/{k}',
-                'k': k,
-                'level': 'label',
+                "short_path": f"{l}/{k}",
+                "k": k,
+                "level": "label",
             })
             for k2, v2 in v.items():
-                if f"{l}/{k}/{k2}" in config['custom']:
+                if f"{l}/{k}/{k2}" in config["custom"]:
                     logger.info(f"(skip) {l}/{k}/{k2}")
                 else:
                     if "-by-" in k2:
                         k2a = k2.split("-by-")[0]
                         k2b = k2.split("-by-")[1]
-                        csv_file = config['bys'][k2b]['csv']
+                        csv_file = config["bys"][k2b]["csv"]
                         path = f"/root/github.com/loicbourgois/movie_finder_local/data_v3/csv/{csv_file}.csv"
                         for with_wd in wikidata_ids_from_csv(path, csv_file):
                             todos.append({
-                                'short_path': f"{l}/{k}/{k2a}/by/{k2b}/{with_wd}",
-                                'k': k2a,
-                                'level': 'label',
+                                "short_path": f"{l}/{k}/{k2a}/by/{k2b}/{with_wd}",
+                                "k": k2a,
+                                "level": "label",
                             })
                     else:
                         todos.append({
-                            'short_path': f"{l}/{k}/{k2}",
-                            'k': k2,
-                            'level': 'label',
+                            "short_path": f"{l}/{k}/{k2}",
+                            "k": k2,
+                            "level": "label",
                         })
                         for k3 in v2.keys():
                             todos.append({
-                                'short_path': f"{l}/{k}/{k2}/{k3}",
-                                'k': k3,
-                                'level': 'label',
+                                "short_path": f"{l}/{k}/{k2}/{k3}",
+                                "k": k3,
+                                "level": "label",
                             })
-    for name in config['omdb'].keys():
+    for name in config["omdb"].keys():
         todos.append({
-            'short_path': f"omdb/{name}",
-            'level': 'omdb',
-            'table': f"omdb___{name}",
+            "short_path": f"omdb/{name}",
+            "level": "omdb",
+            "table": f"omdb___{name}",
         })
     return todos
 
@@ -263,42 +263,42 @@ def get_todos(config):
 def convert_to_sql(config):
     logger.info("convert_to_sql - A")
     tables = {
-        "item": pandas.DataFrame({c: pandas.Series(dtype=t) for c, t in {'item_id': 'int', 'type': 'str'}.items()}),
-        "item___label": pandas.DataFrame({c: pandas.Series(dtype=t) for c, t in {'item_id': 'int', 'language': 'str', 'label': 'str'}.items()}),
+        "item": pandas.DataFrame({c: pandas.Series(dtype=t) for c, t in {"item_id": "int", "type": "str"}.items()}),
+        "item___label": pandas.DataFrame({c: pandas.Series(dtype=t) for c, t in {"item_id": "int", "language": "str", "label": "str"}.items()}),
     }
     logger.info("convert_to_sql - C")
     todos = get_todos(config)
     for (i, x) in enumerate(todos):
         logger.info(f"(convert) {aligned_advancement(i,len(todos))} - {x['short_path']}")
         path = f"/root/github.com/loicbourgois/movie_finder_local/data_v3/csv/{x['short_path']}.csv"
-        if x['level'] == 1:
+        if x["level"] == 1:
             df = pandas.read_csv(path)
-            df['type'] = x['type']
-            df.rename(columns={x['type']: "item_id"}, inplace=True)
-            df['item_id'] = df['item_id'].str.replace("http://www.wikidata.org/entity/Q", '')
-            df = df.astype({'item_id': int})
-            tables[x['table']] = pandas.concat([tables[x['table']], df])
-        elif x['level'] in [2, 3]:
+            df["type"] = x["type"]
+            df.rename(columns={x["type"]: "item_id"}, inplace=True)
+            df["item_id"] = df["item_id"].str.replace("http://www.wikidata.org/entity/Q", "")
+            df = df.astype({"item_id": int})
+            tables[x["table"]] = pandas.concat([tables[x["table"]], df])
+        elif x["level"] in [2, 3]:
             tables = to_database(
                 tables=tables,
-                k=x['k'],
-                k_parent=x['k_parent'],
+                k=x["k"],
+                k_parent=x["k_parent"],
                 path=path,
             )
-        elif x['level'] == "label":
+        elif x["level"] == "label":
             tables["item___label"] = pandas.concat([
                 tables["item___label"],
                 get_df_label(
                     path=path,
-                    k=x['k'],
+                    k=x["k"],
                 )
             ])
-        elif x['level'] == "omdb":
-            df = pandas.read_csv(path, on_bad_lines='warn')
+        elif x["level"] == "omdb":
+            df = pandas.read_csv(path, on_bad_lines="warn")
             for column_name in list(df.columns):
                 df = df.astype({column_name: str})
                 df[column_name] = df[column_name].str.replace("\\N", "")
-            tables[x['table']] = df
+            tables[x["table"]] = df
         else:
             raise Exception(f"error: invalid level: {x['level']}")
     logger.info("convert_to_sql - E")

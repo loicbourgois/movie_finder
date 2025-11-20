@@ -34,7 +34,7 @@ def wikidata_ids_from_csv(path, csv_file):
     df = pandas.read_csv(path)
     data = df.to_dict(orient="records")
     data = [
-        x[csv_file].replace('http://www.wikidata.org/entity/', '')
+        x[csv_file].replace("http://www.wikidata.org/entity/", "")
         for x in data
     ]
     def cmp_(a,b):
@@ -57,9 +57,9 @@ def add_query(queries, path, q):
 
 def get_queries(config):
     queries = {}
-    for lang in config['languages']:
-        for item_k, v in config['data'].items():
-            item_v = config['wikidata_items'][item_k]
+    for lang in config["languages"]:
+        for item_k, v in config["data"].items():
+            item_v = config["wikidata_items"][item_k]
             if isinstance(item_v, str):
                 add_query(
                     queries,
@@ -80,10 +80,10 @@ def get_queries(config):
                     if "-by-" in field_k:
                         field_ka = field_k.split("-by-")[0]
                         field_kb = field_k.split("-by-")[1]
-                        item_wdt = config['wikidata_fields'][field_ka]
-                        with_wdt = config['wikidata_fields'][field_kb]
+                        item_wdt = config["wikidata_fields"][field_ka]
+                        with_wdt = config["wikidata_fields"][field_kb]
                         qk = f"{lang}/{item_k}/{field_ka}/by/{field_kb}"
-                        csv_file = config['bys'][field_kb]['csv']
+                        csv_file = config["bys"][field_kb]["csv"]
                         path = f"/root/github.com/loicbourgois/movie_finder_local/data_v3/csv/{csv_file}.csv"
                         for with_wd in wikidata_ids_from_csv(path, csv_file):
                             add_query(
@@ -101,7 +101,7 @@ def get_queries(config):
                                 ),
                             )
                     else:
-                        field_v = config['wikidata_fields'][field_k]
+                        field_v = config["wikidata_fields"][field_k]
                         add_query(
                             queries,
                             f"{lang}/{item_k}/{field_k}",
@@ -128,7 +128,7 @@ def get_queries(config):
                             )
                         )
                         for sub_field_k in subfields:
-                            sub_field_v = config['wikidata_fields'][sub_field_k]
+                            sub_field_v = config["wikidata_fields"][sub_field_k]
                             add_query(
                                 queries,
                                 f"{lang}/{item_k}/{field_k}/{sub_field_k}",
@@ -173,8 +173,8 @@ def get_queries(config):
                     f"{lang}/{item_k}",
                     query_language_relation_0.format(
                         subject=item_k,
-                        predicate=item_v['predicate'],
-                        object=item_v['object'],
+                        predicate=item_v["predicate"],
+                        object=item_v["object"],
                         language=lang,
                     )
                 )
@@ -184,15 +184,15 @@ def get_queries(config):
                         f"{lang}/{item_k}/{field_k}",
                         query_language_relation_1.format(
                             subject=item_k,
-                            predicate=item_v['predicate'],
-                            object=item_v['object'],
+                            predicate=item_v["predicate"],
+                            object=item_v["object"],
                             language=lang,
-                            subject_field_predicate=config['wikidata_fields'][field_k],
+                            subject_field_predicate=config["wikidata_fields"][field_k],
                             subject_field=field_k,
                         )
                     )
-    for item_k, v in config['data'].items():
-        item_v = config['wikidata_items'][item_k]
+    for item_k, v in config["data"].items():
+        item_v = config["wikidata_items"][item_k]
         if isinstance(item_v, str):
             add_query(
                 queries,
@@ -208,7 +208,7 @@ def get_queries(config):
                     # -by- is only useful for labels so far
                     pass
                 else:
-                    field_v = config['wikidata_fields'][field_k]
+                    field_v = config["wikidata_fields"][field_k]
                     add_query(
                         queries,
                         f"{item_k}/{field_k}",
@@ -228,7 +228,7 @@ def get_queries(config):
                         )
                     )
                     for sub_field_k in subfields:
-                        sub_field_v = config['wikidata_fields'][sub_field_k]
+                        sub_field_v = config["wikidata_fields"][sub_field_k]
                         add_query(
                             queries,
                             f"{item_k}/{field_k}/{sub_field_k}",
@@ -265,8 +265,8 @@ def get_queries(config):
                 f"{item_k}",
                 query_relation_0.format(
                     subject=item_k,
-                    predicate=item_v['predicate'],
-                    object=item_v['object'],
+                    predicate=item_v["predicate"],
+                    object=item_v["object"],
                 )
             )
             for field_k, subfields in v.items():
@@ -275,9 +275,9 @@ def get_queries(config):
                     f"{item_k}/{field_k}",
                     query_relation_1.format(
                         subject=item_k,
-                        predicate=item_v['predicate'],
-                        object=item_v['object'],
-                        subject_field_predicate=config['wikidata_fields'][field_k],
+                        predicate=item_v["predicate"],
+                        object=item_v["object"],
+                        subject_field_predicate=config["wikidata_fields"][field_k],
                         subject_field=field_k,
                     )
                 )

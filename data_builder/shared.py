@@ -1,21 +1,36 @@
+import csv
 import os
+from pathlib import Path
 
 
 def read(path):
-    with open(path, "r", encoding="utf-8") as file:
+    with Path(path).open("r", encoding="utf-8") as file:
         return file.read()
 
 
-def write_force(path, content):
-    folder = path.replace(path.split("/")[-1], '')
+def create_parent_folder(path):
+    folder = path.replace(path.split("/")[-1], "")
     if not os.path.exists(folder):
         os.makedirs(folder)
-    with open(path, 'w', encoding="utf-8") as f:
+
+
+def write_force(path, content):
+    folder = path.replace(path.split("/")[-1], "")
+    if not os.path.exists(folder):
+        os.makedirs(folder)
+    with Path(path).open("w", encoding="utf-8") as f:
         f.write(content)
 
 
+def write_force_csv(path, rows):
+    create_parent_folder(path)
+    with Path(path).open("w", encoding="utf-8") as file:
+        writer = csv.writer(file)
+        writer.writerows(rows)
+
+
 def path_local(path):
-    return path.replace('/root/', '$HOME/')
+    return path.replace("/root/", "$HOME/")
 
 
 def align_right(str_, length):

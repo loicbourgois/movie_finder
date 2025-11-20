@@ -14,11 +14,11 @@ logger = get_logger()
 def query_to_file(path, query):
     start = time.time()
     args = urllib.parse.urlencode({
-        'query': query,
-        'format': 'json'
+        "query": query,
+        "format": "json"
     })
     headers = {
-        'User-Agent': 'movie_finder/v2'
+        "User-Agent": "movie_finder/v2"
     }
     try:
         r = requests.get(
@@ -48,7 +48,7 @@ def pull_data(config, queries):
             remaining_queries[k] = v
     for i, (k, v) in enumerate(remaining_queries.items()):
         path_json = "/root/github.com/loicbourgois/movie_finder_local/data_v3/json/" + k + ".json"
-        if k in config['custom']:
+        if k in config["custom"]:
             logger.info(f"(skip) {aligned_advancement(i,len(remaining_queries))} - {path_local(path_json)}")
         else:
             logger.info(f"(pull) {aligned_advancement(i,len(remaining_queries))} - {path_local(path_json)}")

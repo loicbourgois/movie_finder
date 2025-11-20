@@ -6,7 +6,7 @@ from .runcmd import runcmd_list
 def omdb_pull(config):
     omdb_folder = "/root/github.com/loicbourgois/movie_finder_local/data_v3/csv/omdb"
     runcmd_list(["mkdir", "-p", omdb_folder])
-    for item in config['omdb'].keys():
+    for item in config["omdb"].keys():
         url = f"https://www.omdb.org/data/{item}.csv.bz2"
         file = f"{item}.csv.bz2"
         runcmd_list(["curl", url, "-O"], cwd=omdb_folder)
