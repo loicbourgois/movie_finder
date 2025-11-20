@@ -1,9 +1,9 @@
-import uuid
-import subprocess
 import os
+import subprocess
 import time
-from .logger import get_logger
-logger = get_logger()
+import uuid
+
+from .logger import logger
 
 
 def short_path(x):
@@ -14,7 +14,7 @@ def grey(x):
     return x
 
 
-runcmd_list_stdouts = {}
+runcmd_list_stdouts : dict[str, list] = {}
 
 
 def runcmd_list(

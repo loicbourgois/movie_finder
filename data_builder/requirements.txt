@@ -4,3 +4,8 @@ requests
 qwikidata
 pandas
 pylint
+flake8
+ruff
+mypy
+pandas-stubs
+types-requests

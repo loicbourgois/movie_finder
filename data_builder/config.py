@@ -1,6 +1,10 @@
 import json
 
 
+def json_copy(x):
+    return json.loads(json.dumps(x))
+
+
 def get_config():
     wikidata_fields = {
         "director": "wdt:P57",
@@ -51,10 +55,6 @@ def get_config():
         "gender_identity": "wd:Q48264",
         "country_of_citizenship": "wd:Q6256",
         "gender": "wd:Q48277",
-        # "painter": {
-        #     "relation": "P106", # occupation
-        #     "item": "Q1028181", # painter
-        # },
         "professional_painter": {
             "predicate": "wdt:P101",    # field of work
             "object": "wd:Q11629",      # art of painting
@@ -77,21 +77,21 @@ def get_config():
         "genre": {},
     }
     media = {
-        "director": json.loads(json.dumps(media_person)),
-        "producer": json.loads(json.dumps(media_person)),
-        "creator": json.loads(json.dumps(media_person)),
-        "screen_writer": json.loads(json.dumps(media_person)),
+        "director": json_copy(media_person),
+        "producer": json_copy(media_person),
+        "creator": json_copy(media_person),
+        "screen_writer": json_copy(media_person),
         "publication_date": {},
-        "cast_member": json.loads(json.dumps(media_person)),
+        "cast_member": json_copy(media_person),
         "imdb_id": {},
-        "narrator": json.loads(json.dumps(media_person)),
+        "narrator": json_copy(media_person),
         "award_received": {},
         "genre": {},
-        "characters": json.loads(json.dumps(media_person)),
+        "characters": json_copy(media_person),
         "main_subject": {},
         "original_language": {},
-        "composer": json.loads(json.dumps(media_person)),
-        "film_editor": json.loads(json.dumps(media_person)),
+        "composer": json_copy(media_person),
+        "film_editor": json_copy(media_person),
         "inspired_by": {},
         "depicts": {},
         "nominated_for": {},
@@ -103,32 +103,37 @@ def get_config():
         "review_score": {},
     }
     data = {
-        # "documentary": json.loads(json.dumps(media)),
-        # "film_series": json.loads(json.dumps(media)),
-        # "western_animation": json.loads(json.dumps(media)),
-        # "anime": json.loads(json.dumps(media)),
-        "animated_television_series": json.loads(json.dumps(media)),
-        "television_series": json.loads(json.dumps(media)),
-        "film": json.loads(json.dumps(media)),
-        # "country": {},
-        # "gender": {},
-        # "professional_painter": json.loads(json.dumps(media_person)),
-        # "professional_artist": json.loads(json.dumps(media_person)),
-        # "professional_actor": json.loads(json.dumps(media_person)),
+        "documentary": json_copy(media),
+        "film_series": json_copy(media),
+        "western_animation": json_copy(media),
+        "anime": json_copy(media),
+        "animated_television_series": json_copy(media),
+        "television_series": json_copy(media),
+        "film": json_copy(media),
+        "country": {},
+        "gender": {},
+        "professional_painter": json_copy(media_person),
+        "professional_artist": json_copy(media_person),
+        "professional_actor": json_copy(media_person),
     }
-    # data['film']['cast_member-by-gender'] = {}
     bys = {
-        # "country_of_citizenship": {
-        #     "csv": "country",
-        # },
+        "country_of_citizenship": {
+            "csv": "country",
+        },
         "gender": {
             "csv": "gender",
         }
     }
+    # https://www.wikidata.org/wiki/Help:Wikimedia_language_codes/lists/all
     languages = {
+        "fr": {},
         "en": {},
-        # "fr": {},
-        # "ja": {},
+        "ja": {},
+        "es": {},   # spanish
+        "yue": {},  # cantonese
+        "zh": {},   # chinese
+        "cmn": {},  # chinese
+        "hi": {},   # hindi
     }
     return {
         "data": data,
@@ -137,9 +142,17 @@ def get_config():
         "wikidata_items": wikidata_items,
         "bys": bys,
         "custom": {
-            "en/film/cast_member": {}, # too big to pull
-            "ja/film/cast_member": {}, # too big to pull
+            # too big
             "film/cast_member/nominated_for": {},
+            "en/film/cast_member": {},
+            "ja/film/cast_member": {},
+            "es/film/cast_member": {},
+            "yue/film/cast_member": {},
+            "zh/film/cast_member": {},
+            "hi/film/cast_member": {},
+            "zh/film/cast_member/gender": {},
+            # no result
+            "cmn/television_series/cast_member": {},
         },
         "omdb": {
             "movie_links": {},

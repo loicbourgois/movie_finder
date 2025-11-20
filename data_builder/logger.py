@@ -1,7 +1,6 @@
 import logging
 import os
 
-
 old_factory = logging.getLogRecordFactory()
 
 
@@ -41,13 +40,19 @@ def set_up_logger(name):
     os.environ['logger_name'] = name
 
 
-def get_logger(name=os.environ.get('logger_name', 'default_logger')):
+def get_logger(name=None):
+    if name is None:
+        name = os.environ.get('logger_name', 'default_logger')
     logger = logging.getLogger(name)
     if len(logger.handlers) > 0:
         return logger
     logger.propagate = False
     logger.setLevel(logging.DEBUG)
     console_handler = logging.StreamHandler()
-    console_handler.setFormatter(logging.Formatter("%(custom_prefix_2)s · %(message)s"))
+    console_handler.setFormatter(logging.Formatter("%(asctime)s · %(custom_prefix_2)s · %(message)s"))
     logger.addHandler(console_handler)
     return logger
+
+
+set_up_logger("movie_finder")
+logger = get_logger()

@@ -1,13 +1,18 @@
 #!/bin/sh
+# file://./../../movie_finder_local/data_v3/database/go_inner.sh
 set -e
 DATABASE_USER=local_dev
 DATABASE_DBNAME=local_dev
 DATABASE_PASSWORD=local_dev_password
 psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
-	CREATE USER local_dev;
-	alter user local_dev password 'local_dev_password';
-	CREATE DATABASE local_dev;
-	GRANT ALL PRIVILEGES ON DATABASE local_dev TO local_dev;
+	-- fix for 
+	-- 	checkpoints are occurring too frequently
+	--	HINT:  Consider increasing the configuration parameter "max_wal_size".
+	ALTER SYSTEM SET max_wal_size = '4GB';
+	-- Reload configuration to apply changes
+    SELECT pg_reload_conf(); 
+	CREATE USER $DATABASE_USER PASSWORD '$DATABASE_PASSWORD';
+	CREATE DATABASE $DATABASE_DBNAME OWNER $DATABASE_USER;
 EOSQL
 PGPASSWORD=$DATABASE_PASSWORD psql -v ON_ERROR_STOP=1 --username $DATABASE_USER --dbname $DATABASE_DBNAME \
 	-c "\timing" \

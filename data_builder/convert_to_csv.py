@@ -1,9 +1,12 @@
 import csv
 import json
 import os
+
 import pandas
+
 from .logger import get_logger
-from .shared import read, path_local, aligned_advancement
+from .shared import aligned_advancement, path_local, read
+
 logger = get_logger("data_builder")
 
 

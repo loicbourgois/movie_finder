@@ -1,20 +1,23 @@
 from functools import cmp_to_key
+
 import pandas
+
 from .logger import get_logger
 from .query import (
-    query_0,
-    query_1,
-    query_2,
     q0l,
     q1l,
     q2l,
+    query_0,
+    query_1,
+    query_2,
     query_by,
-    query_relation_0,
-    query_relation_1,
     query_language_relation_0,
     query_language_relation_1,
+    query_relation_0,
+    query_relation_1,
 )
 from .shared import write_force
+
 logger = get_logger("movie_finder")
 instance_of_any_subclass_of = "wdt:P31/wdt:P279*"
 

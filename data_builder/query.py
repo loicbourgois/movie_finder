@@ -47,6 +47,7 @@ WHERE {{
     ?{item_k} {instance_of_any_subclass_of} {item_v} .
 }}
 """
+
 query_1 = """# {item_k} -.-> {field_k}
 SELECT distinct ?{item_k} ?{field_k}
 {with_q0}
@@ -55,6 +56,7 @@ WHERE {{
     ?{item_k} {field_v} ?{field_k} .
 }}
 """
+
 query_2 = """# {item_k}__{field_k} -.-> {sub_field_k}
 select distinct ?{field_k} ?{sub_field_k}
 {with_q0}
@@ -64,6 +66,7 @@ where {{
     ?{field_k} {sub_field_v} ?{sub_field_k} .
 }}
 """
+
 query_by = """
     SELECT ?{item} ?{item}_label (lang(?{item}_label) as ?lang)
     with {{
@@ -88,6 +91,7 @@ WHERE {{
     ?{item_k} rdfs:label ?{item_k}_label filter (lang(?{item_k}_label) = "{lang}").
 }}
 """
+
 q1l = """
 SELECT ?{field_k} ?{field_k}_label (lang(?{field_k}_label) as ?lang)
 {with_q0}
@@ -103,6 +107,7 @@ WHERE {{
     ?{field_k} rdfs:label ?{field_k}_label filter (lang(?{field_k}_label) = "{lang}").
 }}
 """
+
 q2l = """
 SELECT ?{sub_field_k} ?{sub_field_k}_label (lang(?{sub_field_k}_label) as ?lang)
 {with_q0}

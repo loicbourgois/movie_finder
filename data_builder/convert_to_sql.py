@@ -1,8 +1,11 @@
 import os
 from functools import cmp_to_key
+
 import pandas
-from .shared import write_force, aligned_advancement, read
+
 from .logger import get_logger
+from .shared import aligned_advancement
+
 logger = get_logger('data_builder')
 
 
@@ -93,8 +96,7 @@ def get_df_label(path=None, k=None):
     col = "item_id"
     df = df[df[col].str.contains('http://www.wikidata.org/entity/Q')]
     df[col] = df[col].str.replace("http://www.wikidata.org/entity/Q", '')
-    df = df.astype({col: int})
-    return df
+    return df.astype({col: int})
 
 
 def transform_review_score(row):
@@ -151,7 +153,6 @@ def to_database(
         elif column_type(col) == "string":
             df = df.astype({col: str})
         elif column_type(col) == "review_score":
-            # df = df.astype({col: str})
             df = df.transform(transform_review_score, axis=1)
             df[col] = pandas.to_numeric(df[col])
         else:
@@ -171,25 +172,6 @@ def to_database(
     return tables
 
 
-def add_kind(kinds, k, v):
-    if column_type(get_column_name(k)) == "qid":
-        kinds[k] = k
-    for k2, v2 in v.items():
-        add_kind(kinds, k2, v2)
-
-
-def create_table(table_create_queries, k, v):
-    table_create_queries[k] = {
-        'name': f"item___{k}",
-        'column': f"{k}_id",
-        'column_type': column_type_sql(get_column_name(k)),
-    }
-    if column_type(get_column_name(k)) != "qid":
-        table_create_queries[k]["column"] = k
-    for k2, v2 in v.items():
-        create_table(table_create_queries, k2, v2)
-
-
 def wikidata_ids_from_csv(path, csv_file):
     df = pandas.read_csv(path)
     data = df.to_dict(orient="records")
@@ -204,27 +186,8 @@ def wikidata_ids_from_csv(path, csv_file):
     return data
 
 
-def convert_to_sql(config):
-    logger.info("convert_to_sql - A")
-    tables = {
-        "item": pandas.DataFrame({c: pandas.Series(dtype=t) for c, t in {'item_id': 'int', 'type': 'str'}.items()}),
-        "item___label": pandas.DataFrame({c: pandas.Series(dtype=t) for c, t in {'item_id': 'int', 'language': 'str', 'label': 'str'}.items()}),
-    }
-    kinds = {}
-    table_create_queries = {}
-    logger.info("convert_to_sql - B")
-    for k, v in config['data'].items():
-        add_kind(kinds, k, v)
-        create_table(table_create_queries, k, v)
-    kinds_str = ",\n".join([  f"'{k}'" for k in kinds])
-    create_tables = [
-        f"""CREATE TABLE {v['name']} (
-            item_id int not null,
-            {v['column']} {v['column_type']} not null
-        );"""
-        for k, v in table_create_queries.items() if "-by-" not in v['name']
-    ]
-    logger.info("convert_to_sql - C")
+
+def get_todos(config):
     todos = []
     for k, v in config['data'].items():
         todos.append({
@@ -294,7 +257,17 @@ def convert_to_sql(config):
             'level': 'omdb',
             'table': f"omdb___{name}",
         })
+    return todos
 
+
+def convert_to_sql(config):
+    logger.info("convert_to_sql - A")
+    tables = {
+        "item": pandas.DataFrame({c: pandas.Series(dtype=t) for c, t in {'item_id': 'int', 'type': 'str'}.items()}),
+        "item___label": pandas.DataFrame({c: pandas.Series(dtype=t) for c, t in {'item_id': 'int', 'language': 'str', 'label': 'str'}.items()}),
+    }
+    logger.info("convert_to_sql - C")
+    todos = get_todos(config)
     for (i, x) in enumerate(todos):
         logger.info(f"(convert) {aligned_advancement(i,len(todos))} - {x['short_path']}")
         path = f"/root/github.com/loicbourgois/movie_finder_local/data_v3/csv/{x['short_path']}.csv"
@@ -302,7 +275,6 @@ def convert_to_sql(config):
             df = pandas.read_csv(path)
             df['type'] = x['type']
             df.rename(columns={x['type']: "item_id"}, inplace=True)
-            # start = datetime.now()
             df['item_id'] = df['item_id'].str.replace("http://www.wikidata.org/entity/Q", '')
             df = df.astype({'item_id': int})
             tables[x['table']] = pandas.concat([tables[x['table']], df])
@@ -326,17 +298,7 @@ def convert_to_sql(config):
             for column_name in list(df.columns):
                 df = df.astype({column_name: str})
                 df[column_name] = df[column_name].str.replace("\\N", "")
-            columns_list = [
-                f"{column_name} {column_type_sql(column_name, 'omdb')} {nullability_sql(column_name, 'omdb')}"
-                for column_name in list(df.columns)
-            ]
             tables[x['table']] = df
-            sep = ",\n"
-            create_tables.append(
-                f"""CREATE TABLE {x['table']} (
-                    {sep.join(columns_list)}
-                );"""
-            )
         else:
             raise Exception(f"error: invalid level: {x['level']}")
     logger.info("convert_to_sql - E")
@@ -348,22 +310,4 @@ def convert_to_sql(config):
         v = v.dropna()
         logger.info(f"  {v.shape}")
         v.to_csv(path, index=False)
-    logger.info("convert_to_sql - F")
-    import_csv_str = "\n".join(
-        [
-            f'''    -c "\\copy {table_name} FROM '$HOME/github.com/loicbourgois/movie_finder_local/data_v3/database/{table_name}.csv' CSV HEADER;" \\'''
-            for table_name in tables
-        ]
-    )
-    write_force(
-        "/root/github.com/loicbourgois/movie_finder_local/data_v3/database/go_inner.sh",
-        read("/root/github.com/loicbourgois/movie_finder/database/go_inner.template").format(IMPORT_CSV=import_csv_str)
-    )
-    write_force(
-        "/root/github.com/loicbourgois/movie_finder_local/data_v3/database/init_1.sql",
-        read("/root/github.com/loicbourgois/movie_finder/database/init_1.template").format(
-            create_table_str="\n".join(create_tables),
-            kinds_str=kinds_str,
-        )
-    )
     logger.info("convert_to_sql - done")

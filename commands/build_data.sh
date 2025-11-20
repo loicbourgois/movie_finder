@@ -1,6 +1,7 @@
 #!/bin/sh
 set -e
-docker compose \
+# docker compose duplicates logs
+docker-compose \
   --file $HOME/github.com/loicbourgois/movie_finder/docker-compose.yml \
   up \
   --renew-anon-volumes --build --force-recreate --remove-orphans \

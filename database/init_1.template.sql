@@ -1,3 +1,4 @@
+-- file://./../../movie_finder_local/data_v3/database/init_1.sql
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 create type kind AS ENUM (
   {kinds_str}

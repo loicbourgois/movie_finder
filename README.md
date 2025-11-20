@@ -1,20 +1,22 @@
 # movie_finder
 
 
+## V3
+```sh
+$HOME/github.com/loicbourgois/movie_finder/commands/lint.sh
+vs $HOME/github.com/loicbourgois/movie_finder/data_builder/config.py
+$HOME/github.com/loicbourgois/movie_finder/commands/build_data.sh
+$HOME/github.com/loicbourgois/movie_finder/database/go.sh
+vs $HOME/github.com/loicbourgois/movie_finder/database_client/sql/01.sql
+$HOME/github.com/loicbourgois/movie_finder/database_client/go.sh sql/01
+```
+
+
 ## Renew certificate
 ```sh
 $HOME/github.com/loicbourgois/movie_finder/commands/admin_root.sh
     vs $HOME/github.com/loicbourgois/movie_finder/commands/renew_certificate.sh
 $HOME/github.com/loicbourgois/movie_finder/commands/deploy.sh
-```
-
-
-## V3
-```sh
-$HOME/github.com/loicbourgois/movie_finder/commands/lint.sh
-$HOME/github.com/loicbourgois/movie_finder/commands/build_data.sh
-$HOME/github.com/loicbourgois/movie_finder/database/go.sh
-$HOME/github.com/loicbourgois/movie_finder/database_client/go.sh sql/02
 ```
 
 

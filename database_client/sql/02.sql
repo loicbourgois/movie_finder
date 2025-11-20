@@ -23,17 +23,20 @@ qlabel as (
     select * from item___label
     where language = 'fr'
 )
-,qs1 as (
+
+, qs1 as (
     select item_id as id, 1 as rank, label
     from qlabel
     where label ilike '%psycho%thriller%'
     -- where label ilike '%titanic%'
     group by item_id, label
 )
+
 , qs2 as (
     select item_id as id, 2 as rank, label
     from qlabel
-    where label ilike '%psycho%'
+    where
+        label ilike '%psycho%'
         and label ilike '%thriller%'
     group by item_id, label
 )
@@ -44,6 +47,7 @@ qlabel as (
 --         or label ilike '%psycho%'
 --     group by item_id, label
 -- )
+
 , q3 as (
     select * from qs1
     union all
@@ -51,24 +55,27 @@ qlabel as (
     -- union all
     -- select * from qs3
 )
+
 , q4 as (
     select * from q3
     inner join item
-    on q3.id = item.item_id
+        on q3.id = item.item_id
 )
+
 , q5 as (
     select
         id
         -- ,min(rank) as rank
         -- ,array_agg(distinct kind) as kind
         -- ,array_agg(distinct label) as label
-        ,rank
-        ,kind
-        ,label
+        , rank
+        , kind
+        , label
     from q4
     -- group by id
     -- order by rank
 )
+
 , q6 as (
     select
         id as i1,
@@ -78,15 +85,16 @@ qlabel as (
     from q5
     -- where rank <= 2
 )
+
 , q7 as (
-    select 
+    select
         q6.i1
-        ,array_agg(distinct q6.l1) as l1
-        ,min(q6.r1) as r1
+        , array_agg(distinct q6.l1) as l1
+        , min(q6.r1) as r1
         -- ,q6.k1
-        ,a.item_id as i2
-        ,array_agg(distinct b.label) as l2 
-        ,array_agg(distinct c.kind) as k2
+        , a.item_id as i2
+        , array_agg(distinct b.label) as l2
+        , array_agg(distinct c.kind) as k2
     from q6
     inner join item___genre as a
         on a.genre_id = q6.i1

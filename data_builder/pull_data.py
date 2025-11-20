@@ -1,9 +1,12 @@
+import json
 import time
 import urllib
-import json
+
 import requests
-from .shared import path_local, write_force, read, aligned_advancement
+
 from .logger import get_logger
+from .shared import aligned_advancement, path_local, read, write_force
+
 endpoint_url = "https://query.wikidata.org/sparql"
 logger = get_logger()
 
@@ -17,15 +20,18 @@ def query_to_file(path, query):
     headers = {
         'User-Agent': 'movie_finder/v2'
     }
-    r = requests.get(
-        f"{endpoint_url}?{args}", 
-        timeout=3600,
-        headers= headers,
-    )
-    logger.info(f"  {r.status_code} - {path_local(path)}")
-    if r.status_code != 200:
-        logger.info(r.text)
-    write_force(path, r.text)
+    try:
+        r = requests.get(
+            f"{endpoint_url}?{args}",
+            timeout=60*5,
+            headers= headers,
+        )
+        logger.info(f"  {r.status_code} - {path_local(path)} - {int(time.time()-start)}")
+        if r.status_code != 200:
+            logger.info(r.text)
+        write_force(path, r.text)
+    except:
+        logger.exception(f"  failed - {path_local(path)}")
     end = time.time()
     time.sleep( max(0, 3 - (end - start)) )
 
