@@ -244,11 +244,10 @@ fn add_omdb(
     config: &Config,
     create_tables: &mut Vec<String>,
     table_names: &mut BTreeMap<String, String>,
-) -> Result<(), Box<dyn std::error::Error>> {
+)  {
     for omdb_name in &config.omdb {
         let short_path = format!("omdb/{}", omdb_name);
         let table_name = format!("omdb___{}", omdb_name);
-        let level = "omdb";
         let home_dir = std::env::var("HOME").expect("HOME environment variable not set");
         let csv_path = PathBuf::from(home_dir.clone())
             .join("github.com/loicbourgois/movie_finder_local/data_v3/csv")
@@ -256,8 +255,8 @@ fn add_omdb(
         let mut reader = ReaderBuilder::new()
             .has_headers(true)
             .flexible(true)
-            .from_path(&csv_path)?;
-        let headers = reader.headers()?.clone();
+            .from_path(&csv_path).unwrap();
+        let headers = reader.headers().unwrap().clone();
         let mut columns_sql = Vec::new();
         for column_name in headers.iter() {
             let column_type = get_column_type_sql_omdb(column_name);
@@ -273,5 +272,4 @@ fn add_omdb(
         create_tables.push(create_stmt);
         table_names.insert(table_name.clone(), table_name);
     }
-    Ok(())
 }

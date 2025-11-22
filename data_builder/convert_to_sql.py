@@ -1,10 +1,14 @@
 import os
 from functools import cmp_to_key
+import json
 
 import pandas
 
 from .logger import get_logger
-from .shared import aligned_advancement
+from .shared import (
+    aligned_advancement,
+    write_force,
+)
 
 logger = get_logger("data_builder")
 
@@ -261,13 +265,17 @@ def get_todos(config):
 
 
 def convert_to_sql(config):
-    logger.info("convert_to_sql - A")
+    logger.info("convert_to_sql - get_todos")
+    todos = get_todos(config)
+    write_force(
+        "/root/github.com/loicbourgois/movie_finder/data_builder/convert_to_sql.todos.py.json",
+        json.dumps(todos, indent=2)
+    )
+    logger.info("convert_to_sql - build tables")
     tables = {
         "item": pandas.DataFrame({c: pandas.Series(dtype=t) for c, t in {"item_id": "int", "type": "str"}.items()}),
         "item___label": pandas.DataFrame({c: pandas.Series(dtype=t) for c, t in {"item_id": "int", "language": "str", "label": "str"}.items()}),
     }
-    logger.info("convert_to_sql - C")
-    todos = get_todos(config)
     for (i, x) in enumerate(todos):
         logger.info(f"(convert) {aligned_advancement(i,len(todos))} - {x['short_path']}")
         path = f"/root/github.com/loicbourgois/movie_finder_local/data_v3/csv/{x['short_path']}.csv"
@@ -306,7 +314,7 @@ def convert_to_sql(config):
         logger.info(f"{i+1}/{len(tables)} - {k}")
         path = f"/root/github.com/loicbourgois/movie_finder_local/data_v3/database/{k}.csv"
         create_parent_folder(path)
-        v.drop_duplicates(inplace=True)
+        v = v.drop_duplicates()
         v = v.dropna()
         logger.info(f"  {v.shape}")
         v.to_csv(path, index=False)

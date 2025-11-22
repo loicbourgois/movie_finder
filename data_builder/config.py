@@ -104,12 +104,12 @@ def get_config():
     }
     data = {
         "documentary": json_copy(media),
+        "film": json_copy(media),
         "film_series": json_copy(media),
         "western_animation": json_copy(media),
         "anime": json_copy(media),
         "animated_television_series": json_copy(media),
         "television_series": json_copy(media),
-        "film": json_copy(media),
         "country": {},
         "gender": {},
         "professional_painter": json_copy(media_person),

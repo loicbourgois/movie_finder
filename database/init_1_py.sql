@@ -20,12 +20,12 @@ create type kind AS ENUM (
 'film_editor',
 'inspired_by',
 'depicts',
+'film',
 'film_series',
 'western_animation',
 'anime',
 'animated_television_series',
 'television_series',
-'film',
 'country',
 'professional_painter',
 'professional_artist',
@@ -152,6 +152,10 @@ CREATE TABLE item___review_score (
             item_id int not null,
             review_score float not null
         );
+CREATE TABLE item___film (
+            item_id int not null,
+            film_id int not null
+        );
 CREATE TABLE item___film_series (
             item_id int not null,
             film_series_id int not null
@@ -171,10 +175,6 @@ CREATE TABLE item___animated_television_series (
 CREATE TABLE item___television_series (
             item_id int not null,
             television_series_id int not null
-        );
-CREATE TABLE item___film (
-            item_id int not null,
-            film_id int not null
         );
 CREATE TABLE item___country (
             item_id int not null,
