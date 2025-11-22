@@ -12,7 +12,7 @@ lint.ignore = [
     "ANN202", # Missing return type annotation for private function
     "D100", # Missing docstring in public module
     "D103", # Missing docstring in public function
-    # "PTH103", # `os.makedirs()` should be replaced by `Path.mkdir(parents=True)`
+    "PTH103", # `os.makedirs()` should be replaced by `Path.mkdir(parents=True)`
     "S101", # Use of `assert` detected
     "PTH110", # `os.path.exists()` should be replaced by `Path.exists()`
     "UP015", # [*] Unnecessary mode argument

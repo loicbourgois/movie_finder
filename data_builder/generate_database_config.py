@@ -77,7 +77,7 @@ def generate_database_config(config):
         )
         table_names[x["table"]] = x["table"]
     write_force(
-        "/root/github.com/loicbourgois/movie_finder/database/go_inner.sh",
+        "/root/github.com/loicbourgois/movie_finder/database/go_inner_py.sh",
         read("/root/github.com/loicbourgois/movie_finder/database/go_inner.template.sh").format(
             IMPORT_CSV="\n".join(
                 [
@@ -88,7 +88,7 @@ def generate_database_config(config):
         )
     )
     write_force(
-        "/root/github.com/loicbourgois/movie_finder/database/init_1.sql",
+        "/root/github.com/loicbourgois/movie_finder/database/init_1_py.sql",
         read("/root/github.com/loicbourgois/movie_finder/database/init_1.template.sql").format(
             create_table_str="\n".join(create_tables),
             kinds_str=kinds_str,

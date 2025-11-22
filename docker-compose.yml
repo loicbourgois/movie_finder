@@ -10,6 +10,7 @@ services:
       - $HOME/github.com/loicbourgois/movie_finder_local/data_v3:/root/github.com/loicbourgois/movie_finder_local/data_v3:rw
       - $HOME/github.com/loicbourgois/movie_finder:/root/github.com/loicbourgois/movie_finder:ro
       - $HOME/github.com/loicbourgois/movie_finder/database:/root/github.com/loicbourgois/movie_finder/database:rw
+      - $HOME/github.com/loicbourgois/movie_finder/data_builder:/root/github.com/loicbourgois/movie_finder/data_builder:rw
   database:
     image: postgres:14
     environment:
@@ -19,8 +20,10 @@ services:
     ports:
       - 5432:5432
     volumes:
-      - $HOME/github.com/loicbourgois/movie_finder/database/go_inner.sh:/docker-entrypoint-initdb.d/01_main.sh:ro
-      - $HOME/github.com/loicbourgois/movie_finder/database/init_1.sql:/var/lib/postgresql/github.com/loicbourgois/movie_finder/database/init_1.sql:ro
+      # - $HOME/github.com/loicbourgois/movie_finder/database/go_inner_py.sh:/docker-entrypoint-initdb.d/01_main.sh:ro
+      # - $HOME/github.com/loicbourgois/movie_finder/database/init_1_py.sql:/var/lib/postgresql/github.com/loicbourgois/movie_finder/database/init_1.sql:ro
+      - $HOME/github.com/loicbourgois/movie_finder/database/go_inner_rs.sh:/docker-entrypoint-initdb.d/01_main.sh:ro
+      - $HOME/github.com/loicbourgois/movie_finder/database/init_1_rs.sql:/var/lib/postgresql/github.com/loicbourgois/movie_finder/database/init_1.sql:ro
       - $HOME/github.com/loicbourgois/movie_finder/database/init_2.sql:/var/lib/postgresql/github.com/loicbourgois/movie_finder/database/init_2.sql:ro
       - $HOME/github.com/loicbourgois/movie_finder_local/data_v3/database:/var/lib/postgresql/github.com/loicbourgois/movie_finder_local/data_v3/database:ro
   database_client:
