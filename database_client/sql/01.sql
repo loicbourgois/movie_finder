@@ -3,5 +3,4 @@ select
     language
     , count(*) as item_count
 from item___label
-group by language
-order by language asc;
+group by language;

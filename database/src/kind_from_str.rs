@@ -1,9 +1,36 @@
 use crate::Kind;
 
-pub fn kind_from_str(s: &str) -> Kind{
+pub fn kind_from_str(s: &str) -> Kind {
     match s {
+        "animated_television_series" => Kind::AnimatedTelevisionSeries,
         "anime" => Kind::Anime,
+        "award_received" => Kind::AwardReceived,
+        "cast_member" => Kind::CastMember,
+        "characters" => Kind::Characters,
+        "composer" => Kind::Composer,
+        "country" => Kind::Country,
+        "creator" => Kind::Creator,
+        "depicts" => Kind::Depicts,
+        "director" => Kind::Director,
         "documentary" => Kind::Documentary,
+        "film" => Kind::Film,
+        "film_editor" => Kind::FilmEditor,
+        "film_series" => Kind::FilmSeries,
+        "gender" => Kind::Gender,
+        "genre" => Kind::Genre,
+        "inspired_by" => Kind::InspiredBy,
+        "main_subject" => Kind::MainSubject,
+        "narrator" => Kind::Narrator,
+        "nominated_for" => Kind::NominatedFor,
+        "occupation" => Kind::Occupation,
+        "original_language" => Kind::OriginalLanguage,
+        "producer" => Kind::Producer,
+        "professional_actor" => Kind::ProfessionalActor,
+        "professional_artist" => Kind::ProfessionalArtist,
+        "professional_painter" => Kind::ProfessionalPainter,
+        "screen_writer" => Kind::ScreenWriter,
+        "television_series" => Kind::TelevisionSeries,
+        "western_animation" => Kind::WesternAnimation,
         _ => panic!("error in str_to_kind: {s}"),
     }
 }

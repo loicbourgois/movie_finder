@@ -1,6 +1,6 @@
+import json
 import os
 from functools import cmp_to_key
-import json
 
 import pandas
 

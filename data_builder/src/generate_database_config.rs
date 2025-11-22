@@ -3,7 +3,9 @@ use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 use std::fs;
 use csv::ReaderBuilder;
+use std::collections::HashMap;
 use std::path::PathBuf;
+use heck::AsUpperCamelCase;
 
 fn get_column_name(ck: &str) -> String {
     (match ck {
@@ -136,6 +138,52 @@ fn write_force(path: &PathBuf, contents: &str) -> () {
     fs::write(path, contents).unwrap()
 }
 
+// fn capitalize_first(s: &str) -> String {
+//     let mut c = s.chars();
+//     match c.next() {
+//         None => String::new(),
+//         Some(first) => first.to_uppercase().collect::<String>() + c.as_str(),
+//     }
+// }
+
+
+pub fn write_from_template(template_path: &str, kv: HashMap<String, String>) {
+    let home_dir = std::env::var("HOME").expect("HOME environment variable not set");
+    let template_path_2 = template_path.replace("~", &home_dir);
+    let out_path = template_path_2.replace(".template", "");
+    assert!( template_path_2 !=out_path);
+    assert!(  template_path.contains(".template"));
+    assert!( template_path !=template_path_2);
+    let mut content = read(&PathBuf::from(template_path_2));
+    for (k, v) in kv {
+        content = content.replace(&k, &v);
+    }
+     write_force(&PathBuf::from(out_path), &content);
+}
+
+
+pub fn write_kind_rs(kinds: & BTreeMap<String, String>) {
+    let mut kv = HashMap::new();
+    kv.insert("VALUES".to_string(), kinds
+            .keys()
+            .map(|k| format!("{},", AsUpperCamelCase(k)))
+            .collect::<Vec<_>>()
+            .join("\n"));
+    write_from_template("~/github.com/loicbourgois/movie_finder/database/src/kind.template.rs", kv);
+}
+
+
+pub fn write_kind_from_str_rs(kinds: & BTreeMap<String, String>) {
+    let mut kv = HashMap::new();
+    kv.insert("MATCHES".to_string(), kinds
+            .keys()
+            .map(|k| format!("\"{}\" => Kind::{},", k, AsUpperCamelCase(k)))
+            .collect::<Vec<_>>()
+            .join("\n"));
+    write_from_template("~/github.com/loicbourgois/movie_finder/database/src/kind_from_str.template.rs", kv);
+}
+
+
 pub fn generate_database_config(config: &Config) {
     let mut table_create_queries: BTreeMap<String, CreateQueries> = BTreeMap::new();
     for v in config.data.values() {
@@ -161,21 +209,18 @@ pub fn generate_database_config(config: &Config) {
         .collect();
     table_names.insert("item".to_string(), "item".to_string());
     table_names.insert("item___label".to_string(), "item___label".to_string());
-    
-    
     add_omdb(config, &mut create_tables, &mut table_names);
-    
-    
     let kinds: &mut BTreeMap<String, String> = &mut BTreeMap::new();
     for (k, v) in &config.data {
         add_kind(kinds, &k, &v)
     }
+    write_kind_rs(&kinds);
+    write_kind_from_str_rs(&kinds);
     let kinds_str = kinds
         .keys()
         .map(|k| format!("'{}'", k))
         .collect::<Vec<_>>()
         .join(",\n");
-
     let import_csv = table_names.keys()
         .map(|table_name| {
             format!(

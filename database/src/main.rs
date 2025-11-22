@@ -1,41 +1,62 @@
-mod kind_from_str;
-mod kind;
-use crate::kind_from_str::kind_from_str;
-use crate::kind::Kind;
-use std::path::PathBuf;
-use csv::ReaderBuilder;
-use std::collections::HashMap;
+use movie_finder_database::count_per_language_1;
+use movie_finder_database::count_per_language_2;
+use movie_finder_database::count_title_contains_1;
+use movie_finder_database::count_title_contains_2;
+use movie_finder_database::count_title_contains_3;
+use movie_finder_database::count_title_contains_4;
+use movie_finder_database::count_title_contains_5;
+use movie_finder_database::count_title_contains_6;
+use movie_finder_database::count_title_contains_7;
+use movie_finder_database::count_title_lower_contains;
+use movie_finder_database::database::Database;
+use movie_finder_database::process_item;
+use movie_finder_database::process_item_label;
+use std::time::Instant;
 
-
-struct Item {
-  item_id: usize,
-  kind: Kind,
+fn timeit<F, R>(label: &str, func: F) -> R
+where
+    F: FnOnce() -> R,
+{
+    let start = Instant::now();
+    let result = func();
+    let duration = start.elapsed();
+    println!("# {label}: {duration:?}");
+    result
 }
 
-
-struct Database {
-    item_id: HashMap<usize, usize>,
-    item_kind: HashMap<usize, Kind>,
+fn setup() -> Database {
+    let mut database = Database::new();
+    process_item(&mut database);
+    process_item_label(&mut database);
+    database
 }
-
 
 fn main() {
-    println!("start");
-    let home_dir = std::env::var("HOME").expect("HOME environment variable not set");
-    let csv_path = PathBuf::from(home_dir.clone())
-        .join("github.com/loicbourgois/movie_finder_local/data_v3/database/item.csv");
-    let mut reader = ReaderBuilder::new()
-        .has_headers(true)
-        .flexible(true)
-        .from_path(&csv_path).unwrap();
-    let mut database = Database {
-        item_id: HashMap::new(),
-        item_kind: HashMap::new(),
-    };
-    for result in reader.records() {
-        let record = result.unwrap();
-        let item_id = record[0].parse().unwrap();
-        database.item_id.insert(item_id, item_id);
-        database.item_kind.insert(item_id, kind_from_str(&record[1]));
-    }
+    let db = timeit("setup", setup);
+    timeit("count_per_language_1", || count_per_language_1(&db));
+    timeit("count_per_language_2", || count_per_language_2(&db));
+    timeit("count_title_contains_1(Titanic)", || {
+        count_title_contains_1(&db, "Titanic");
+    });
+    timeit("count_title_contains_2(Titanic)", || {
+        count_title_contains_2(&db, "Titanic");
+    });
+    timeit("count_title_contains_3(Titanic)", || {
+        count_title_contains_3(&db, "Titanic");
+    });
+    timeit("count_title_contains_4(Titanic)", || {
+        count_title_contains_4(&db, "Titanic");
+    });
+    timeit("count_title_contains_5(Titanic)", || {
+        count_title_contains_5(&db, "Titanic");
+    });
+    timeit("count_title_contains_6(Titanic)", || {
+        count_title_contains_6(&db, "Titanic");
+    });
+    timeit("count_title_contains_7(Titanic)", || {
+        count_title_contains_7(&db, "Titanic");
+    });
+    timeit("count_title_lower_contains(horizon)", || {
+        count_title_lower_contains(&db, "horizon");
+    });
 }

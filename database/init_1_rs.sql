@@ -1,7 +1,7 @@
 -- file://./../../movie_finder_local/data_v3/database/init_1.sql
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp" ;
 create type kind AS ENUM (
-  'animated_television_series',
+'animated_television_series',
 'anime',
 'award_received',
 'cast_member',
@@ -30,169 +30,169 @@ create type kind AS ENUM (
 'screen_writer',
 'television_series',
 'western_animation'
-);
+) ;
 CREATE TABLE item (
-  item_id int not null,
-  kind kind not null
-);
+item_id int not null,
+kind kind not null
+) ;
 CREATE TABLE item___label (
-  item_id int not null,
-  language text not null,
-  label text not null
-);
+item_id int not null,
+language text not null,
+label text not null
+) ;
 CREATE TABLE item___attendance (
-                    item_id int not null,
-                    attendance float not null
-                );
+item_id int not null,
+attendance float not null
+) ;
 CREATE TABLE item___award_received (
-                    item_id int not null,
-                    award_received_id int not null
-                );
+item_id int not null,
+award_received_id int not null
+) ;
 CREATE TABLE item___box_office (
-                    item_id int not null,
-                    box_office float not null
-                );
+item_id int not null,
+box_office float not null
+) ;
 CREATE TABLE item___capital_cost (
-                    item_id int not null,
-                    capital_cost float not null
-                );
+item_id int not null,
+capital_cost float not null
+) ;
 CREATE TABLE item___cast_member (
-                    item_id int not null,
-                    cast_member_id int not null
-                );
+item_id int not null,
+cast_member_id int not null
+) ;
 CREATE TABLE item___characters (
-                    item_id int not null,
-                    characters_id int not null
-                );
+item_id int not null,
+characters_id int not null
+) ;
 CREATE TABLE item___composer (
-                    item_id int not null,
-                    composer_id int not null
-                );
+item_id int not null,
+composer_id int not null
+) ;
 CREATE TABLE item___creator (
-                    item_id int not null,
-                    creator_id int not null
-                );
+item_id int not null,
+creator_id int not null
+) ;
 CREATE TABLE item___date_of_birth (
-                    item_id int not null,
-                    date_of_birth date not null
-                );
+item_id int not null,
+date_of_birth date not null
+) ;
 CREATE TABLE item___depicts (
-                    item_id int not null,
-                    depicts_id int not null
-                );
+item_id int not null,
+depicts_id int not null
+) ;
 CREATE TABLE item___director (
-                    item_id int not null,
-                    director_id int not null
-                );
+item_id int not null,
+director_id int not null
+) ;
 CREATE TABLE item___duration (
-                    item_id int not null,
-                    duration float not null
-                );
+item_id int not null,
+duration float not null
+) ;
 CREATE TABLE item___film_editor (
-                    item_id int not null,
-                    film_editor_id int not null
-                );
+item_id int not null,
+film_editor_id int not null
+) ;
 CREATE TABLE item___gender (
-                    item_id int not null,
-                    gender_id int not null
-                );
+item_id int not null,
+gender_id int not null
+) ;
 CREATE TABLE item___genre (
-                    item_id int not null,
-                    genre_id int not null
-                );
+item_id int not null,
+genre_id int not null
+) ;
 CREATE TABLE item___imdb_id (
-                    item_id int not null,
-                    imdb_id text not null
-                );
+item_id int not null,
+imdb_id text not null
+) ;
 CREATE TABLE item___inspired_by (
-                    item_id int not null,
-                    inspired_by_id int not null
-                );
+item_id int not null,
+inspired_by_id int not null
+) ;
 CREATE TABLE item___main_subject (
-                    item_id int not null,
-                    main_subject_id int not null
-                );
+item_id int not null,
+main_subject_id int not null
+) ;
 CREATE TABLE item___narrator (
-                    item_id int not null,
-                    narrator_id int not null
-                );
+item_id int not null,
+narrator_id int not null
+) ;
 CREATE TABLE item___nominated_for (
-                    item_id int not null,
-                    nominated_for_id int not null
-                );
+item_id int not null,
+nominated_for_id int not null
+) ;
 CREATE TABLE item___occupation (
-                    item_id int not null,
-                    occupation_id int not null
-                );
+item_id int not null,
+occupation_id int not null
+) ;
 CREATE TABLE item___omdb_id (
-                    item_id int not null,
-                    omdb_id float not null
-                );
+item_id int not null,
+omdb_id float not null
+) ;
 CREATE TABLE item___original_language (
-                    item_id int not null,
-                    original_language_id int not null
-                );
+item_id int not null,
+original_language_id int not null
+) ;
 CREATE TABLE item___producer (
-                    item_id int not null,
-                    producer_id int not null
-                );
+item_id int not null,
+producer_id int not null
+) ;
 CREATE TABLE item___publication_date (
-                    item_id int not null,
-                    publication_date date not null
-                );
+item_id int not null,
+publication_date date not null
+) ;
 CREATE TABLE item___review_score (
-                    item_id int not null,
-                    review_score float not null
-                );
+item_id int not null,
+review_score float not null
+) ;
 CREATE TABLE item___screen_writer (
-                    item_id int not null,
-                    screen_writer_id int not null
-                );
+item_id int not null,
+screen_writer_id int not null
+) ;
 CREATE TABLE omdb___all_categories (
-    id int not null,
-    parent_id int ,
-    root_id int not null
-);
+id int not null,
+parent_id int,
+root_id int not null
+) ;
 CREATE TABLE omdb___all_movies (
-    id int not null,
-    name text not null,
-    parent_id int ,
-    date date 
-);
+id int not null,
+name text not null,
+parent_id int,
+date date
+) ;
 CREATE TABLE omdb___all_series (
-    id int not null,
-    name text not null,
-    parent_id int ,
-    date date 
-);
+id int not null,
+name text not null,
+parent_id int,
+date date
+) ;
 CREATE TABLE omdb___all_votes (
-    movie_id int not null,
-    vote_average float not null,
-    votes_count int not null
-);
+movie_id int not null,
+vote_average float not null,
+votes_count int not null
+) ;
 CREATE TABLE omdb___category_names (
-    category_id int not null,
-    name text not null,
-    language_iso_639_1 text not null
-);
+category_id int not null,
+name text not null,
+language_iso_639_1 text not null
+) ;
 CREATE TABLE omdb___image_ids (
-    image_id int not null,
-    object_id int ,
-    object_type text ,
-    image_version int 
-);
+image_id int not null,
+object_id int,
+object_type text,
+image_version int
+) ;
 CREATE TABLE omdb___movie_categories (
-    movie_id int not null,
-    category_id int not null
-);
+movie_id int not null,
+category_id int not null
+) ;
 CREATE TABLE omdb___movie_links (
-    source text not null,
-    key text not null,
-    movie_id int not null,
-    language_iso_639_1 text not null
-);
+source text not null,
+key text not null,
+movie_id int not null,
+language_iso_639_1 text not null
+) ;
 CREATE TABLE omdb___movie_references (
-    movie_id int not null,
-    referenced_id int not null,
-    type text 
-);
+movie_id int not null,
+referenced_id int not null,
+type text
+) ;

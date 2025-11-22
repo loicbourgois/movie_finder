@@ -5,8 +5,9 @@
 ```sh
 $HOME/github.com/loicbourgois/movie_finder/commands/lint.sh
 vs $HOME/github.com/loicbourgois/movie_finder/data_builder/config.py
-$HOME/github.com/loicbourgois/movie_finder/commands/build_data.sh
-$HOME/github.com/loicbourgois/movie_finder/database/go.sh
+$HOME/github.com/loicbourgois/movie_finder/commands/build_data_rs.sh
+$HOME/github.com/loicbourgois/movie_finder/commands/database.sh
+$HOME/github.com/loicbourgois/movie_finder/commands/database_rs.sh
 vs $HOME/github.com/loicbourgois/movie_finder/database_client/sql/01.sql
 $HOME/github.com/loicbourgois/movie_finder/database_client/go.sh sql/01
 ```

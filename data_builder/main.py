@@ -1,3 +1,5 @@
+import json
+
 from .config import get_config
 from .convert_to_csv import convert_to_csv
 from .convert_to_sql import convert_to_sql
@@ -6,7 +8,6 @@ from .get_queries import get_queries
 from .logger import logger
 from .omdb_pull import omdb_pull
 from .pull_data import pull_data
-import json
 from .shared import write_force
 
 
