@@ -5,6 +5,8 @@
 ```sh
 $HOME/github.com/loicbourgois/movie_finder/commands/lint.sh
 vs $HOME/github.com/loicbourgois/movie_finder/data_builder/config.py
+$HOME/github.com/loicbourgois/movie_finder/commands/setup.sh
+$HOME/github.com/loicbourgois/movie_finder/commands/build_data.sh
 $HOME/github.com/loicbourgois/movie_finder/commands/build_data_rs.sh
 $HOME/github.com/loicbourgois/movie_finder/commands/database.sh
 $HOME/github.com/loicbourgois/movie_finder/commands/database_rs.sh
@@ -35,3 +37,10 @@ $HOME/github.com/loicbourgois/movie_finder/commands/remote_logs.sh
 ## Sources
 - https://www.omdb.org/en/us/content/Help:DataDownload 
 - https://query.wikidata.org/
+- https://developer.imdb.com/non-commercial-datasets/
+
+## references
+- https://ort.pyke.io/#add-ort-to-your-cargotoml
+- https://github.com/pykeio/ort 
+- https://github.com/Anush008/fastembed-rs
+- https://github.com/StarlightSearch/EmbedAnything

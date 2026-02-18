@@ -9,3 +9,4 @@ ruff
 mypy
 pandas-stubs
 types-requests
+cinemagoer

@@ -49,7 +49,7 @@ lint.ignore = [
     # "I001", # [*] Import block is un-sorted or un-formatted
     # "PTH123", # `open()` should be replaced by `Path.open()`
     # "Q000", # [*] Single quotes found but double quotes preferred
-    # "T201",
+    "T201", # `print` found
     # "D211", 
     # "D213", 
     # "E402",
