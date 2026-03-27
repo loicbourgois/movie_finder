@@ -1,0 +1,60 @@
+# https://docs.astral.sh/ruff/configuration/
+fix = true
+lint.select = ["ALL"]
+lint.ignore = [
+    "E741", # Ambiguous variable name
+    "E722", # Do not use bare `except`
+    "E501", # Line too long
+    "ANN001", # Missing type annotation for function argument
+    "ANN002", # Missing type annotation for `*args`
+    "ANN003", #  Missing type annotation for `**kwargs`
+    "ANN201", # Missing return type annotation for public function
+    "ANN202", # Missing return type annotation for private function
+    "D100", # Missing docstring in public module
+    "D103", # Missing docstring in public function
+    "PTH103", # `os.makedirs()` should be replaced by `Path.mkdir(parents=True)`
+    "S101", # Use of `assert` detected
+    "PTH110", # `os.path.exists()` should be replaced by `Path.exists()`
+    "UP015", # [*] Unnecessary mode argument
+    "S603", # `subprocess` call: check for execution of untrusted input
+    "UP034", # [*] Avoid extraneous parentheses
+    "PLW2901", # `for` loop variable `line` overwritten by assignment target
+    "G004", # Logging statement uses f-string
+    "FBT002", # Boolean default positional argument in function definition
+    "PLR0913", # Too many arguments in function definition (6 > 5)
+    "C901", # runcmd_list
+    "BLE001", # Do not catch blind exception: `Exception`
+    "PLR2004", # Magic value used in comparison, consider replacing `200` with a constant variable
+    "COM812", # [*] Trailing comma missing
+    "SIM118", # Use `key in dict` instead of `key in dict.keys()`
+    "FIX002", # Line contains TODO, consider resolving the issue
+    "TD003", # Missing issue link for this TODO
+    "TD002", # Missing author in TODO
+    "SIM112", # Use capitalized environment variable
+    "B007", # Loop control variable not used within loop body
+    "ICN001", # `pandas` should be imported as `pd`
+    "PLR0912", # Too many branches (18 > 12)
+    "Q001", # [*] Single quote multiline found but double quotes preferred
+    "SIM108", # Use ternary operator 
+    "PD002", # `inplace=True` should be avoided; it has inconsistent behavior
+    "EM102",  # Exception must not use an f-string literal, assign to variable first
+    "TRY003", # Avoid specifying long messages outside the exception class
+    "TRY002", # Create your own exception
+    "PERF401", # Use `list.extend` to create a transformed list
+    "PLR5501", # [*] Use `elif` instead of `else` then `if`, to reduce indentation
+    "EM101", # Exception must not use a string literal, assign to variable first
+    "D104", # Missing docstring in public package
+    "ERA001", # Found commented-out code
+    "F841", # Local variable is assigned to but never used
+    # "I001", # [*] Import block is un-sorted or un-formatted
+    # "PTH123", # `open()` should be replaced by `Path.open()`
+    # "Q000", # [*] Single quotes found but double quotes preferred
+    "T201", # `print` found
+    # "D211", 
+    # "D213", 
+    # "E402",
+]
+
+
+[lint.per-file-ignores]
+"main.py" = ["F401"]

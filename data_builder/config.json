@@ -1,0 +1,755 @@
+{
+  "data": {
+    "documentary": {
+      "director": {
+        "gender": {},
+        "date_of_birth": {},
+        "occupation": {},
+        "nominated_for": {},
+        "award_received": {},
+        "genre": {}
+      },
+      "producer": {
+        "gender": {},
+        "date_of_birth": {},
+        "occupation": {},
+        "nominated_for": {},
+        "award_received": {},
+        "genre": {}
+      },
+      "creator": {
+        "gender": {},
+        "date_of_birth": {},
+        "occupation": {},
+        "nominated_for": {},
+        "award_received": {},
+        "genre": {}
+      },
+      "screen_writer": {
+        "gender": {},
+        "date_of_birth": {},
+        "occupation": {},
+        "nominated_for": {},
+        "award_received": {},
+        "genre": {}
+      },
+      "publication_date": {},
+      "cast_member": {
+        "gender": {},
+        "date_of_birth": {},
+        "occupation": {},
+        "nominated_for": {},
+        "award_received": {},
+        "genre": {}
+      },
+      "imdb_id": {},
+      "narrator": {
+        "gender": {},
+        "date_of_birth": {},
+        "occupation": {},
+        "nominated_for": {},
+        "award_received": {},
+        "genre": {}
+      },
+      "award_received": {},
+      "genre": {},
+      "characters": {
+        "gender": {},
+        "date_of_birth": {},
+        "occupation": {},
+        "nominated_for": {},
+        "award_received": {},
+        "genre": {}
+      },
+      "main_subject": {},
+      "original_language": {},
+      "composer": {
+        "gender": {},
+        "date_of_birth": {},
+        "occupation": {},
+        "nominated_for": {},
+        "award_received": {},
+        "genre": {}
+      },
+      "film_editor": {
+        "gender": {},
+        "date_of_birth": {},
+        "occupation": {},
+        "nominated_for": {},
+        "award_received": {},
+        "genre": {}
+      },
+      "inspired_by": {},
+      "depicts": {},
+      "nominated_for": {},
+      "attendance": {},
+      "duration": {},
+      "omdb_id": {},
+      "box_office": {},
+      "capital_cost": {},
+      "review_score": {}
+    },
+    "film": {
+      "director": {
+        "gender": {},
+        "date_of_birth": {},
+        "occupation": {},
+        "nominated_for": {},
+        "award_received": {},
+        "genre": {}
+      },
+      "producer": {
+        "gender": {},
+        "date_of_birth": {},
+        "occupation": {},
+        "nominated_for": {},
+        "award_received": {},
+        "genre": {}
+      },
+      "creator": {
+        "gender": {},
+        "date_of_birth": {},
+        "occupation": {},
+        "nominated_for": {},
+        "award_received": {},
+        "genre": {}
+      },
+      "screen_writer": {
+        "gender": {},
+        "date_of_birth": {},
+        "occupation": {},
+        "nominated_for": {},
+        "award_received": {},
+        "genre": {}
+      },
+      "publication_date": {},
+      "cast_member": {
+        "gender": {},
+        "date_of_birth": {},
+        "occupation": {},
+        "nominated_for": {},
+        "award_received": {},
+        "genre": {}
+      },
+      "imdb_id": {},
+      "narrator": {
+        "gender": {},
+        "date_of_birth": {},
+        "occupation": {},
+        "nominated_for": {},
+        "award_received": {},
+        "genre": {}
+      },
+      "award_received": {},
+      "genre": {},
+      "characters": {
+        "gender": {},
+        "date_of_birth": {},
+        "occupation": {},
+        "nominated_for": {},
+        "award_received": {},
+        "genre": {}
+      },
+      "main_subject": {},
+      "original_language": {},
+      "composer": {
+        "gender": {},
+        "date_of_birth": {},
+        "occupation": {},
+        "nominated_for": {},
+        "award_received": {},
+        "genre": {}
+      },
+      "film_editor": {
+        "gender": {},
+        "date_of_birth": {},
+        "occupation": {},
+        "nominated_for": {},
+        "award_received": {},
+        "genre": {}
+      },
+      "inspired_by": {},
+      "depicts": {},
+      "nominated_for": {},
+      "attendance": {},
+      "duration": {},
+      "omdb_id": {},
+      "box_office": {},
+      "capital_cost": {},
+      "review_score": {}
+    },
+    "film_series": {
+      "director": {
+        "gender": {},
+        "date_of_birth": {},
+        "occupation": {},
+        "nominated_for": {},
+        "award_received": {},
+        "genre": {}
+      },
+      "producer": {
+        "gender": {},
+        "date_of_birth": {},
+        "occupation": {},
+        "nominated_for": {},
+        "award_received": {},
+        "genre": {}
+      },
+      "creator": {
+        "gender": {},
+        "date_of_birth": {},
+        "occupation": {},
+        "nominated_for": {},
+        "award_received": {},
+        "genre": {}
+      },
+      "screen_writer": {
+        "gender": {},
+        "date_of_birth": {},
+        "occupation": {},
+        "nominated_for": {},
+        "award_received": {},
+        "genre": {}
+      },
+      "publication_date": {},
+      "cast_member": {
+        "gender": {},
+        "date_of_birth": {},
+        "occupation": {},
+        "nominated_for": {},
+        "award_received": {},
+        "genre": {}
+      },
+      "imdb_id": {},
+      "narrator": {
+        "gender": {},
+        "date_of_birth": {},
+        "occupation": {},
+        "nominated_for": {},
+        "award_received": {},
+        "genre": {}
+      },
+      "award_received": {},
+      "genre": {},
+      "characters": {
+        "gender": {},
+        "date_of_birth": {},
+        "occupation": {},
+        "nominated_for": {},
+        "award_received": {},
+        "genre": {}
+      },
+      "main_subject": {},
+      "original_language": {},
+      "composer": {
+        "gender": {},
+        "date_of_birth": {},
+        "occupation": {},
+        "nominated_for": {},
+        "award_received": {},
+        "genre": {}
+      },
+      "film_editor": {
+        "gender": {},
+        "date_of_birth": {},
+        "occupation": {},
+        "nominated_for": {},
+        "award_received": {},
+        "genre": {}
+      },
+      "inspired_by": {},
+      "depicts": {},
+      "nominated_for": {},
+      "attendance": {},
+      "duration": {},
+      "omdb_id": {},
+      "box_office": {},
+      "capital_cost": {},
+      "review_score": {}
+    },
+    "western_animation": {
+      "director": {
+        "gender": {},
+        "date_of_birth": {},
+        "occupation": {},
+        "nominated_for": {},
+        "award_received": {},
+        "genre": {}
+      },
+      "producer": {
+        "gender": {},
+        "date_of_birth": {},
+        "occupation": {},
+        "nominated_for": {},
+        "award_received": {},
+        "genre": {}
+      },
+      "creator": {
+        "gender": {},
+        "date_of_birth": {},
+        "occupation": {},
+        "nominated_for": {},
+        "award_received": {},
+        "genre": {}
+      },
+      "screen_writer": {
+        "gender": {},
+        "date_of_birth": {},
+        "occupation": {},
+        "nominated_for": {},
+        "award_received": {},
+        "genre": {}
+      },
+      "publication_date": {},
+      "cast_member": {
+        "gender": {},
+        "date_of_birth": {},
+        "occupation": {},
+        "nominated_for": {},
+        "award_received": {},
+        "genre": {}
+      },
+      "imdb_id": {},
+      "narrator": {
+        "gender": {},
+        "date_of_birth": {},
+        "occupation": {},
+        "nominated_for": {},
+        "award_received": {},
+        "genre": {}
+      },
+      "award_received": {},
+      "genre": {},
+      "characters": {
+        "gender": {},
+        "date_of_birth": {},
+        "occupation": {},
+        "nominated_for": {},
+        "award_received": {},
+        "genre": {}
+      },
+      "main_subject": {},
+      "original_language": {},
+      "composer": {
+        "gender": {},
+        "date_of_birth": {},
+        "occupation": {},
+        "nominated_for": {},
+        "award_received": {},
+        "genre": {}
+      },
+      "film_editor": {
+        "gender": {},
+        "date_of_birth": {},
+        "occupation": {},
+        "nominated_for": {},
+        "award_received": {},
+        "genre": {}
+      },
+      "inspired_by": {},
+      "depicts": {},
+      "nominated_for": {},
+      "attendance": {},
+      "duration": {},
+      "omdb_id": {},
+      "box_office": {},
+      "capital_cost": {},
+      "review_score": {}
+    },
+    "anime": {
+      "director": {
+        "gender": {},
+        "date_of_birth": {},
+        "occupation": {},
+        "nominated_for": {},
+        "award_received": {},
+        "genre": {}
+      },
+      "producer": {
+        "gender": {},
+        "date_of_birth": {},
+        "occupation": {},
+        "nominated_for": {},
+        "award_received": {},
+        "genre": {}
+      },
+      "creator": {
+        "gender": {},
+        "date_of_birth": {},
+        "occupation": {},
+        "nominated_for": {},
+        "award_received": {},
+        "genre": {}
+      },
+      "screen_writer": {
+        "gender": {},
+        "date_of_birth": {},
+        "occupation": {},
+        "nominated_for": {},
+        "award_received": {},
+        "genre": {}
+      },
+      "publication_date": {},
+      "cast_member": {
+        "gender": {},
+        "date_of_birth": {},
+        "occupation": {},
+        "nominated_for": {},
+        "award_received": {},
+        "genre": {}
+      },
+      "imdb_id": {},
+      "narrator": {
+        "gender": {},
+        "date_of_birth": {},
+        "occupation": {},
+        "nominated_for": {},
+        "award_received": {},
+        "genre": {}
+      },
+      "award_received": {},
+      "genre": {},
+      "characters": {
+        "gender": {},
+        "date_of_birth": {},
+        "occupation": {},
+        "nominated_for": {},
+        "award_received": {},
+        "genre": {}
+      },
+      "main_subject": {},
+      "original_language": {},
+      "composer": {
+        "gender": {},
+        "date_of_birth": {},
+        "occupation": {},
+        "nominated_for": {},
+        "award_received": {},
+        "genre": {}
+      },
+      "film_editor": {
+        "gender": {},
+        "date_of_birth": {},
+        "occupation": {},
+        "nominated_for": {},
+        "award_received": {},
+        "genre": {}
+      },
+      "inspired_by": {},
+      "depicts": {},
+      "nominated_for": {},
+      "attendance": {},
+      "duration": {},
+      "omdb_id": {},
+      "box_office": {},
+      "capital_cost": {},
+      "review_score": {}
+    },
+    "animated_television_series": {
+      "director": {
+        "gender": {},
+        "date_of_birth": {},
+        "occupation": {},
+        "nominated_for": {},
+        "award_received": {},
+        "genre": {}
+      },
+      "producer": {
+        "gender": {},
+        "date_of_birth": {},
+        "occupation": {},
+        "nominated_for": {},
+        "award_received": {},
+        "genre": {}
+      },
+      "creator": {
+        "gender": {},
+        "date_of_birth": {},
+        "occupation": {},
+        "nominated_for": {},
+        "award_received": {},
+        "genre": {}
+      },
+      "screen_writer": {
+        "gender": {},
+        "date_of_birth": {},
+        "occupation": {},
+        "nominated_for": {},
+        "award_received": {},
+        "genre": {}
+      },
+      "publication_date": {},
+      "cast_member": {
+        "gender": {},
+        "date_of_birth": {},
+        "occupation": {},
+        "nominated_for": {},
+        "award_received": {},
+        "genre": {}
+      },
+      "imdb_id": {},
+      "narrator": {
+        "gender": {},
+        "date_of_birth": {},
+        "occupation": {},
+        "nominated_for": {},
+        "award_received": {},
+        "genre": {}
+      },
+      "award_received": {},
+      "genre": {},
+      "characters": {
+        "gender": {},
+        "date_of_birth": {},
+        "occupation": {},
+        "nominated_for": {},
+        "award_received": {},
+        "genre": {}
+      },
+      "main_subject": {},
+      "original_language": {},
+      "composer": {
+        "gender": {},
+        "date_of_birth": {},
+        "occupation": {},
+        "nominated_for": {},
+        "award_received": {},
+        "genre": {}
+      },
+      "film_editor": {
+        "gender": {},
+        "date_of_birth": {},
+        "occupation": {},
+        "nominated_for": {},
+        "award_received": {},
+        "genre": {}
+      },
+      "inspired_by": {},
+      "depicts": {},
+      "nominated_for": {},
+      "attendance": {},
+      "duration": {},
+      "omdb_id": {},
+      "box_office": {},
+      "capital_cost": {},
+      "review_score": {}
+    },
+    "television_series": {
+      "director": {
+        "gender": {},
+        "date_of_birth": {},
+        "occupation": {},
+        "nominated_for": {},
+        "award_received": {},
+        "genre": {}
+      },
+      "producer": {
+        "gender": {},
+        "date_of_birth": {},
+        "occupation": {},
+        "nominated_for": {},
+        "award_received": {},
+        "genre": {}
+      },
+      "creator": {
+        "gender": {},
+        "date_of_birth": {},
+        "occupation": {},
+        "nominated_for": {},
+        "award_received": {},
+        "genre": {}
+      },
+      "screen_writer": {
+        "gender": {},
+        "date_of_birth": {},
+        "occupation": {},
+        "nominated_for": {},
+        "award_received": {},
+        "genre": {}
+      },
+      "publication_date": {},
+      "cast_member": {
+        "gender": {},
+        "date_of_birth": {},
+        "occupation": {},
+        "nominated_for": {},
+        "award_received": {},
+        "genre": {}
+      },
+      "imdb_id": {},
+      "narrator": {
+        "gender": {},
+        "date_of_birth": {},
+        "occupation": {},
+        "nominated_for": {},
+        "award_received": {},
+        "genre": {}
+      },
+      "award_received": {},
+      "genre": {},
+      "characters": {
+        "gender": {},
+        "date_of_birth": {},
+        "occupation": {},
+        "nominated_for": {},
+        "award_received": {},
+        "genre": {}
+      },
+      "main_subject": {},
+      "original_language": {},
+      "composer": {
+        "gender": {},
+        "date_of_birth": {},
+        "occupation": {},
+        "nominated_for": {},
+        "award_received": {},
+        "genre": {}
+      },
+      "film_editor": {
+        "gender": {},
+        "date_of_birth": {},
+        "occupation": {},
+        "nominated_for": {},
+        "award_received": {},
+        "genre": {}
+      },
+      "inspired_by": {},
+      "depicts": {},
+      "nominated_for": {},
+      "attendance": {},
+      "duration": {},
+      "omdb_id": {},
+      "box_office": {},
+      "capital_cost": {},
+      "review_score": {}
+    },
+    "country": {},
+    "gender": {},
+    "professional_painter": {
+      "gender": {},
+      "date_of_birth": {},
+      "occupation": {},
+      "nominated_for": {},
+      "award_received": {},
+      "genre": {}
+    },
+    "professional_artist": {
+      "gender": {},
+      "date_of_birth": {},
+      "occupation": {},
+      "nominated_for": {},
+      "award_received": {},
+      "genre": {}
+    },
+    "professional_actor": {
+      "gender": {},
+      "date_of_birth": {},
+      "occupation": {},
+      "nominated_for": {},
+      "award_received": {},
+      "genre": {}
+    }
+  },
+  "languages": {
+    "fr": {},
+    "en": {},
+    "ja": {},
+    "es": {},
+    "yue": {},
+    "zh": {},
+    "cmn": {},
+    "hi": {}
+  },
+  "wikidata_fields": {
+    "director": "wdt:P57",
+    "producer": "wdt:P162",
+    "main_subject": "wdt:P921",
+    "genre": "wdt:P136",
+    "original_language": "wdt:P364",
+    "date_of_birth": "wdt:P569",
+    "gender": "wdt:P21",
+    "publication_date": "wdt:P577",
+    "screen_writer": "wdt:P58",
+    "cast_member": "wdt:P161",
+    "occupation": "wdt:P106",
+    "composer": "wdt:P86",
+    "narrator": "wdt:P2438",
+    "production_company": "wdt:P272",
+    "country_of_citizenship": "wdt:P27",
+    "sex_or_gender": "wdt:P21",
+    "gender_identity": "wdt:P21",
+    "distributed_by": "wdt:P750",
+    "inspired_by": "wdt:P941",
+    "set_in_period": "wdt:P2408",
+    "narrative_location": "wdt:P840",
+    "filming_location": "wdt:P915",
+    "duration": "wdt:P2047",
+    "award_received": "wdt:P166",
+    "nominated_for": "wdt:P1411",
+    "box_office": "wdt:P2142",
+    "capital_cost": "wdt:P2130",
+    "characters": "wdt:P674",
+    "depicts": "wdt:P180",
+    "imdb_id": "wdt:P345",
+    "omdb_id": "wdt:P3302",
+    "creator": "wdt:P170",
+    "film_editor": "wdt:P1040",
+    "review_score": "wdt:P444",
+    "attendance": "wdt:P1110"
+  },
+  "wikidata_items": {
+    "documentary": "wd:Q4164344",
+    "film": "wd:Q11424",
+    "television_series": "wd:Q5398426",
+    "anime": "wd:Q1107",
+    "film_series": "wd:Q24856",
+    "western_animation": "wd:Q83646243",
+    "animated_television_series": "wd:Q117467246",
+    "country": "wd:Q6256",
+    "gender_identity": "wd:Q48264",
+    "country_of_citizenship": "wd:Q6256",
+    "gender": "wd:Q48277",
+    "professional_painter": {
+      "predicate": "wdt:P101",
+      "object": "wd:Q11629"
+    },
+    "professional_artist": {
+      "predicate": "wdt:P101",
+      "object": "wd:Q56055944"
+    },
+    "professional_actor": {
+      "predicate": "wdt:P101",
+      "object": "wd:Q222749"
+    }
+  },
+  "bys": {
+    "country_of_citizenship": {
+      "csv": "country"
+    },
+    "gender": {
+      "csv": "gender"
+    }
+  },
+  "custom": {
+    "film/cast_member/nominated_for": {},
+    "en/film/cast_member": {},
+    "ja/film/cast_member": {},
+    "es/film/cast_member": {},
+    "yue/film/cast_member": {},
+    "zh/film/cast_member": {},
+    "hi/film/cast_member": {},
+    "zh/film/cast_member/gender": {},
+    "cmn/television_series/cast_member": {}
+  },
+  "omdb": {
+    "movie_links": {},
+    "image_ids": {},
+    "movie_references": {},
+    "category_names": {},
+    "movie_categories": {},
+    "all_categories": {},
+    "all_votes": {},
+    "all_movies": {},
+    "all_series": {}
+  }
+}

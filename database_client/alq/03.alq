@@ -1,0 +1,9 @@
+select
+    media as (
+        anime
+    )
+    media.genre
+    media.cast_member
+where
+    media.genre ilike '%psychologie%'
+limit 3

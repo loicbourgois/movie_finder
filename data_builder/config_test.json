@@ -1,0 +1,14 @@
+{
+  "data": {
+    "documentary": {
+      "director": {
+        "gender": {},
+        "date_of_birth": {},
+        "occupation": {},
+        "nominated_for": {},
+        "award_received": {},
+        "genre": {}
+      }
+    }
+  }
+}

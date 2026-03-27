@@ -1,0 +1,9 @@
+TODO: explain this log
+
+2025-11-19 06:06:54.006 UTC [47] LOG:  received fast shutdown request
+movie_finder-database-1  | waiting for server to shut down....2025-11-19 06:06:54.007 UTC [47] LOG:  aborting any active transactions
+movie_finder-database-1  | 2025-11-19 06:06:54.011 UTC [47] LOG:  background worker "logical replication launcher" (PID 54) exited with exit code 1
+movie_finder-database-1  | 2025-11-19 06:06:54.013 UTC [49] LOG:  shutting down
+movie_finder-database-1  | 2025-11-19 06:06:54.572 UTC [47] LOG:  database system is shut down
+movie_finder-database-1  |  done
+movie_finder-database-1  | server stopped

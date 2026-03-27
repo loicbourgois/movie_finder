@@ -44,6 +44,8 @@ struct MovieSmall {
 struct Omdb {
     id: String,
     img_url: String,
+    image_version: String,
+    image_id: String,
 }
 
 #[derive(serde::Serialize)]
@@ -108,6 +110,8 @@ fn movie_small(data: &web::Data<Data>, id: &str) -> MovieSmall {
                             img_url: format!(
                                 "https://www.omdb.org/image/default/{omdb_img_id}.jpeg?v={omdb_img_v}"
                             ),
+                            image_version: omdb_img_v.to_string(),
+                            image_id: omdb_img_id.to_string(),
                         },
                     )
                 })
@@ -144,6 +148,8 @@ fn get_movie(id: &str, data: &web::Data<Data>) -> Movie {
                         img_url: format!(
                             "https://www.omdb.org/image/default/{omdb_img_id}.jpeg?v={omdb_img_v}"
                         ),
+                        image_version: omdb_img_v.to_string(),
+                        image_id: omdb_img_id.to_string(),
                     },
                 )
             })
@@ -259,6 +265,11 @@ async fn get_item_json(path: web::Path<String>, data: web::Data<Data>) -> HttpRe
 
 #[get("/search/{_str}")]
 async fn search_html(_str: web::Path<String>, data: web::Data<Data>) -> HttpResponse {
+    index_html(&data)
+}
+
+#[get("/search_v2/{_str}")]
+async fn search_v2_html(_str: web::Path<String>, data: web::Data<Data>) -> HttpResponse {
     index_html(&data)
 }
 
@@ -413,11 +424,11 @@ fn read_file(path: &str) -> std::io::Result<String> {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    println!("main setup");
+    println!("[start] load_data");
     let data = load_data()?;
-    println!("main setup ok");
+    println!("[ end ] load_data");
     let mut aa = HttpServer::new(move || {
-        println!("setup");
+        println!("[start] setup");
         let cors = Cors::default()
             .allowed_origin("http://localhost")
             .allowed_origin("localhost")
@@ -433,10 +444,11 @@ async fn main() -> std::io::Result<()> {
             .service(get_item_html)
             .service(get_item_json)
             .service(search_html)
+            .service(search_v2_html)
             .service(search_json)
             .service(search_json_v2)
             .service(actix_files::Files::new("/", "../front/"));
-        println!("setup ok");
+        println!("[ end ] setup");
         app
     })
     .workers(1);

@@ -1,15 +1,13 @@
 from .utils import column_type
+from .utils import logging
 
 
 def wheres(k, alq):
-    l = []
+    l = ['true']
     for x in alq['where']:
-        if x['field'] == k:
+        if x['field'] == k or x['field'].replace(".", "_") == k:
             l.append(f"item___label.label {x['comparator']} '{x['value']}'")
-    if len(l) > 0:
-        return " and " + " and ".join(l) 
-    else:
-        return ""
+    return " and ".join(l) 
 
 
 def sql_elements(alq):
@@ -18,7 +16,6 @@ def sql_elements(alq):
     select_first = list(alq['select'].keys())[0]
     for k in alq['select_keys']:
         v = alq['select'][k]
-    # for k, v in alq['select'].items():
         if v.get('kinds'):
             aa = ",".join( f"'{x}'" for x in v['kinds'])
             sql_withs.append(f"""
@@ -31,19 +28,16 @@ def sql_elements(alq):
                     from item
                     inner join item___label
                         on item.item_id = item___label.item_id
-                    where item.kind in ({aa})
-                        {wheres(k, alq)}
+                    where /*w1*/ item.kind in ({aa}) and {wheres(k, alq)}
                 )
             """)
         if v.get("item"):
             aa = ""
             field = v['field']
-            # item = v['item']
             if v.get("parent_item"):
                 aa = v['parent_item'] + "_"
             parent_table = f"{aa}{v['item']}"
             table = f"item___{v['field']}"
-            # table_2 = k
             joins.append(f"""
                 left outer join {k}
                     on {parent_table}.{parent_table}_id = {k}.{k}_up_id
@@ -59,7 +53,7 @@ def sql_elements(alq):
                         from {table}
                         inner join item___label
                             on {table}.{field}_id = item___label.item_id
-                        where true {wheres(k, alq)}
+                        where /*w2*/ {wheres(k, alq)}
                     )
                 """)
             else:
@@ -71,8 +65,12 @@ def sql_elements(alq):
                         from {table}
                     )
                 """)
+    where = ['True']
+    for x in alq['where']:
+        where.append(f"{x['field'].replace(".", "_")} {x['comparator']} '{x['value']}'")
     return {
         'sql_withs': sql_withs,
         'joins': joins,
         'select_first': select_first,
+        'where': where,
     }
